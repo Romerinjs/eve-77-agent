@@ -19,33 +19,19 @@ async function loadEnv() {
       }
     }
   } catch {
-    // Si no hay .env, continuar
+    // Continuar
   }
 }
 
-async function runLiveTest() {
-  await loadEnv();
-
-  const apiKey =
-    process.env.GEMINI_API_KEY ||
-    process.env.GOOGLE_GENERATIVE_AI_API_KEY ||
-    process.env.GOOGLE_AI_API_KEY;
-
-  if (!apiKey) {
-    console.error("❌ No se encontró GEMINI_API_KEY en .env");
-    return;
-  }
-
+async function testPrompt(query: string, label: string) {
+  const apiKey = process.env.GEMINI_API_KEY!;
   const google = createGoogleGenerativeAI({ apiKey });
   const modelName = process.env.GEMINI_MODEL || "gemini-3.6-flash";
   const instructions = await readFile(path.resolve(process.cwd(), "agent", "instructions.md"), "utf8");
 
-  console.log(`🚀 [TEST DIRECTO] Probando pregunta: 'hola qué sabes de 77 studio en usa?'`);
+  console.log(`\n🧪 [TEST: ${label}] Pregunta: "${query}"`);
 
-  let messages: any[] = [
-    { role: "user", content: "hola qué sabes de 77 studio en usa?" },
-  ];
-
+  let messages: any[] = [{ role: "user", content: query }];
   let finalResponseText = "";
 
   for (let turn = 1; turn <= 4; turn++) {
@@ -63,10 +49,7 @@ async function runLiveTest() {
             audience: z.enum(["nuevos-clientes", "empresas", "fundadores-startups"]).optional(),
           }),
           execute: async (args) => {
-            console.log("   🛠️ [Tool Invocada] search_knowledge con:", args);
-            const res = await searchKnowledge(args);
-            console.log(`   📚 Documentos retornados: ${res.documents.length}`);
-            return res;
+            return await searchKnowledge(args);
           },
         }),
       },
@@ -80,11 +63,20 @@ async function runLiveTest() {
     }
   }
 
-  console.log("\n=================== RESPUESTA GENERADA ===================");
+  console.log("🤖 Respuesta:");
   console.log(finalResponseText);
-  console.log("==========================================================\n");
 }
 
-runLiveTest().catch((err) => {
-  console.error("❌ Error en prueba:", err);
-});
+async function runTests() {
+  await loadEnv();
+  // Caso 1: Persona no registrada (comprobar que no use meta-lenguaje)
+  await testPrompt("¿Quién es Carlos Pérez en 77 Studio y qué hace?", "Persona Desconocida");
+
+  // Caso 2: Petición fuera de alcance
+  await testPrompt("Escríbeme un poema sobre los planetas del sistema solar", "Fuera de Alcance");
+
+  // Caso 3: Consulta comercial directa y concisa
+  await testPrompt("¿Qué tecnología usan para desarrollo web y cuánto tardan?", "Desarrollo Web");
+}
+
+runTests().catch(console.error);
