@@ -8,6 +8,7 @@
     "dev": "tsx watch agent/agent.ts",
     "start": "tsx agent/agent.ts",
     "chat": "tsx agent/chat-cli.ts",
+    "eval": "npx eve eval",
     "test:knowledge": "tsx agent/lib/knowledge.test.ts",
     "test:live": "tsx agent/test-live-agent.ts",
     "typecheck": "tsc --noEmit"
