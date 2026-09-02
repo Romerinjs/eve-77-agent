@@ -6,6 +6,9 @@ import path from "node:path";
 import { z } from "zod";
 import { searchKnowledge } from "./lib/knowledge.js";
 
+// Desactivar warnings redundantes
+process.env.AI_SDK_LOG_WARNINGS = "false";
+
 async function loadEnv() {
   try {
     const envContent = await readFile(path.resolve(process.cwd(), ".env"), "utf8");
@@ -45,7 +48,7 @@ async function startInteractiveChat() {
   console.log("Escribe tu pregunta o 'salir' para terminar.");
   console.log("========================================================\n");
 
-  const conversationHistory: any[] = [];
+  let conversationHistory: any[] = [];
 
   const rl = readline.createInterface({
     input: process.stdin,
@@ -70,74 +73,50 @@ async function startInteractiveChat() {
       process.stdout.write("🤖 77 Agent (Consultando base de conocimiento y pensando...)\r");
 
       try {
-        // Paso 1: Llamar al modelo con herramientas
-        const step1 = await generateText({
-          model: google(modelName),
-          system: instructions,
-          messages: conversationHistory,
-          tools: {
-            search_knowledge: tool({
-              description:
-                "Busca información oficial en la base de conocimiento de 77 Studio sobre servicios, playbooks y datos de contacto.",
-              inputSchema: z.object({
-                query: z.string().default(""),
-                slug: z.string().optional(),
-                audience: z.enum(["nuevos-clientes", "empresas", "fundadores-startups"]).optional(),
-              }),
-            }),
-          },
-        });
+        let turnMessages = [...conversationHistory];
+        let finalResponseText = "";
 
-        let finalResponseText = step1.text;
-
-        // Si el modelo solicitó buscar información
-        if (step1.toolCalls && step1.toolCalls.length > 0) {
-          const toolCall: any = step1.toolCalls[0];
-          const args = toolCall.args || { query: trimmed };
-          const searchResult = await searchKnowledge(args);
-
-          const toolMessages = [
-            ...conversationHistory,
-            {
-              role: "assistant",
-              content: [
-                {
-                  type: "tool-call",
-                  toolCallId: toolCall.toolCallId,
-                  toolName: toolCall.toolName,
-                  args: toolCall.args,
-                },
-              ],
-            },
-            {
-              role: "tool",
-              content: [
-                {
-                  type: "tool-result",
-                  toolCallId: toolCall.toolCallId,
-                  toolName: toolCall.toolName,
-                  output: {
-                    type: "text",
-                    value: JSON.stringify(searchResult),
-                  },
-                },
-              ],
-            },
-          ];
-
-          const step2 = await generateText({
+        // Ejecutar bucle multi-turno para resolver tool calls y generar la respuesta final
+        for (let turn = 1; turn <= 4; turn++) {
+          const result = await generateText({
             model: google(modelName),
             system: instructions,
-            messages: toolMessages,
+            messages: turnMessages,
+            tools: {
+              search_knowledge: tool({
+                description:
+                  "Busca información oficial en la base de conocimiento de 77 Studio sobre servicios, playbooks y datos de contacto.",
+                inputSchema: z.object({
+                  query: z.string().default(""),
+                  slug: z.string().optional(),
+                  audience: z.enum(["nuevos-clientes", "empresas", "fundadores-startups"]).optional(),
+                }),
+                execute: async (args) => {
+                  return await searchKnowledge(args);
+                },
+              }),
+            },
           });
 
-          finalResponseText = step2.text;
+          turnMessages = [...turnMessages, ...result.response.messages];
+
+          if (result.text && result.finishReason !== "tool-calls") {
+            finalResponseText = result.text;
+            break;
+          }
         }
 
+        // Limpiar la línea de estado "pensando..."
+        process.stdout.write("                                                            \r");
+
         console.log("\n🤖 77 Agent:\n");
-        console.log(finalResponseText);
-        conversationHistory.push({ role: "assistant", content: finalResponseText });
+        console.log(finalResponseText || "Disculpa, no pude procesar esa consulta.");
+        
+        if (finalResponseText) {
+          conversationHistory.push({ role: "assistant", content: finalResponseText });
+        }
       } catch (err: any) {
+        process.stdout.write("                                                            \r");
         console.error("\n❌ Error generando respuesta:", err?.message || err);
       }
 
