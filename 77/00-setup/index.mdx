@@ -1,0 +1,149 @@
+---
+title: "77 Studio - Setup del Entorno, Stack Tecnológico & Arquitectura"
+description: "Especificación técnica del entorno de desarrollo, librerías, Astro 5.x y stack tecnológico de 77 Studio."
+module: "00-setup"
+route: "/setup"
+whatsappMessage: "Hola 77 Studio 👋 Quiero conocer más sobre su stack tecnológico."
+slug: "tecnologia/setup"
+category: "tecnologia"
+audience: "empresas"
+keywords:
+  - setup
+  - stack tecnologico
+  - astro
+  - typescript
+  - tailwind css
+  - arquitectura web
+  - diseno de sistemas
+related_slugs:
+  - "servicios/web"
+  - "tecnologia/ia-agent-chat"
+---
+
+# 00 | Setup del Entorno, Stack Tecnológico, Librerías & Habilidades Requeridas
+
+> **Módulo Base (Paso 0):** Especificación técnica para la preparación del entorno de desarrollo, instalación de dependencias, configuración de Astro 5.x y definición del perfil técnico necesario para construir el sitio web de **77 Studio**.
+
+---
+
+## 0.1 Requisitos del Entorno de Desarrollo (Environment Prereqs)
+
+Para garantizar la correcta ejecución y compilación de la plataforma web de 77 Studio, el desarrollador o la estación de trabajo debe contar con:
+
+- **Runtime de JavaScript**: Node.js `v18.17.1` o `v20.x LTS` (recomendado v20.10.0+).
+- **Gestor de Paquetes**: `npm` v9+ (incluido con Node) o `pnpm` v8+.
+- **Sistema de Control de Versiones**: Git 2.40+ configurado globalmente.
+- **Editor Recomendado**: Visual Studio Code con las siguientes extensiones instaladas:
+  - `astro-build.astro-vscode` (Soporte oficial de Astro)
+  - `bradlc.vscode-tailwindcss` (Tailwind CSS IntelliSense)
+  - `unifiedjs.vscode-mdx` (Resaltado de sintaxis MDX)
+  - `esbenp.prettier-vscode` (Formateador de código)
+
+---
+
+## 0.2 Inicialización del Proyecto y Comandos CLI
+
+El sitio se construye sobre **Astro 5.x (Islands Architecture)**. Los comandos de inicialización y mantenimiento son:
+
+```bash
+# 1. Inicialización en el directorio del proyecto
+npm create astro@latest ./ -- --template empty --typescript strict
+
+# 2. Instalación de Integraciones Oficiales de Astro
+npx astro add mdx --yes
+npx astro add vercel --yes
+
+# 3. Comandos de Operación Diaria
+npm run dev      # Inicia el servidor de desarrollo local (http://localhost:4321)
+npm run build    # Compila el sitio estático/SSR para producción en la carpeta dist/
+npm run preview  # Previsualiza la build de producción localmente
+npx astro check  # Diagnostica tipos de TypeScript y valida la integridad de los componentes
+```
+
+---
+
+## 0.3 Matriz de Paquetes y Librerías Requeridas (NPM Stack)
+
+El ecosistema de paquetes de **77 Studio** se mantiene liviano para asegurar tiempos de carga < 1s y puntaje Lighthouse 95+:
+
+### Dependencias Principales (`dependencies`)
+| Paquete | Versión Recomendada | Propósito / Uso en 77 Studio |
+|---|---|---|
+| `astro` | `^5.x.x` | Core Framework (Islands Architecture, zero JS por defecto) |
+| `@astrojs/mdx` | `^4.x.x` | Renderizado de colecciones MDX con componentes inyectados |
+| `@astrojs/vercel` | `^8.x.x` | Adaptador SSR / Serverless para despliegue en Vercel |
+| `tailwindcss` | `^4.x.x` | Sistema de diseño de utilidad (Design Tokens de 77 Studio) |
+| `@tailwindcss/vite` | `^4.x.x` | Plugin de compilación rápida para Tailwind v4 |
+| `clsx` | `^2.1.x` | Construcción condicional de clases CSS en componentes UI |
+| `tailwind-merge` | `^2.2.x` | Resolución de conflictos en clases Tailwind dinámicas |
+| `lucide-astro` | `^0.3x.x` | Conjunto de iconos SVG optimizados en formato vectorizado |
+| `@nanostores/astro` | `^0.4.x` | Manejo de estado liviano entre islas UI (ej. selector ES/EN) |
+
+### Dependencias de Desarrollo (`devDependencies`)
+| Paquete | Versión | Propósito |
+|---|---|---|
+| `typescript` | `^5.x.x` | Tipado estático estricto para componentes y colecciones |
+| `@types/node` | `^20.x.x` | Tipos TypeScript para variables de entorno de Node |
+| `prettier` | `^3.x.x` | Formateador automático de código `.astro`, `.mdx` y `.ts` |
+| `prettier-plugin-astro` | `^0.13.x` | Formateador específico para sintaxis de plantillas Astro |
+
+---
+
+## 0.4 Matriz de Habilidades Técnicas del Desarrollador (Developer Skills)
+
+Para trabajar de manera efectiva en el sitio de 77 Studio, el equipo o desarrollador debe dominar las siguientes 5 áreas de competencia:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                    MATRIZ DE HABILIDADES TÉCNICAS 77 STUDIO                    │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│ 1. Astro Islands Architecture  ──► Cero JavaScript por defecto, hydration rules │
+│ 2. Tailwind CSS v4 & Design Tokens ─► Uso de paleta Slate-50, Purple #7C3AED    │
+│ 3. MDX & Content Collections ────► Schemas de Frontmatter tipados y layouts MDX │
+│ 4. Estrategia CRO & Conversion ──► Doble CTA, enlaces WhatsApp contextuales    │
+│ 5. Git Trunk-Based & Vercel ─────► Commits estandarizados y Preview URLs        │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+1. **Arquitectura de Islas de Astro (Islands Architecture):**
+   - Entender la renderización HTML estática previa.
+   - Saber aplicar las directivas de hidratación del cliente solo cuando sea necesario: `client:load`, `client:visible`, `client:only="react"`.
+2. **Sistema de Diseño y Tokens de 77 Studio:**
+   - Aplicar estrictamente los colores oficiales: Fondo `bg-slate-50`, Tarjetas blancas `rounded-[20px]`, Acento Violeta `#7C3AED`, Texto `#0A0A0A`.
+   - Integrar fuentes tipográficas de Google Fonts: `Sora` (Títulos), `Inter Tight` (Cuerpo), `IBM Plex Mono` (Tech/CTAs).
+3. **Modelado de Contenidos con Astro MDX:**
+   - Definir colecciones en `src/content/config.ts` usando `zod` para validación de datos.
+   - Escribir contenido MDX limpio combinando Markdown estándar con componentes Astro/React inyectados.
+4. **Optimización de Conversión (CRO) & Copywriting Comercial:**
+   - Implementar el patrón de **Doble CTA Comercial** (WhatsApp prellenado + Email/Formulario).
+   - Configurar la **Barra Sticky Inferior para Móviles** (`MobileStickyBar.astro`).
+5. **Workflow de Git Trunk-Based & Despliegue en Vercel:**
+   - Escribir commits siguiendo **Conventional Commits** (`feat:`, `fix:`, `docs:`, etc.).
+   - Crear ramas de corta duración y revisar enlaces de vista previa (*Preview URLs*) en Vercel antes de mergear a `main`.
+
+---
+
+## 0.5 Configuración de Variables de Entorno (`.env`)
+
+Crea un archivo `.env` en la raíz del proyecto para definir los parámetros operativos:
+
+```env
+# URL oficial del sitio desplegado
+PUBLIC_SITE_URL=https://77.studio
+
+# Teléfono oficial de WhatsApp para links prellenados (sin + ni espacios)
+PUBLIC_WHATSAPP_NUMBER=573000000000
+
+# Endpoint de API en Dokploy para envío de formularios / CRM
+PUBLIC_API_URL=https://api.77.studio/v1/leads
+```
+
+---
+
+## 0.6 Verificación de Preparación (Checklist de Inicio)
+
+- [ ] Node.js v18+ o v20+ verificado (`node -v`).
+- [ ] Proyecto Astro 5 inicializado con soporte MDX y Vercel.
+- [ ] Tailwind CSS v4 configurado con los design tokens de `77-design-system`.
+- [ ] Tipografías Sora, Inter Tight e IBM Plex Mono cargadas en `global.css` o `BaseLayout.astro`.
+- [ ] Repositorio de GitHub vinculado a `https://github.com/Romerinjs/web-77-studio.git` con política de Trunk-Based Development.

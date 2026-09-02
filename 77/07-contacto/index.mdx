@@ -1,0 +1,133 @@
+---
+title: "77 Studio - Contacto Directo"
+description: "Hablemos de tu proyecto. Conversa por WhatsApp o envíanos los detalles por formulario."
+module: "07-contacto"
+route: "/contacto"
+whatsappMessage: "Hola 77 Studio 👋 Quiero conversar con ustedes sobre un proyecto para mi empresa."
+slug: "empresa/contacto"
+category: "empresa"
+audience: "todas"
+keywords:
+  - contacto
+  - hablar por whatsapp
+  - enviar mensaje
+  - formulario comercial
+  - cotizacion
+  - agendar reunion
+  - llamada de exploracion
+  - presupuesto
+  - empezar proyecto
+related_slugs:
+  - "general/home"
+  - "audiencias/nuevos-clientes"
+  - "audiencias/empresas"
+---
+
+# 07 | Contacto - Especificación de Vista & Layout MDX
+
+> **Objetivo Comercial:** Maximizar la conversión de tráfico de alta intención otorgando la misma prioridad visual a WhatsApp y al Formulario por Email.
+
+---
+
+## Frontmatter & Metadata
+
+```ts
+export const pageMeta = {
+  title: "Contacto | Hablemos de tu Proyecto | 77 Studio",
+  description: "Ponte en contacto con 77 Studio para proyectos de marketing, desarrollo web, automatización e IA. Atención en Colombia, USA e internacional.",
+  canonical: "https://77.studio/contacto",
+  ogImage: "/images/og-contacto.jpg"
+};
+```
+
+---
+
+## 1. Hero & Layout General (2 Columnas)
+
+El layout de la página de contacto elimina distracciones pesadas y organiza la pantalla en dos columnas principales en escritorio (`lg:grid lg:grid-cols-2 lg:gap-12`):
+
+```astro
+<div class="mx-auto max-w-[1290px] px-4 py-12 lg:py-20 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+  <!-- Columna Izquierda: Mensaje + Card WhatsApp -->
+  <!-- Columna Derecha: Card Formulario Email -->
+</div>
+```
+
+---
+
+## 2. Columna Izquierda: WhatsApp Directo & Presencia Internacional
+
+- **Título**: Hablemos de tu proyecto.
+- **Copy**: Ya sea que necesites mejorar tu marketing, desarrollar una nueva web, automatizar procesos o construir un producto digital, podemos empezar por una conversación directa.
+- **Card WhatsApp blanca (`border border-stroke-2/60 rounded-[20px] p-6 shadow-sm`)**:
+  - Icono destacado de WhatsApp.
+  - Microcopy: *"¿Quieres hablar directamente con nosotros? Cuéntanos brevemente qué necesitas y te orientamos desde la primera conversación."*
+  - Botón: `Abrir chat de WhatsApp` (`bg-opai-purple text-white rounded-xl py-3 px-6 font-ibm-plex-mono`).
+- **Banner Internacional**: Colombia ↔ Estados Unidos. Operación remota global.
+
+---
+
+## 3. Columna Derecha: Formulario Comercial
+
+Card blanca limpia (`rounded-[20px] border border-stroke-2/60 p-6 md:p-8 shadow-sm`):
+
+```html
+<form id="contact-form" action="/api/contact" method="POST" class="space-y-4">
+  <input type="hidden" name="origin_url" value="" id="hidden-origin" />
+  
+  <div>
+    <label class="block font-sora text-sm font-medium text-background-13">Nombre Completo *</label>
+    <input type="text" name="name" required class="w-full mt-1 px-4 py-3 rounded-xl border border-stroke-2/60 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-opai-purple outline-none" placeholder="Tu nombre" />
+  </div>
+
+  <div>
+    <label class="block font-sora text-sm font-medium text-background-13">Empresa *</label>
+    <input type="text" name="company" required class="w-full mt-1 px-4 py-3 rounded-xl border border-stroke-2/60 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-opai-purple outline-none" placeholder="Nombre de tu empresa" />
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div>
+      <label class="block font-sora text-sm font-medium text-background-13">Email Corporativo *</label>
+      <input type="email" name="email" required class="w-full mt-1 px-4 py-3 rounded-xl border border-stroke-2/60 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-opai-purple outline-none" placeholder="correo@empresa.com" />
+    </div>
+    <div>
+      <label class="block font-sora text-sm font-medium text-background-13">WhatsApp / Teléfono *</label>
+      <input type="tel" name="phone" required class="w-full mt-1 px-4 py-3 rounded-xl border border-stroke-2/60 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-opai-purple outline-none" placeholder="+123456789" />
+    </div>
+  </div>
+
+  <div>
+    <label class="block font-sora text-sm font-medium text-background-13">¿En qué podemos ayudarte? *</label>
+    <select name="service" required class="w-full mt-1 px-4 py-3 rounded-xl border border-stroke-2/60 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-opai-purple outline-none">
+      <option value="">Selecciona una opción</option>
+      <option value="marketing">Marketing (Paid Media & Contenido)</option>
+      <option value="web">Desarrollo Web & Landings</option>
+      <option value="ia-automatizacion">IA & Automatización de Procesos</option>
+      <option value="productos-digitales">Productos Digitales & SaaS</option>
+      <option value="general">Consulta General</option>
+    </select>
+  </div>
+
+  <div>
+    <label class="block font-sora text-sm font-medium text-background-13">Cuéntanos brevemente sobre tu proyecto *</label>
+    <textarea name="message" rows="4" required class="w-full mt-1 px-4 py-3 rounded-xl border border-stroke-2/60 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-opai-purple outline-none" placeholder="¿Qué quieres hacer o mejorar?"></textarea>
+  </div>
+
+  <button type="submit" class="w-full font-ibm-plex-mono bg-background-13 text-white py-4 rounded-xl font-medium hover:bg-black transition-colors shadow-sm">
+    Enviar Solicitud de Contacto
+  </button>
+</form>
+```
+
+---
+
+## 4. Script de Inyección de Origen (CRO)
+
+```javascript
+document.addEventListener('DOMContentLoaded', () => {
+  const hiddenOrigin = document.getElementById('hidden-origin');
+  if (hiddenOrigin) {
+    hiddenOrigin.value = window.location.href;
+  }
+});
+```

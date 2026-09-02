@@ -1,0 +1,149 @@
+---
+title: "77 Studio - Integraciones de Marketing, Analytics & Tracking"
+description: "Arquitectura técnica de analítica, pixelado, Meta Conversions API (CAPI), Google Ads, GTM y GA4."
+module: "08-integraciones-marketing"
+route: "/integraciones-marketing"
+whatsappMessage: "Hola 77 Studio 👋 Quisiera asesoría para implementar analítica avanzada y tracking publicitario en mi empresa."
+slug: "servicios/integraciones-marketing"
+category: "servicios"
+audience: "empresas"
+keywords:
+  - integraciones de marketing
+  - tracking
+  - analitica
+  - meta pixel
+  - conversions api
+  - capi
+  - google ads
+  - google tag manager
+  - gtm
+  - ga4
+  - google analytics
+  - utm
+  - atribucion publicitaria
+  - crm webhook
+related_slugs:
+  - "servicios/marketing"
+  - "servicios/ia-automatizacion"
+  - "audiencias/empresas"
+---
+
+# 08 | Integraciones de Marketing, Analytics & Meta / Google Ads
+
+> **Módulo 08:** Especificación técnica para la arquitectura escalable de analítica, pixelado y atribución publicitaria de **77 Studio** mediante **Meta Business Suite (Pixel + CAPI)**, **Google Ads / GTM / GA4** y el motor de captura de parámetros UTM.
+
+---
+
+## 08.1 Arquitectura de Event Bus y Atribución
+
+Para garantizar la captura del 100% de los clientes potenciales (leads) sin perder atribución por bloqueadores de publicidad o restricciones de navegadores (iOS App Tracking Transparency), la plataforma utiliza un **Event Bus híbrido** (Front-end + Server-side).
+
+```
+  [Usuario interactúa con 77 Studio]
+               │
+      ┌────────┴────────┐
+      ▼                 ▼
+[Client-side Pixel]   [Server-side CAPI]
+  - Meta Pixel          - Meta Conversions API (CAPI)
+  - Google Tag (GTM)    - Google Ads Server Event
+  - GA4 Events          - CRM Webhook (Dokploy)
+```
+
+---
+
+## 08.2 Meta Business Suite (Meta Pixel + Conversions API CAPI)
+
+### 1. Client-side Meta Pixel
+Inyectado en `BaseLayout.astro` con soporte para consentimiento de cookies.
+- **`PageView`**: Disparado en cada navegación de página.
+- **`ViewContent`**: Disparado cuando el usuario visualiza módulos clave de servicios (`/marketing`, `/web`, `/ia-automatizacion`).
+- **`Lead`**: Disparado al enviar con éxito un formulario de contacto.
+- **`Contact`**: Disparado al hacer clic en el botón primario de WhatsApp prellenado.
+
+### 2. Server-side Meta Conversions API (CAPI)
+Para garantizar 0% pérdida de datos de conversión, se especifica el endpoint serverless en Astro: `/api/events/meta-capi.ts`.
+- **Payload:** Hash SHA-256 de `email`, `phone`, `user_agent`, `client_ip_address`, `event_id`.
+- **Deduplicación:** Uso de la cabecera `event_id` compartida entre el pixel de cliente y la API CAPI.
+
+```typescript
+// Ejemplo de payload /api/events/meta-capi.ts
+export async function POST({ request }) {
+  const body = await request.json();
+  const eventId = body.eventId || crypto.randomUUID();
+  
+  // Enviar a Meta Graph API v19.0
+  const response = await fetch(`https://graph.facebook.com/v19.0/${import.meta.env.META_PIXEL_ID}/events?access_token=${import.meta.env.META_CAPI_TOKEN}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      data: [{
+        event_name: body.eventName, // 'Lead' | 'Contact'
+        event_time: Math.floor(Date.now() / 1000),
+        event_id: eventId,
+        user_data: {
+          em: [hashSHA256(body.email)],
+          ph: [hashSHA256(body.phone)],
+          client_ip_address: body.ip,
+          client_user_agent: body.userAgent
+        },
+        custom_data: {
+          service_origin: body.serviceOrigin,
+          utm_source: body.utmSource
+        }
+      }]
+    })
+  });
+}
+```
+
+---
+
+## 08.3 Google Ads, Google Tag Manager (GTM) & GA4
+
+### 1. Google Tag Manager Container
+- ID de Contenedor: `GTM-XXXXXXX` (configurable mediante `PUBLIC_GTM_ID`).
+- **Activadores (Triggers):**
+  - `Form_Submission_Success`: Evento `generate_lead`.
+  - `WhatsApp_Click`: Evento `click_whatsapp` con valor asignado.
+
+### 2. Conversiones de Google Ads
+- Configuración del Tag de Conversión para campañas de Búsqueda y Performance Max:
+  - **Conversión Principal:** Envíos de formulario de cotización (`conversion_label: "lead_form"`).
+  - **Conversión Secundaria:** Inicios de conversación de WhatsApp (`conversion_label: "whatsapp_click"`).
+
+---
+
+## 08.4 UTM Engine & Tracking de Origen en Conversión Dual
+
+El script utilitario `src/utils/utm.ts` rastrea y persiste los parámetros URL de la campaña publicitaria durante la sesión del usuario:
+
+### Parámetros Almacenados:
+- `utm_source` (ej. `facebook`, `google`, `linkedin`, `newsletter`)
+- `utm_medium` (ej. `cpc`, `paid_social`, `organic`)
+- `utm_campaign` (ej. `campana-q3-ia-automatizacion`)
+- `utm_content` / `utm_term`
+- `gclid` (Google Click Identifier) / `fbclid` (Facebook Click Identifier)
+
+### Integración en la Conversión Dual:
+
+1. **Formulario de Contacto:**
+   - Inyección de campos ocultos `<input type="hidden" name="utm_source" value={utmSource} />` para envío al CRM.
+
+2. **WhatsApp Contextual:**
+   - Si existen UTMs activos en la sesión, el mensaje prellenado incluye la marca de atribución:
+   - *Ejemplo:* `"Hola 77 Studio 👋 Estoy interesado en desarrollar una solución de IA para mi empresa. [Ref: Google Ads / Campaña IA Q3]"`
+
+---
+
+## 08.5 Variables de Entorno para Integraciones de Marketing
+
+```env
+# Meta / Facebook Business
+PUBLIC_META_PIXEL_ID=1234567890
+META_CAPI_TOKEN=EAAG...
+
+# Google Ads & Analytics
+PUBLIC_GTM_ID=GTM-XXXXXXX
+PUBLIC_GA4_MEASUREMENT_ID=G-XXXXXXXXXX
+GOOGLE_ADS_CONVERSION_ID=AW-XXXXXXXXX
+```

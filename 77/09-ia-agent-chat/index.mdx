@@ -1,0 +1,153 @@
+---
+title: "77 Studio - Agente de IA Chat & Widget de Consulta"
+description: "Especificación técnica del asistente inteligente, widget interactivo y arquitectura de conocimiento de 77 Studio."
+module: "09-ia-agent-chat"
+route: "/ia-agent-chat"
+whatsappMessage: "Hola 77 Studio 👋 Quisiera implementar un agente de IA similar en mi empresa."
+slug: "tecnologia/ia-agent-chat"
+category: "tecnologia"
+audience: "empresas"
+keywords:
+  - agente de ia chat
+  - asistente virtual
+  - widget de chat
+  - ai chat widget
+  - api serverless
+  - rag
+  - base de conocimiento
+  - single source of truth
+  - chat inteligente
+  - soporte 24/7
+related_slugs:
+  - "servicios/ia-automatizacion"
+  - "servicios/web"
+  - "audiencias/empresas"
+---
+
+# 09 | Agente de IA Chat, Consulta de Conocimiento & API Serverless
+
+> **Módulo 09:** Especificación técnica para la integración del **Agente de IA Consultor de Servicios** de **77 Studio**, compuesto por un widget flotante interactivo (`<AIChatWidget />`), la API serverless agnóstica `/api/chat.ts` y la indexación RAG alimentada por `public/knowledge.json`.
+
+---
+
+## 09.1 Arquitectura del Servicio de Agente de IA
+
+El sitio web cuenta con un asistente inteligente capaz de responder cualquier duda técnica o comercial sobre los servicios de **77 Studio** (Marketing, Web Astro, IA & Automatización, Productos Digitales).
+
+```
+   [Usuario escribe en <AIChatWidget />]
+                    │
+                    ▼
+     POST request a /api/chat.ts
+                    │
+   ┌────────────────┴────────────────┐
+   ▼                                 ▼
+[Carga de public/knowledge.json]  [Generación de System Prompt]
+(Generado con npm run 77 knowledge)  - Asistente Experto 77 Studio
+                                    - Cero alucinaciones
+                                    - Enlace a WhatsApp contextual
+   └────────────────┬────────────────┘
+                    │
+                    ▼
+  [Procesamiento LLM (OpenAI / Gemini)]
+                    │
+                    ▼
+  [Respuesta fluida + Botón a WhatsApp/Form]
+```
+
+---
+
+## 09.2 Componente UI del Widget (`<AIChatWidget />`)
+
+- **Ubicación:** Esquina inferior derecha (estilo flotante redondeado `rounded-full` con sombra `shadow-xl`).
+- **Diseño Visual:** Estética acorde al Design System de 77 Studio (Fondo blanco/cristal `backdrop-blur`, acento violeta `#7C3AED`, badge `font-ibm-plex-mono`).
+- **Comportamiento:**
+  - Mensaje flotante de bienvenida contextual (ej. *"¿Buscas automatizar procesos con IA o escalar tus ventas con Meta Ads? Pregúntame lo que quieras."*).
+  - Estado de carga interactivo con animación de nodos.
+  - Generación de respuestas en formato Markdown enriquecido.
+
+---
+
+## 09.3 Endpoint Serverless Agnóstico `/api/chat.ts`
+
+El endpoint en Astro es 100% agnóstico respecto al proveedor de inteligencia artificial, permitiendo alternar fácilmente entre **OpenAI (GPT-4o)**, **Google Gemini** o un modelo propio en **Dokploy**.
+
+```typescript
+// src/pages/api/chat.ts (Pseudocódigo de Especificación)
+import type { APIRoute } from 'astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+export const POST: APIRoute = async ({ request }) => {
+  const { messages } = await request.json();
+  const lastUserMessage = messages[messages.length - 1]?.content || '';
+
+  // 1. Cargar Base de Conocimiento estructurada (RAG liviano)
+  const knowledgePath = path.join(process.cwd(), 'public', 'knowledge.json');
+  let knowledgeContext = '';
+  
+  if (fs.existsSync(knowledgePath)) {
+    const knowledgeData = JSON.parse(fs.readFileSync(knowledgePath, 'utf-8'));
+    // Filtrar documentos que coincidan con términos clave del mensaje
+    knowledgeContext = knowledgeData.documents
+      .map(doc => `--- DOCUMENTO: ${doc.title} ---\n${doc.contentSnippet}`)
+      .join('\n\n');
+  }
+
+  // 2. System Prompt Estricto
+  const systemPrompt = `
+  Eres el Consultor Inteligente de 77 Studio (Digital Studio + Creative Partner + Technology & AI Company).
+  Tu objetivo es responder de manera profesional, concisa y comercial las preguntas del usuario basándote EXCLUSIVAMENTE en la siguiente base de conocimiento oficial:
+
+  === BASE DE CONOCIMIENTO OFICIAL 77 STUDIO ===
+  ${knowledgeContext}
+  ===============================================
+
+  Reglas de Respuesta:
+  1. No inventes precios ni servicios que no estén en la base de conocimiento.
+  2. Ofrece siempre agendar una conversación por WhatsApp o formulario si el usuario muestra alta intención.
+  `;
+
+  // 3. Selección Agnóstica del Proveedor (OpenAI vs Gemini)
+  const provider = import.meta.env.AI_PROVIDER || 'openai';
+  let replyText = '';
+
+  if (provider === 'gemini') {
+    replyText = await callGeminiAPI(systemPrompt, messages, import.meta.env.AI_API_KEY);
+  } else {
+    replyText = await callOpenAIAPI(systemPrompt, messages, import.meta.env.AI_API_KEY);
+  }
+
+  return new Response(JSON.stringify({ response: replyText }), {
+    headers: { 'Content-Type': 'application/json' }
+  });
+};
+```
+
+---
+
+## 09.4 Compilación Automática de Conocimiento con la CLI
+
+Para mantener al Agente de IA siempre actualizado con cualquier nuevo servicio, tarifa o caso de éxito documentado en la carpeta `77/`:
+
+```bash
+# Comando CLI para re-indexar la base de conocimiento
+npm run 77 knowledge
+```
+
+Este comando procesa todos los archivos MDX (`77/00-setup` a `77/09-ia-agent-chat`), compila el JSON estructurado `public/knowledge.json` y lo deja listo para el consumo del endpoint de IA.
+
+---
+
+## 09.5 Variables de Entorno del Agente de IA
+
+```env
+# Seleccionar proveedor de IA: 'openai' | 'gemini' | 'custom'
+AI_PROVIDER=openai
+
+# Clave de API según el proveedor seleccionado
+AI_API_KEY=sk-proj-xxxxxxxxxxxxxxxxxxxxxxxx
+
+# Modelo preferido
+AI_MODEL=gpt-4o-mini
+```
