@@ -65,7 +65,6 @@ on:
       - main
     paths:
       - '77/**'
-      - 'src/content/knowledge/**' # O la carpeta donde tengas los MDX en Astro
 
 jobs:
   sync-knowledge:
@@ -87,13 +86,9 @@ jobs:
 
       - name: 3. Copiar archivos MDX actualizados
         run: |
-          echo "Copiando archivos MDX hacia eve-77-agent..."
-          # Ajusta la ruta de origen según la estructura de tu repo web:
+          echo "Copiando carpeta 77/ desde la raíz hacia eve-77-agent..."
           mkdir -p agent-repo/77
           cp -R web-repo/77/* agent-repo/77/
-          
-          # Si tienes otras carpetas de contenido, cópialas aquí:
-          # cp -R web-repo/src/content/* agent-repo/content/
 
       - name: 4. Instalar dependencias y validar motor de conocimiento
         working-directory: agent-repo
