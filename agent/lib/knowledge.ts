@@ -165,45 +165,51 @@ async function readDocument(filePath: string, rootDir: string): Promise<CachedDo
   };
 }
 
+import { STATIC_KNOWLEDGE_DOCUMENTS } from "./knowledge-data.js";
+
 async function loadKnowledgeCache(): Promise<CachedDocument[]> {
-  const currentDir = path.dirname(fileURLToPath(import.meta.url));
-  const candidate77Dirs = [
-    path.resolve(process.cwd(), "77"),
-    path.resolve(currentDir, "../../77"),
-    path.resolve(currentDir, "../77"),
-  ];
+  const allDocuments: CachedDocument[] = [...STATIC_KNOWLEDGE_DOCUMENTS];
+  const seenSlugs = new Set<string>(allDocuments.map((d) => d.slug));
 
-  const candidateKnowledgeDirs = [
-    path.resolve(process.cwd(), "content", "knowledge"),
-    path.resolve(currentDir, "../../content/knowledge"),
-  ];
+  try {
+    const currentDir = path.dirname(fileURLToPath(import.meta.url));
+    const candidate77Dirs = [
+      path.resolve(process.cwd(), "77"),
+      path.resolve(currentDir, "../../77"),
+      path.resolve(currentDir, "../77"),
+    ];
 
-  const roots: { path: string; name: string }[] = [];
-  for (const p of candidate77Dirs) {
-    if (!roots.some((r) => r.path === p)) {
-      roots.push({ path: p, name: "77" });
+    const candidateKnowledgeDirs = [
+      path.resolve(process.cwd(), "content", "knowledge"),
+      path.resolve(currentDir, "../../content/knowledge"),
+    ];
+
+    const roots: { path: string; name: string }[] = [];
+    for (const p of candidate77Dirs) {
+      if (!roots.some((r) => r.path === p)) {
+        roots.push({ path: p, name: "77" });
+      }
     }
-  }
-  for (const p of candidateKnowledgeDirs) {
-    if (!roots.some((r) => r.path === p)) {
-      roots.push({ path: p, name: "knowledge" });
+    for (const p of candidateKnowledgeDirs) {
+      if (!roots.some((r) => r.path === p)) {
+        roots.push({ path: p, name: "knowledge" });
+      }
     }
-  }
 
-  const allDocuments: CachedDocument[] = [];
-  const seenSlugs = new Set<string>();
-
-  for (const root of roots) {
-    const files = await walk(root.path);
-    if (files.length > 0) {
-      const docs = await Promise.all(files.map((file) => readDocument(file, root.path)));
-      for (const doc of docs) {
-        if (!seenSlugs.has(doc.slug)) {
-          seenSlugs.add(doc.slug);
-          allDocuments.push(doc);
+    for (const root of roots) {
+      const files = await walk(root.path);
+      if (files.length > 0) {
+        const docs = await Promise.all(files.map((file) => readDocument(file, root.path)));
+        for (const doc of docs) {
+          if (!seenSlugs.has(doc.slug)) {
+            seenSlugs.add(doc.slug);
+            allDocuments.push(doc);
+          }
         }
       }
     }
+  } catch (e) {
+    // Fallback silencioso si el runtime serverless no permite acceso al sistema de archivos
   }
 
   return allDocuments;

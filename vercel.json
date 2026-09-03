@@ -1,10 +1,5 @@
 {
   "version": 2,
-  "functions": {
-    "**": {
-      "includeFiles": "77/**"
-    }
-  },
   "headers": [
     {
       "source": "/(.*)",

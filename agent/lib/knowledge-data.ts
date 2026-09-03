@@ -1,0 +1,797 @@
+// AUTO-GENERATED STATIC KNOWLEDGE BUNDLE
+// Garantiza 0ms de I/O y disponibilidad absoluta en Vercel Serverless
+import type { KnowledgeDocument } from "./knowledge.js";
+
+type CachedDocument = KnowledgeDocument & {
+  search: {
+    id: string;
+    slug: string;
+    route: string;
+    module: string;
+    title: string;
+    description: string;
+    category: string;
+    audience: string;
+    keywords: string[];
+    content: string;
+  };
+};
+
+export const STATIC_KNOWLEDGE_DOCUMENTS: CachedDocument[] = [
+  {
+    "id": "00-setup",
+    "slug": "tecnologia/setup",
+    "title": "77 Studio - Setup del Entorno, Stack Tecnológico & Arquitectura",
+    "description": "Documentación técnica sobre el stack base, dependencias y estructura de 77 Studio.",
+    "module": "00-setup",
+    "route": "/setup",
+    "whatsappMessage": "Hola 77 Studio 👋 Quisiera consultar sobre el stack técnico y setup de desarrollo.",
+    "category": "tecnologia",
+    "audience": "todas",
+    "keywords": [
+      "setup",
+      "stack tecnologico",
+      "arquitectura",
+      "astro",
+      "typescript",
+      "tailwind css",
+      "entorno de desarrollo"
+    ],
+    "related_slugs": [
+      "general/home",
+      "servicios/web"
+    ],
+    "content": "00 | Setup del Entorno, Stack Tecnológico, Librerías & Habilidades RequeridasMódulo Base (Paso 0): Especificación técnica para la preparación del entorno de desarrollo, instalación de dependencias, configuración de Astro 5.x y definición del perfil técnico necesario para construir el sitio web de 77 Studio.0.1 Requisitos del Entorno de Desarrollo (Environment Prereqs)Para garantizar la correcta ejecución y compilación de la plataforma web de 77 Studio, el desarrollador o la estación de trabajo debe contar con:Runtime de JavaScript: Node.js v18.17.1 o v20.x LTS (recomendado v20.10.0+).Gestor de Paquetes: npm v9+ (incluido con Node) o pnpm v8+.Sistema de Control de Versiones: Git 2.40+ configurado globalmente.Editor Recomendado: Visual Studio Code con las siguientes extensiones instaladas:astro-build.astro-vscode (Soporte oficial de Astro)bradlc.vscode-tailwindcss (Tailwind CSS IntelliSense)unifiedjs.vscode-mdx (Resaltado de sintaxis MDX)esbenp.prettier-vscode (Formateador de código)0.2 Inicialización del Proyecto y Comandos CLIEl sitio se construye sobre Astro 5.x (Islands Architecture). Los comandos de inicialización y mantenimiento son:# 1. Inicialización en el directorio del proyecto npm create astro@latest ./ -- --template empty --typescript strict # 2. Instalación de Integraciones Oficiales de Astro npx astro add mdx --yes npx astro add vercel --yes # 3. Comandos de Operación Diaria npm run dev # Inicia el servidor de desarrollo local (http://localhost:4321) npm run build # Compila el sitio estático/SSR para producción en la carpeta dist/ npm run preview # Previsualiza la build de producción localmente npx astro check # Diagnostica tipos de TypeScript y valida la integridad de los componentes0.3 Matriz de Paquetes y Librerías Requeridas (NPM Stack)El ecosistema de paquetes de 77 Studio se mantiene liviano para asegurar tiempos de carga < 1s y puntaje Lighthouse 95+:Dependencias Principales (dependencies)| Paquete | Versión Recomendada | Propósito / Uso en 77 Studio | |---|---|---| | astro | ^5.x.x | Core Framework (Islands Architecture, zero JS por defecto) | | @astrojs/mdx | ^4.x.x | Renderizado de colecciones MDX con componentes inyectados | | @astrojs/vercel | ^8.x.x | Adaptador SSR / Serverless para despliegue en Vercel | | tailwindcss | ^4.x.x | Sistema de diseño de utilidad (Design Tokens de 77 Studio) | | @tailwindcss/vite | ^4.x.x | Plugin de compilación rápida para Tailwind v4 | | clsx | ^2.1.x | Construcción condicional de clases CSS en componentes UI | | tailwind-merge | ^2.2.x | Resolución de conflictos en clases Tailwind dinámicas | | lucide-astro | ^0.3x.x | Conjunto de iconos SVG optimizados en formato vectorizado | | @nanostores/astro | ^0.4.x | Manejo de estado liviano entre islas UI (ej. selector ES/EN) |Dependencias de Desarrollo (devDependencies)| Paquete | Versión | Propósito | |---|---|---| | typescript | ^5.x.x | Tipado estático estricto para componentes y colecciones | | @types/node | ^20.x.x | Tipos TypeScript para variables de entorno de Node | | prettier | ^3.x.x | Formateador automático de código .astro, .mdx y .ts | | prettier-plugin-astro | ^0.13.x | Formateador específico para sintaxis de plantillas Astro |0.4 Matriz de Habilidades Técnicas del Desarrollador (Developer Skills)Para trabajar de manera efectiva en el sitio de 77 Studio, el equipo o desarrollador debe dominar las siguientes 5 áreas de competencia:┌─────────────────────────────────────────────────────────────────────────────────┐ │ MATRIZ DE HABILIDADES TÉCNICAS 77 STUDIO │ ├─────────────────────────────────────────────────────────────────────────────────┤ │ 1. Astro Islands Architecture ──► Cero JavaScript por defecto, hydration rules │ │ 2. Tailwind CSS v4 & Design Tokens ─► Uso de paleta Slate-50, Purple #7C3AED │ │ 3. MDX & Content Collections ────► Schemas de Frontmatter tipados y layouts MDX │ │ 4. Estrategia CRO & Conversion ──► Doble CTA, enlaces WhatsApp contextuales │ │ 5. Git Trunk-Based & Vercel ─────► Commits estandarizados y Preview URLs │ └─────────────────────────────────────────────────────────────────────────────────┘Arquitectura de Islas de Astro (Islands Architecture):Entender la renderización HTML estática previa.Saber aplicar las directivas de hidratación del cliente solo cuando sea necesario: client:load, client:visible, client:only=\"react\".Sistema de Diseño y Tokens de 77 Studio:Aplicar estrictamente los colores oficiales: Fondo bg-slate-50, Tarjetas blancas rounded-[20px], Acento Violeta #7C3AED, Texto #0A0A0A.Integrar fuentes tipográficas de Google Fonts: Sora (Títulos), Inter Tight (Cuerpo), IBM Plex Mono (Tech/CTAs).Modelado de Contenidos con Astro MDX:Definir colecciones en src/content/config.ts usando zod para validación de datos.Escribir contenido MDX limpio combinando Markdown estándar con componentes Astro/React inyectados.Optimización de Conversión (CRO) & Copywriting Comercial:Implementar el patrón de Doble CTA Comercial (WhatsApp prellenado + Email/Formulario).Configurar la Barra Sticky Inferior para Móviles (MobileStickyBar.astro).Workflow de Git Trunk-Based & Despliegue en Vercel:Escribir commits siguiendo Conventional Commits (feat:, fix:, docs:, etc.).Crear ramas de corta duración y revisar enlaces de vista previa (Preview URLs) en Vercel antes de mergear a main.0.5 Configuración de Variables de Entorno (.env)Crea un archivo .env en la raíz del proyecto para definir los parámetros operativos:# URL oficial del sitio desplegado PUBLIC_SITE_URL=https://77.studio # Teléfono oficial de WhatsApp para links prellenados (sin + ni espacios) PUBLIC_WHATSAPP_NUMBER=573000000000 # Endpoint de API en Dokploy para envío de formularios / CRM PUBLIC_API_URL=https://api.77.studio/v1/leads0.6 Verificación de Preparación (Checklist de Inicio)[ ] Node.js v18+ o v20+ verificado (node -v).[ ] Proyecto Astro 5 inicializado con soporte MDX y Vercel.[ ] Tailwind CSS v4 configurado con los design tokens de 77-design-system.[ ] Tipografías Sora, Inter Tight e IBM Plex Mono cargadas en global.css o BaseLayout.astro.[ ] Repositorio de GitHub vinculado a https://github.com/Romerinjs/web-77-studio.git con política de Trunk-Based Development.",
+    "contentTruncated": false,
+    "search": {
+      "id": "00-setup",
+      "slug": "tecnologia/setup",
+      "route": "/setup",
+      "module": "00-setup",
+      "title": "77 studio - setup del entorno, stack tecnologico & arquitectura",
+      "description": "documentacion tecnica sobre el stack base, dependencias y estructura de 77 studio.",
+      "category": "tecnologia",
+      "audience": "todas",
+      "keywords": [
+        "setup",
+        "stack tecnologico",
+        "arquitectura",
+        "astro",
+        "typescript",
+        "tailwind css",
+        "entorno de desarrollo"
+      ],
+      "content": "00 | setup del entorno, stack tecnologico, librerias & habilidades requeridasmodulo base (paso 0): especificacion tecnica para la preparacion del entorno de desarrollo, instalacion de dependencias, configuracion de astro 5.x y definicion del perfil tecnico necesario para construir el sitio web de 77 studio.0.1 requisitos del entorno de desarrollo (environment prereqs)para garantizar la correcta ejecucion y compilacion de la plataforma web de 77 studio, el desarrollador o la estacion de trabajo debe contar con:runtime de javascript: node.js v18.17.1 o v20.x lts (recomendado v20.10.0+).gestor de paquetes: npm v9+ (incluido con node) o pnpm v8+.sistema de control de versiones: git 2.40+ configurado globalmente.editor recomendado: visual studio code con las siguientes extensiones instaladas:astro-build.astro-vscode (soporte oficial de astro)bradlc.vscode-tailwindcss (tailwind css intellisense)unifiedjs.vscode-mdx (resaltado de sintaxis mdx)esbenp.prettier-vscode (formateador de codigo)0.2 inicializacion del proyecto y comandos cliel sitio se construye sobre astro 5.x (islands architecture). los comandos de inicializacion y mantenimiento son:# 1. inicializacion en el directorio del proyecto npm create astro@latest ./ -- --template empty --typescript strict # 2. instalacion de integraciones oficiales de astro npx astro add mdx --yes npx astro add vercel --yes # 3. comandos de operacion diaria npm run dev # inicia el servidor de desarrollo local (http://localhost:4321) npm run build # compila el sitio estatico/ssr para produccion en la carpeta dist/ npm run preview # previsualiza la build de produccion localmente npx astro check # diagnostica tipos de typescript y valida la integridad de los componentes0.3 matriz de paquetes y librerias requeridas (npm stack)el ecosistema de paquetes de 77 studio se mantiene liviano para asegurar tiempos de carga < 1s y puntaje lighthouse 95+:dependencias principales (dependencies)| paquete | version recomendada | proposito / uso en 77 studio | |---|---|---| | astro | 5.x.x | core framework (islands architecture, zero js por defecto) | | @astrojs/mdx | 4.x.x | renderizado de colecciones mdx con componentes inyectados | | @astrojs/vercel | 8.x.x | adaptador ssr / serverless para despliegue en vercel | | tailwindcss | 4.x.x | sistema de diseno de utilidad (design tokens de 77 studio) | | @tailwindcss/vite | 4.x.x | plugin de compilacion rapida para tailwind v4 | | clsx | 2.1.x | construccion condicional de clases css en componentes ui | | tailwind-merge | 2.2.x | resolucion de conflictos en clases tailwind dinamicas | | lucide-astro | 0.3x.x | conjunto de iconos svg optimizados en formato vectorizado | | @nanostores/astro | 0.4.x | manejo de estado liviano entre islas ui (ej. selector es/en) |dependencias de desarrollo (devdependencies)| paquete | version | proposito | |---|---|---| | typescript | 5.x.x | tipado estatico estricto para componentes y colecciones | | @types/node | 20.x.x | tipos typescript para variables de entorno de node | | prettier | 3.x.x | formateador automatico de codigo .astro, .mdx y .ts | | prettier-plugin-astro | 0.13.x | formateador especifico para sintaxis de plantillas astro |0.4 matriz de habilidades tecnicas del desarrollador (developer skills)para trabajar de manera efectiva en el sitio de 77 studio, el equipo o desarrollador debe dominar las siguientes 5 areas de competencia:┌─────────────────────────────────────────────────────────────────────────────────┐ │ matriz de habilidades tecnicas 77 studio │ ├─────────────────────────────────────────────────────────────────────────────────┤ │ 1. astro islands architecture ──► cero javascript por defecto, hydration rules │ │ 2. tailwind css v4 & design tokens ─► uso de paleta slate-50, purple #7c3aed │ │ 3. mdx & content collections ────► schemas de frontmatter tipados y layouts mdx │ │ 4. estrategia cro & conversion ──► doble cta, enlaces whatsapp contextuales │ │ 5. git trunk-based & vercel ─────► commits estandarizados y preview urls │ └─────────────────────────────────────────────────────────────────────────────────┘arquitectura de islas de astro (islands architecture):entender la renderizacion html estatica previa.saber aplicar las directivas de hidratacion del cliente solo cuando sea necesario: client:load, client:visible, client:only=\"react\".sistema de diseno y tokens de 77 studio:aplicar estrictamente los colores oficiales: fondo bg-slate-50, tarjetas blancas rounded-[20px], acento violeta #7c3aed, texto #0a0a0a.integrar fuentes tipograficas de google fonts: sora (titulos), inter tight (cuerpo), ibm plex mono (tech/ctas).modelado de contenidos con astro mdx:definir colecciones en src/content/config.ts usando zod para validacion de datos.escribir contenido mdx limpio combinando markdown estandar con componentes astro/react inyectados.optimizacion de conversion (cro) & copywriting comercial:implementar el patron de doble cta comercial (whatsapp prellenado + email/formulario).configurar la barra sticky inferior para moviles (mobilestickybar.astro).workflow de git trunk-based & despliegue en vercel:escribir commits siguiendo conventional commits (feat:, fix:, docs:, etc.).crear ramas de corta duracion y revisar enlaces de vista previa (preview urls) en vercel antes de mergear a main.0.5 configuracion de variables de entorno (.env)crea un archivo .env en la raiz del proyecto para definir los parametros operativos:# url oficial del sitio desplegado public_site_url=https://77.studio # telefono oficial de whatsapp para links prellenados (sin + ni espacios) public_whatsapp_number=573000000000 # endpoint de api en dokploy para envio de formularios / crm public_api_url=https://api.77.studio/v1/leads0.6 verificacion de preparacion (checklist de inicio)[ ] node.js v18+ o v20+ verificado (node -v).[ ] proyecto astro 5 inicializado con soporte mdx y vercel.[ ] tailwind css v4 configurado con los design tokens de 77-design-system.[ ] tipografias sora, inter tight e ibm plex mono cargadas en global.css o baselayout.astro.[ ] repositorio de github vinculado a https://github.com/romerinjs/web-77-studio.git con politica de trunk-based development."
+    }
+  },
+  {
+    "id": "01-home",
+    "slug": "general/home",
+    "title": "77 Studio - Digital Studio + Creative Partner + AI Company",
+    "description": "Un solo equipo para hacer que tu empresa se vea mejor, venda mejor y funcione mejor. Marketing, desarrollo web, IA y productos digitales en Colombia y USA.",
+    "module": "01-home",
+    "route": "/",
+    "whatsappMessage": "Hola 77 Studio 👋 Vi su página web y quisiera conversar sobre un proyecto para mi empresa.",
+    "category": "general",
+    "audience": "todas",
+    "keywords": [
+      "77 studio",
+      "digital studio",
+      "marketing digital",
+      "desarrollo web",
+      "inteligencia artificial",
+      "automatizacion crm",
+      "productos digitales",
+      "colombia usa",
+      "agente de whatsapp",
+      "sprint 14 dias",
+      "astro 5",
+      "meta ads",
+      "google ads",
+      "conversion cro"
+    ],
+    "related_slugs": [
+      "servicios/marketing-digital",
+      "servicios/desarrollo-web",
+      "servicios/ia-automatizacion",
+      "servicios/productos-digitales",
+      "empresa/nosotros",
+      "empresa/contacto"
+    ],
+    "content": "77 Studio | Propuesta de Valor & Ecosistema PrincipalVisión General: 77 Studio es un estudio digital, partner creativo y compañía de tecnología e inteligencia artificial. Nuestro propósito es unificar estrategia, creatividad y desarrollo para que las empresas aceleren sus ventas, automaticen sus procesos y proyecten una marca de autoridad global.1. Identidad & Posicionamiento (Hero)Propuesta de Valor Central: Un solo equipo para hacer que tu empresa se vea mejor, venda mejor y funcione mejor.Alcance Geográfico: Operación dual desde Colombia y Estados Unidos, colaborando de forma remota y sin fronteras con clientes en Latinoamérica, EE. UU. y mercados globales.Llamado a la Acción Primario: Agendamiento de llamada de diagnóstico de 15 minutos sin costo y atención directa por WhatsApp context-aware.2. Métricas de Impacto ComprobadasNuestra metodología y tecnología generan resultados medibles de negocio desde las primeras semanas de implementación:+310% en Leads Calificados: Filtro inteligente con agentes de IA que pre-califican la intención de compra antes de agendar con el equipo comercial.< 45s en Tiempo de Respuesta: Atención comercial 24/7 sin demora en WhatsApp, evitando que los prospectos se enfríen o coticen con la competencia.-42% en Reducción del CAC Promedio: Optimización continua de pauta publicitaria (Meta & Google Ads) conectada a landings de alta conversión (CRO).100% en Atribución de ROI: Tracking unificado y transparente desde el primer clic publicitario hasta el cierre en el CRM.3. Presencia Internacional (Colombia ↔ USA)Operamos con un modelo ágil, distribuido y de alta cercanía:Sedes Principales: Colombia y Estados Unidos.Modelo Operativo: 100% colaborativo y remoto, adaptado a múltiples husos horarios e industrias.Ventaja Competitiva: Calidad de ingeniería y creatividad de nivel internacional con eficiencia de costos y comunicación directa en español e inglés.4. Ecosistema de Integraciones & Partners TecnológicosNos integramos con las plataformas líderes del mercado para garantizar robustez y escalabilidad:Meta Business Partner: Campañas avanzadas en Meta Ads, Instagram Ads y Conversions API (CAPI).Google Ads Premier Partner: Estrategia en Google Search, Display, YouTube Ads y Google Analytics 4 (GA4).Make Automation Expert: Orquestación de flujos de trabajo, webhooks y automatizaciones multi-sistema.Zapier Certified Systems: Integración fluida entre aplicaciones empresariales.HubSpot CRM Integration: Sincronización bidireccional de leads, pipelines de venta y scoring de prospectos.5. El Reto Digital (5 Fricciones Comunes de Crecimiento)Las empresas en crecimiento suelen enfrentar 5 problemas estructurales que frenan sus resultados:Presencia digital débil: Sitios web antiguos o plantillas lentas que no reflejan la autoridad ni la calidad real del servicio.Contenido sin sistema: Necesidad constante de producir videos y piezas para redes, pero sin un flujo operativo predecible.Oportunidades comerciales perdidas: Inversión en publicidad donde los leads tardan horas en recibir respuesta y se pierden por falta de seguimiento oportuno.IA sin dirección práctica: Mucho ruido sobre inteligencia artificial pero pocas aplicaciones concretas para reducir costos o aumentar ventas.Demasiados proveedores desconectados: Una agencia de pauta, un diseñador freelance y un programador trabajando en silos sin un responsable del resultado global.6. Los 4 Pilares del Ecosistema 77 StudioResolvemos la fragmentación ofreciendo un partner integral en 4 áreas especializadas:A. Marketing Digital & Paid Media (/marketing)Estrategia de pauta publicitaria en Meta Ads & Google Ads orientada a retorno de inversión (ROI).Producción ágil de contenido audiovisual y creativos de video de alto impacto.Copywriting persuasivo y diseño de identidad de marca para generar autoridad.B. Desarrollo Web & Landing Pages (/web)Desarrollo sobre la arquitectura ultrarrápida de Astro 5 con tiempos de carga inferiores a 1 segundo.Landing pages de alta conversión diseñadas bajo principios estrictos de CRO (Conversion Rate Optimization).Enfoque Mobile-First, SEO técnico avanzado y doble canal de conversión (WhatsApp y formularios estructurados).C. IA + Automatización de Procesos (/ia-automatizacion)Agentes de IA para WhatsApp: Atención y pre-calificación instantánea 24/7 en lenguaje natural.Sprint de 14 Días: Metodología intensiva para desplegar agentes y flujos operativos en solo 2 semanas.Integración nativa con CRMs (HubSpot, Zoho, Salesforce) y herramientas de automatización (Make, n8n, Zapier).D. Productos Digitales & Software a Medida (/productos-digitales)Construcción ágil de MVPs en 4 semanas para validar modelos de negocio rápidamente.Desarrollo de plataformas SaaS, portales de clientes y dashboards ejecutivos en tiempo real.Arquitectura en la nube escalable, segura y mantenible.7. Casos de Negocio Reales (El Reto vs Nuestra Solución)E-Commerce & Retail B2B:Reto: Leads costosos y fatiga publicitaria en campañas de captación.Solución: Segmentación de audiencias y producción de creativos de video de alta conversión.Resultado: +185% en leads calificados y -42% en costo por adquisición (CAC).Firma de Consultoría & Finanzas:Reto: Sitio web lento en WordPress con 70% de rebote y baja conversión corporativa.Solución: Migración a Astro 5 con arquitectura de conversión directa a WhatsApp y llamadas de diagnóstico.Resultado: Velocidad de carga 99/100 y +120% en contactos comerciales directos.Empresa de Servicios Profesionales:Reto: Fuga de prospectos fuera de horario por respuesta tardía en WhatsApp.Solución: Agente de IA 24/7 integrado en WhatsApp con sincronización inmediata a CRM.Resultado: Tiempo de respuesta < 30 segundos y 100% de leads atendidos en tiempo real.Startup de Logística:Reto: Operación manual descentralizada mediante hojas de cálculo desconectadas.Solución: Portal web y dashboard centralizado para métricas y control de despachos.Resultado: Lanzamiento de MVP en 4 semanas y ahorro de 15 horas semanales en reportes.8. Testimonios Reales & Aliados EstratégicosCarlos Rivera (Yamaha del Café): “En 3 meses duplicamos los leads de la sala de ventas. Antes pautábamos sin saber si funcionaba. Ahora tenemos datos y un equipo que los entiende.”Juan David Jaramillo (Hotel Biohabitat): “Pasamos de depender del voz a voz a tener reservas recurrentes desde redes. El posicionamiento que logramos no lo habíamos conseguido solos.”Dr. Hernán Jaramillo (Universidad del Quindío): “Optimizamos la captación de estudiantes para programas de posgrado con segmentación avanzada de Meta & Google Ads.”Maria Jose Giraldo (Constructora EPIC): “77 Studio nos ayudó a construir un embudo que educa al prospecto y nos avisa cuando está listo. Cerramos más rápido con menos esfuerzo comercial.”Ing. Ricardo Morales (SENA Regional Quindío): “Modelamos automatizaciones clave para el seguimiento de convocatorias de innovación y tecnología con respuesta inteligente de IA en segundos.”Dra. Camila Restrepo (Universidad del Valle): “Implementamos embudos de respuesta ultra-rápida que redujeron el costo de adquisición de prospectos cualificados para nuestros programas.”Ing. Felipe Valencia (Sievert Colombia): “Estructuramos un motor digital B2B de generación de demanda constante para nuestros servicios industriales de alta ingeniería.”Alejandro Gómez (Especial Impresores): “Logramos un retorno de inversión medible en pauta digital para soluciones gráficas y empaques corporativos a escala nacional.”9. Proceso de Trabajo en 4 PasosMetodología clara sin burocracia innecesaria:Entendemos (Diagnóstico & Objetivo): Analizamos tu modelo de negocio, cuellos de botella actuales, audiencia y metas prioritarias antes de proponer cualquier solución técnica o creativa.Proponemos (Estrategia & Alcance): Diseñamos un plan de acción transparente con entregables concretos, tiempos realistas y la arquitectura de marketing o tecnología requerida.Creamos (Ejecución Ágil): Desarrollamos tus campañas, plataforma web, flujos de automatización o software bajo altos estándares de calidad estética y funcional.Optimizamos (Medición & Escala): Monitoreamos el rendimiento con métricas reales de negocio y ajustamos continuamente para maximizar el retorno de inversión y la eficiencia operativa.10. Canales de Contacto & ConversiónLlamada de Diagnóstico de 15 Minutos: Sesión estratégica sin costo para evaluar la situación digital de tu empresa.Canal Directo de WhatsApp: 💬 Conversar por WhatsAppFormulario Comercial: Disponible en la sección inferior de la página principal (/contacto o #contacto).",
+    "contentTruncated": false,
+    "search": {
+      "id": "01-home",
+      "slug": "general/home",
+      "route": "/",
+      "module": "01-home",
+      "title": "77 studio - digital studio + creative partner + ai company",
+      "description": "un solo equipo para hacer que tu empresa se vea mejor, venda mejor y funcione mejor. marketing, desarrollo web, ia y productos digitales en colombia y usa.",
+      "category": "general",
+      "audience": "todas",
+      "keywords": [
+        "77 studio",
+        "digital studio",
+        "marketing digital",
+        "desarrollo web",
+        "inteligencia artificial",
+        "automatizacion crm",
+        "productos digitales",
+        "colombia usa",
+        "agente de whatsapp",
+        "sprint 14 dias",
+        "astro 5",
+        "meta ads",
+        "google ads",
+        "conversion cro"
+      ],
+      "content": "77 studio | propuesta de valor & ecosistema principalvision general: 77 studio es un estudio digital, partner creativo y compania de tecnologia e inteligencia artificial. nuestro proposito es unificar estrategia, creatividad y desarrollo para que las empresas aceleren sus ventas, automaticen sus procesos y proyecten una marca de autoridad global.1. identidad & posicionamiento (hero)propuesta de valor central: un solo equipo para hacer que tu empresa se vea mejor, venda mejor y funcione mejor.alcance geografico: operacion dual desde colombia y estados unidos, colaborando de forma remota y sin fronteras con clientes en latinoamerica, ee. uu. y mercados globales.llamado a la accion primario: agendamiento de llamada de diagnostico de 15 minutos sin costo y atencion directa por whatsapp context-aware.2. metricas de impacto comprobadasnuestra metodologia y tecnologia generan resultados medibles de negocio desde las primeras semanas de implementacion:+310% en leads calificados: filtro inteligente con agentes de ia que pre-califican la intencion de compra antes de agendar con el equipo comercial.< 45s en tiempo de respuesta: atencion comercial 24/7 sin demora en whatsapp, evitando que los prospectos se enfrien o coticen con la competencia.-42% en reduccion del cac promedio: optimizacion continua de pauta publicitaria (meta & google ads) conectada a landings de alta conversion (cro).100% en atribucion de roi: tracking unificado y transparente desde el primer clic publicitario hasta el cierre en el crm.3. presencia internacional (colombia ↔ usa)operamos con un modelo agil, distribuido y de alta cercania:sedes principales: colombia y estados unidos.modelo operativo: 100% colaborativo y remoto, adaptado a multiples husos horarios e industrias.ventaja competitiva: calidad de ingenieria y creatividad de nivel internacional con eficiencia de costos y comunicacion directa en espanol e ingles.4. ecosistema de integraciones & partners tecnologicosnos integramos con las plataformas lideres del mercado para garantizar robustez y escalabilidad:meta business partner: campanas avanzadas en meta ads, instagram ads y conversions api (capi).google ads premier partner: estrategia en google search, display, youtube ads y google analytics 4 (ga4).make automation expert: orquestacion de flujos de trabajo, webhooks y automatizaciones multi-sistema.zapier certified systems: integracion fluida entre aplicaciones empresariales.hubspot crm integration: sincronizacion bidireccional de leads, pipelines de venta y scoring de prospectos.5. el reto digital (5 fricciones comunes de crecimiento)las empresas en crecimiento suelen enfrentar 5 problemas estructurales que frenan sus resultados:presencia digital debil: sitios web antiguos o plantillas lentas que no reflejan la autoridad ni la calidad real del servicio.contenido sin sistema: necesidad constante de producir videos y piezas para redes, pero sin un flujo operativo predecible.oportunidades comerciales perdidas: inversion en publicidad donde los leads tardan horas en recibir respuesta y se pierden por falta de seguimiento oportuno.ia sin direccion practica: mucho ruido sobre inteligencia artificial pero pocas aplicaciones concretas para reducir costos o aumentar ventas.demasiados proveedores desconectados: una agencia de pauta, un disenador freelance y un programador trabajando en silos sin un responsable del resultado global.6. los 4 pilares del ecosistema 77 studioresolvemos la fragmentacion ofreciendo un partner integral en 4 areas especializadas:a. marketing digital & paid media (/marketing)estrategia de pauta publicitaria en meta ads & google ads orientada a retorno de inversion (roi).produccion agil de contenido audiovisual y creativos de video de alto impacto.copywriting persuasivo y diseno de identidad de marca para generar autoridad.b. desarrollo web & landing pages (/web)desarrollo sobre la arquitectura ultrarrapida de astro 5 con tiempos de carga inferiores a 1 segundo.landing pages de alta conversion disenadas bajo principios estrictos de cro (conversion rate optimization).enfoque mobile-first, seo tecnico avanzado y doble canal de conversion (whatsapp y formularios estructurados).c. ia + automatizacion de procesos (/ia-automatizacion)agentes de ia para whatsapp: atencion y pre-calificacion instantanea 24/7 en lenguaje natural.sprint de 14 dias: metodologia intensiva para desplegar agentes y flujos operativos en solo 2 semanas.integracion nativa con crms (hubspot, zoho, salesforce) y herramientas de automatizacion (make, n8n, zapier).d. productos digitales & software a medida (/productos-digitales)construccion agil de mvps en 4 semanas para validar modelos de negocio rapidamente.desarrollo de plataformas saas, portales de clientes y dashboards ejecutivos en tiempo real.arquitectura en la nube escalable, segura y mantenible.7. casos de negocio reales (el reto vs nuestra solucion)e-commerce & retail b2b:reto: leads costosos y fatiga publicitaria en campanas de captacion.solucion: segmentacion de audiencias y produccion de creativos de video de alta conversion.resultado: +185% en leads calificados y -42% en costo por adquisicion (cac).firma de consultoria & finanzas:reto: sitio web lento en wordpress con 70% de rebote y baja conversion corporativa.solucion: migracion a astro 5 con arquitectura de conversion directa a whatsapp y llamadas de diagnostico.resultado: velocidad de carga 99/100 y +120% en contactos comerciales directos.empresa de servicios profesionales:reto: fuga de prospectos fuera de horario por respuesta tardia en whatsapp.solucion: agente de ia 24/7 integrado en whatsapp con sincronizacion inmediata a crm.resultado: tiempo de respuesta < 30 segundos y 100% de leads atendidos en tiempo real.startup de logistica:reto: operacion manual descentralizada mediante hojas de calculo desconectadas.solucion: portal web y dashboard centralizado para metricas y control de despachos.resultado: lanzamiento de mvp en 4 semanas y ahorro de 15 horas semanales en reportes.8. testimonios reales & aliados estrategicoscarlos rivera (yamaha del cafe): “en 3 meses duplicamos los leads de la sala de ventas. antes pautabamos sin saber si funcionaba. ahora tenemos datos y un equipo que los entiende.”juan david jaramillo (hotel biohabitat): “pasamos de depender del voz a voz a tener reservas recurrentes desde redes. el posicionamiento que logramos no lo habiamos conseguido solos.”dr. hernan jaramillo (universidad del quindio): “optimizamos la captacion de estudiantes para programas de posgrado con segmentacion avanzada de meta & google ads.”maria jose giraldo (constructora epic): “77 studio nos ayudo a construir un embudo que educa al prospecto y nos avisa cuando esta listo. cerramos mas rapido con menos esfuerzo comercial.”ing. ricardo morales (sena regional quindio): “modelamos automatizaciones clave para el seguimiento de convocatorias de innovacion y tecnologia con respuesta inteligente de ia en segundos.”dra. camila restrepo (universidad del valle): “implementamos embudos de respuesta ultra-rapida que redujeron el costo de adquisicion de prospectos cualificados para nuestros programas.”ing. felipe valencia (sievert colombia): “estructuramos un motor digital b2b de generacion de demanda constante para nuestros servicios industriales de alta ingenieria.”alejandro gomez (especial impresores): “logramos un retorno de inversion medible en pauta digital para soluciones graficas y empaques corporativos a escala nacional.”9. proceso de trabajo en 4 pasosmetodologia clara sin burocracia innecesaria:entendemos (diagnostico & objetivo): analizamos tu modelo de negocio, cuellos de botella actuales, audiencia y metas prioritarias antes de proponer cualquier solucion tecnica o creativa.proponemos (estrategia & alcance): disenamos un plan de accion transparente con entregables concretos, tiempos realistas y la arquitectura de marketing o tecnologia requerida.creamos (ejecucion agil): desarrollamos tus campanas, plataforma web, flujos de automatizacion o software bajo altos estandares de calidad estetica y funcional.optimizamos (medicion & escala): monitoreamos el rendimiento con metricas reales de negocio y ajustamos continuamente para maximizar el retorno de inversion y la eficiencia operativa.10. canales de contacto & conversionllamada de diagnostico de 15 minutos: sesion estrategica sin costo para evaluar la situacion digital de tu empresa.canal directo de whatsapp: 💬 conversar por whatsappformulario comercial: disponible en la seccion inferior de la pagina principal (/contacto o #contacto)."
+    }
+  },
+  {
+    "id": "02-marketing",
+    "slug": "servicios/marketing",
+    "title": "77 Studio - Marketing Digital & Paid Media",
+    "description": "Marketing diseñado para hacer crecer tu empresa. Meta Ads, Google Ads, Estrategia y Contenido.",
+    "module": "02-marketing",
+    "route": "/marketing",
+    "whatsappMessage": "Hola 77 Studio 👋 Vi sus servicios de marketing y quisiera conocer cómo pueden ayudar a mi empresa con estrategia, Meta Ads y Google Ads.",
+    "category": "servicios",
+    "audience": "empresas",
+    "keywords": [
+      "meta ads",
+      "google ads",
+      "paid media",
+      "pauta digital",
+      "publicidad digital",
+      "facebook ads",
+      "instagram ads",
+      "estrategia comercial",
+      "generacion de demanda",
+      "branding",
+      "creacion de contenido",
+      "edicion de video",
+      "reels",
+      "email marketing"
+    ],
+    "related_slugs": [
+      "servicios/web",
+      "servicios/integraciones-marketing",
+      "servicios/ia-automatizacion",
+      "audiencias/empresas",
+      "audiencias/nuevos-clientes"
+    ],
+    "content": "02 | Marketing - Especificación de Vista & Layout MDXObjetivo Comercial: Generar oportunidades comerciales mediante estrategia, Meta Ads y Google Ads, respaldados por creatividad, contenido y capacidades de comunicación.Frontmatter & Metadata1. Hero SectionMensaje Principal: Marketing diseñado para hacer crecer tu empresa.Subtítulo: Integramos estrategia, Meta Ads, Google Ads, creatividad, contenido, branding y automatización para ayudar a empresas a atraer atención y generar nuevas oportunidades.Visual: Composición con dashboard de campañas (Ads Manager), resultados de búsqueda en Google y piezas de creativos reales de 77 Studio.CTAs Duales:WhatsApp con mensaje prellenado del módulo.Formulario de solicitud por Email.2. Grid de 10 Capacidades (Grid 2x5)Cards compactas con bordes sutiles (border border-stroke-2/60 bg-white rounded-xl p-4):Estrategia: Objetivos, audiencias, mensajes y canales.Meta Ads: Facebook e Instagram Ads para generación de demanda.Google Ads: Captura de intención activa de búsqueda.Branding: Identidad visual y comunicación clara.Generación de Contenido: Piezas gráficas y carruseles.Edición de Video: Reels, Shorts y anuncios multiplataforma.Contenido con IA: Imágenes, variaciones creativas y concepto.Automatización de Publicaciones: Programación sin fricción.Email Marketing: Secuencias y automatizaciones de nutrición.SMS Marketing: Comunicación directa de alta apertura.3. El Problema: \"Pautar no es solo activar anuncios\"Comparativa visual: Campañas desconectadas (leads fríos, dinero desperdiciado) vs. Sistema de marketing conectado con Web y CRM.4. Meta Ads vs. Google Ads (Canales Complementarios)Meta Ads (Generar Demanda): Descubrimiento, despertar interés, interacción y remarketing en Instagram/Facebook.Google Ads (Capturar Intención): Posicionamiento en Search cuando el cliente ya busca activamente la solución.5. Creatividad que Apoya la PautaMosaico visual de 6 a 8 piezas publicitarias reales creadas por 77 Studio:Videos/Reels con hooks publicitarios.Anuncios estáticos y dinámicos.Experimentos y variaciones generadas con asistencia de IA.6. Proceso de Marketing en 4 PasosEntendemos: Análisis de empresa, oferta y competidores.Diseñamos: Canales, creativos y embudo de conversión.Lanzamos: Configuración técnica y activación de campañas.Optimizamos: A/B testing continuo y escalado.7. Cierre ComercialBloque visual oscuro con acento violeta (#7C3AED) y llamadas duales a WhatsApp + Formulario.",
+    "contentTruncated": false,
+    "search": {
+      "id": "02-marketing",
+      "slug": "servicios/marketing",
+      "route": "/marketing",
+      "module": "02-marketing",
+      "title": "77 studio - marketing digital & paid media",
+      "description": "marketing disenado para hacer crecer tu empresa. meta ads, google ads, estrategia y contenido.",
+      "category": "servicios",
+      "audience": "empresas",
+      "keywords": [
+        "meta ads",
+        "google ads",
+        "paid media",
+        "pauta digital",
+        "publicidad digital",
+        "facebook ads",
+        "instagram ads",
+        "estrategia comercial",
+        "generacion de demanda",
+        "branding",
+        "creacion de contenido",
+        "edicion de video",
+        "reels",
+        "email marketing"
+      ],
+      "content": "02 | marketing - especificacion de vista & layout mdxobjetivo comercial: generar oportunidades comerciales mediante estrategia, meta ads y google ads, respaldados por creatividad, contenido y capacidades de comunicacion.frontmatter & metadata1. hero sectionmensaje principal: marketing disenado para hacer crecer tu empresa.subtitulo: integramos estrategia, meta ads, google ads, creatividad, contenido, branding y automatizacion para ayudar a empresas a atraer atencion y generar nuevas oportunidades.visual: composicion con dashboard de campanas (ads manager), resultados de busqueda en google y piezas de creativos reales de 77 studio.ctas duales:whatsapp con mensaje prellenado del modulo.formulario de solicitud por email.2. grid de 10 capacidades (grid 2x5)cards compactas con bordes sutiles (border border-stroke-2/60 bg-white rounded-xl p-4):estrategia: objetivos, audiencias, mensajes y canales.meta ads: facebook e instagram ads para generacion de demanda.google ads: captura de intencion activa de busqueda.branding: identidad visual y comunicacion clara.generacion de contenido: piezas graficas y carruseles.edicion de video: reels, shorts y anuncios multiplataforma.contenido con ia: imagenes, variaciones creativas y concepto.automatizacion de publicaciones: programacion sin friccion.email marketing: secuencias y automatizaciones de nutricion.sms marketing: comunicacion directa de alta apertura.3. el problema: \"pautar no es solo activar anuncios\"comparativa visual: campanas desconectadas (leads frios, dinero desperdiciado) vs. sistema de marketing conectado con web y crm.4. meta ads vs. google ads (canales complementarios)meta ads (generar demanda): descubrimiento, despertar interes, interaccion y remarketing en instagram/facebook.google ads (capturar intencion): posicionamiento en search cuando el cliente ya busca activamente la solucion.5. creatividad que apoya la pautamosaico visual de 6 a 8 piezas publicitarias reales creadas por 77 studio:videos/reels con hooks publicitarios.anuncios estaticos y dinamicos.experimentos y variaciones generadas con asistencia de ia.6. proceso de marketing en 4 pasosentendemos: analisis de empresa, oferta y competidores.disenamos: canales, creativos y embudo de conversion.lanzamos: configuracion tecnica y activacion de campanas.optimizamos: a/b testing continuo y escalado.7. cierre comercialbloque visual oscuro con acento violeta (#7c3aed) y llamadas duales a whatsapp + formulario."
+    }
+  },
+  {
+    "id": "03-web",
+    "slug": "servicios/web",
+    "title": "77 Studio - Desarrollo Web & Landing Pages",
+    "description": "Desarrollo web de alto rendimiento con Astro, enfocado en velocidad y conversión comercial.",
+    "module": "03-web",
+    "route": "/web",
+    "whatsappMessage": "Hola 77 Studio 👋 Vi su servicio de desarrollo web y landing pages y quisiera cotizar un proyecto para mi empresa.",
+    "category": "servicios",
+    "audience": "empresas",
+    "keywords": [
+      "desarrollo web",
+      "diseno web",
+      "landing page",
+      "paginas web",
+      "astro",
+      "react",
+      "tailwind",
+      "cro",
+      "optimizacion de conversion",
+      "velocidad de carga",
+      "seo",
+      "mobile first",
+      "sitios corporativos"
+    ],
+    "related_slugs": [
+      "servicios/marketing",
+      "servicios/ia-automatizacion",
+      "servicios/productos-digitales",
+      "audiencias/empresas",
+      "audiencias/nuevos-clientes"
+    ],
+    "content": "03 | Web - Especificación de Vista & Layout MDXObjetivo Comercial: Vender páginas web y landing pages como herramientas comerciales de alta conversión, claridad y confianza, no como piezas estáticas o decorativas.Frontmatter & Metadata1. Hero SectionMensaje Principal: Una web que represente correctamente tu empresa y convierta visitantes en oportunidades.Subtítulo: Diseñamos experiencias digitales claras, rápidas y pensadas para generar confianza, explicar tu propuesta y facilitar el siguiente paso.Visual: Browser mockup en resolución desktop con vista responsive para teléfonos inteligentes a un costado.CTAs Duales:WhatsApp con mensaje contextual del servicio web.Formulario de cotizaciones por Email.2. Tipos de Soluciones WebGrid de 6 cards blancas redondeadas (rounded-[20px] shadow-sm):Web Corporativa: Sitios que presentan e inspiran credibilidad a nivel internacional.Landing Pages: Páginas orientadas 100% a campañas y captación de leads.Rediseño Web: Modernización de sitios antiguos, optimizando UX y velocidad.Funnels de Conversión: Recorridos guiados paso a paso para cerrar ventas o citas.Integraciones Tech: Formularios conectados a CRM, WhatsApp, calendarios y correo.Analítica & Eventos: Medición precisa de eventos y conversiones en Google Analytics / Meta Pixel.3. Diagnóstico: \"El Problema de la Web Tradicional\"Síntomas comunes:No se entiende la oferta en los primeros segundos.Diseño desactualizado que resta credibilidad.Mala navegación en móviles.Formularios largos o difíciles de encontrar.Tráfico pautado que se pierde sin convertir.Solución 77 Studio: Rediseño estratégico basado en CRO y claridad de mensaje.4. Pilares de Diseño para ConversiónClaridad: Mensajes y jerarquía comprensibles al instante.Confianza: Elementos de prueba social, proyectos reales y casos verificables.Conversión: Botones duales visibles, formularios cortos y CTAs persistentes.Velocidad & SEO: Carga ultrarrápida impulsada por la arquitectura de Astro.Mobile First: Diseño concebido primero para dispositivos móviles.5. Proceso de Desarrollo Web en 5 PasosEntendemos: Oferta, público objetivo y objetivos de conversión.Estructuramos: Wireframes, mapa del sitio y copywriting comercial.Diseñamos: UI en alta fidelidad y experiencia de usuario.Desarrollamos: Código limpio en Astro, Tailwind CSS e integraciones API.Lanzamos: QA, medición de analítica y publicación en servidor de alta velocidad.6. Cierre ComercialBrowser mockup de cierre con bloque oscuro, acento violeta (#7C3AED) y llamadas duales a WhatsApp + Formulario.",
+    "contentTruncated": false,
+    "search": {
+      "id": "03-web",
+      "slug": "servicios/web",
+      "route": "/web",
+      "module": "03-web",
+      "title": "77 studio - desarrollo web & landing pages",
+      "description": "desarrollo web de alto rendimiento con astro, enfocado en velocidad y conversion comercial.",
+      "category": "servicios",
+      "audience": "empresas",
+      "keywords": [
+        "desarrollo web",
+        "diseno web",
+        "landing page",
+        "paginas web",
+        "astro",
+        "react",
+        "tailwind",
+        "cro",
+        "optimizacion de conversion",
+        "velocidad de carga",
+        "seo",
+        "mobile first",
+        "sitios corporativos"
+      ],
+      "content": "03 | web - especificacion de vista & layout mdxobjetivo comercial: vender paginas web y landing pages como herramientas comerciales de alta conversion, claridad y confianza, no como piezas estaticas o decorativas.frontmatter & metadata1. hero sectionmensaje principal: una web que represente correctamente tu empresa y convierta visitantes en oportunidades.subtitulo: disenamos experiencias digitales claras, rapidas y pensadas para generar confianza, explicar tu propuesta y facilitar el siguiente paso.visual: browser mockup en resolucion desktop con vista responsive para telefonos inteligentes a un costado.ctas duales:whatsapp con mensaje contextual del servicio web.formulario de cotizaciones por email.2. tipos de soluciones webgrid de 6 cards blancas redondeadas (rounded-[20px] shadow-sm):web corporativa: sitios que presentan e inspiran credibilidad a nivel internacional.landing pages: paginas orientadas 100% a campanas y captacion de leads.rediseno web: modernizacion de sitios antiguos, optimizando ux y velocidad.funnels de conversion: recorridos guiados paso a paso para cerrar ventas o citas.integraciones tech: formularios conectados a crm, whatsapp, calendarios y correo.analitica & eventos: medicion precisa de eventos y conversiones en google analytics / meta pixel.3. diagnostico: \"el problema de la web tradicional\"sintomas comunes:no se entiende la oferta en los primeros segundos.diseno desactualizado que resta credibilidad.mala navegacion en moviles.formularios largos o dificiles de encontrar.trafico pautado que se pierde sin convertir.solucion 77 studio: rediseno estrategico basado en cro y claridad de mensaje.4. pilares de diseno para conversionclaridad: mensajes y jerarquia comprensibles al instante.confianza: elementos de prueba social, proyectos reales y casos verificables.conversion: botones duales visibles, formularios cortos y ctas persistentes.velocidad & seo: carga ultrarrapida impulsada por la arquitectura de astro.mobile first: diseno concebido primero para dispositivos moviles.5. proceso de desarrollo web en 5 pasosentendemos: oferta, publico objetivo y objetivos de conversion.estructuramos: wireframes, mapa del sitio y copywriting comercial.disenamos: ui en alta fidelidad y experiencia de usuario.desarrollamos: codigo limpio en astro, tailwind css e integraciones api.lanzamos: qa, medicion de analitica y publicacion en servidor de alta velocidad.6. cierre comercialbrowser mockup de cierre con bloque oscuro, acento violeta (#7c3aed) y llamadas duales a whatsapp + formulario."
+    }
+  },
+  {
+    "id": "04-ia-automatizacion",
+    "slug": "servicios/ia-automatizacion",
+    "title": "77 Studio - IA + Automatización de Procesos",
+    "description": "Elimina tareas repetitivas y optimiza tu operación con inteligencia artificial y flujos automatizados.",
+    "module": "04-ia-automatizacion",
+    "route": "/ia-automatizacion",
+    "whatsappMessage": "Hola 77 Studio 👋 Quisiera consultar sobre automatización con IA y optimización de procesos para mi empresa.",
+    "category": "servicios",
+    "audience": "empresas",
+    "keywords": [
+      "ia",
+      "inteligencia artificial",
+      "automatizacion",
+      "automatizacion de procesos",
+      "workflows",
+      "crm",
+      "make",
+      "zapier",
+      "n8n",
+      "agentes de ia",
+      "chatbots",
+      "eficiencia operativa",
+      "integracion de sistemas",
+      "llm",
+      "optimizacion de tiempo"
+    ],
+    "related_slugs": [
+      "servicios/web",
+      "servicios/marketing",
+      "servicios/productos-digitales",
+      "audiencias/empresas"
+    ],
+    "content": "04 | IA + Automatización - Especificación de Vista & Layout MDXObjetivo Comercial: Demostrar cómo la automatización y la IA aplicada resuelven cuellos de botella reales en ventas, atención y operaciones sin caer en clichés vacíos de inteligencia artificial.Frontmatter & Metadata1. Hero SectionMensaje Principal: Haz que tu empresa funcione de forma más inteligente.Subtítulo: Menos tareas manuales. Más tiempo para hacer crecer tu empresa. Diseñamos automatizaciones y soluciones de IA para mejorar seguimiento, atención y ventas.Visual Recomendado: Diagrama animado de nodos que conecta Lead → CRM → Agente IA → Notificación WhatsApp → Asignación a vendedor humano. Evitar robots o cerebros digitales.CTAs Duales:WhatsApp con mensaje prellenado de automatización.Formulario de evaluación por Email.2. Aplicaciones Prácticas de TecnologíaGrid de 4 capacidades en cards blancas (rounded-[20px]):Automatización Comercial: Conexión de CRM, distribución de leads, secuencias de follow-up por WhatsApp y correo.Atención y Soporte: Asistentes virtuales, chatbots contextuales y enrutamiento inteligente.Procesos Internos: Automatización de documentos, hojas de cálculo, aprobaciones y alertas.Inteligencia Artificial Aplicada: Agentes de consulta, clasificación automática de leads, resúmenes y extracción de datos.3. El Problema Operativo\"Si tu equipo hace la misma tarea repetitiva todos los días, existe una forma mejor de ejecutarla.\"Aclaración clave: Automatizar no reemplaza personas, empodera al equipo para enfocarse en tareas comerciales estratégicas.4. Diferenciación: Automatización vs. Inteligencia ArtificialAutomatización: Reglas estables y deterministas para conectar sistemas (Make, n8n, Zapier, Webhooks).Inteligencia Artificial: Capacidad de analizar, clasificar e interpretar información no estructurada antes de ejecutar una acción (LLMs, RAG, Agentes).5. Proceso de Implementación en 6 PasosEntendemos: Mapeo del proceso actual y puntos de dolor.Detectamos: Cuellos de botella y tareas manuales repetitivas.Diseñamos: Arquitectura del flujo ideal y herramientas.Implementamos: Construcción de automatizaciones e integraciones API.Probamos: Pruebas de campo con escenarios reales y margen de error cero.Mejoramos: Ajustes basados en la operación diaria.6. Cierre ComercialBloque visual oscuro con flujo de trabajo simplificado, acento violeta (#7C3AED) y CTAs duales a WhatsApp + Formulario.",
+    "contentTruncated": false,
+    "search": {
+      "id": "04-ia-automatizacion",
+      "slug": "servicios/ia-automatizacion",
+      "route": "/ia-automatizacion",
+      "module": "04-ia-automatizacion",
+      "title": "77 studio - ia + automatizacion de procesos",
+      "description": "elimina tareas repetitivas y optimiza tu operacion con inteligencia artificial y flujos automatizados.",
+      "category": "servicios",
+      "audience": "empresas",
+      "keywords": [
+        "ia",
+        "inteligencia artificial",
+        "automatizacion",
+        "automatizacion de procesos",
+        "workflows",
+        "crm",
+        "make",
+        "zapier",
+        "n8n",
+        "agentes de ia",
+        "chatbots",
+        "eficiencia operativa",
+        "integracion de sistemas",
+        "llm",
+        "optimizacion de tiempo"
+      ],
+      "content": "04 | ia + automatizacion - especificacion de vista & layout mdxobjetivo comercial: demostrar como la automatizacion y la ia aplicada resuelven cuellos de botella reales en ventas, atencion y operaciones sin caer en cliches vacios de inteligencia artificial.frontmatter & metadata1. hero sectionmensaje principal: haz que tu empresa funcione de forma mas inteligente.subtitulo: menos tareas manuales. mas tiempo para hacer crecer tu empresa. disenamos automatizaciones y soluciones de ia para mejorar seguimiento, atencion y ventas.visual recomendado: diagrama animado de nodos que conecta lead → crm → agente ia → notificacion whatsapp → asignacion a vendedor humano. evitar robots o cerebros digitales.ctas duales:whatsapp con mensaje prellenado de automatizacion.formulario de evaluacion por email.2. aplicaciones practicas de tecnologiagrid de 4 capacidades en cards blancas (rounded-[20px]):automatizacion comercial: conexion de crm, distribucion de leads, secuencias de follow-up por whatsapp y correo.atencion y soporte: asistentes virtuales, chatbots contextuales y enrutamiento inteligente.procesos internos: automatizacion de documentos, hojas de calculo, aprobaciones y alertas.inteligencia artificial aplicada: agentes de consulta, clasificacion automatica de leads, resumenes y extraccion de datos.3. el problema operativo\"si tu equipo hace la misma tarea repetitiva todos los dias, existe una forma mejor de ejecutarla.\"aclaracion clave: automatizar no reemplaza personas, empodera al equipo para enfocarse en tareas comerciales estrategicas.4. diferenciacion: automatizacion vs. inteligencia artificialautomatizacion: reglas estables y deterministas para conectar sistemas (make, n8n, zapier, webhooks).inteligencia artificial: capacidad de analizar, clasificar e interpretar informacion no estructurada antes de ejecutar una accion (llms, rag, agentes).5. proceso de implementacion en 6 pasosentendemos: mapeo del proceso actual y puntos de dolor.detectamos: cuellos de botella y tareas manuales repetitivas.disenamos: arquitectura del flujo ideal y herramientas.implementamos: construccion de automatizaciones e integraciones api.probamos: pruebas de campo con escenarios reales y margen de error cero.mejoramos: ajustes basados en la operacion diaria.6. cierre comercialbloque visual oscuro con flujo de trabajo simplificado, acento violeta (#7c3aed) y ctas duales a whatsapp + formulario."
+    }
+  },
+  {
+    "id": "05-productos-digitales",
+    "slug": "servicios/productos-digitales",
+    "title": "77 Studio - Productos Digitales, SaaS & Dashboards",
+    "description": "Construcción ágil de software a medida, aplicaciones web, plataformas SaaS y paneles ejecutivos.",
+    "module": "05-productos-digitales",
+    "route": "/productos-digitales",
+    "whatsappMessage": "Hola 77 Studio 👋 Tengo la idea de un producto digital o software y quisiera conversar sobre su desarrollo.",
+    "category": "servicios",
+    "audience": "fundadores-startups",
+    "keywords": [
+      "productos digitales",
+      "saas",
+      "software a medida",
+      "mvp",
+      "dashboards",
+      "paneles de control",
+      "aplicaciones web",
+      "desarrollo de software",
+      "plataformas digitales",
+      "startups",
+      "arquitectura cloud"
+    ],
+    "related_slugs": [
+      "servicios/web",
+      "servicios/ia-automatizacion",
+      "audiencias/fundadores-startups",
+      "audiencias/empresas"
+    ],
+    "content": "05 | Productos Digitales - Especificación de Vista & Layout MDXObjetivo Comercial: Posicionar a 77 Studio como Product Studio y Partner Tecnológico para el diseño y construcción de SaaS, MVPs, portales, dashboards y software a la medida.Frontmatter & Metadata1. Hero SectionMensaje Principal: Si tu empresa necesita una herramienta que todavía no existe, podemos construirla.Subtítulo: PRODUCTOS DIGITALES PARA EMPRESAS: Convertimos necesidades e ideas en productos digitales adaptados a cada negocio.Visual: Mockup elegante de producto/dashboard en navegador con paneles flotantes e interfaz administrativa responsive. Estética de Product Studio, no fábrica de software tradicional.CTAs Duales:WhatsApp con mensaje prellenado de productos digitales.Formulario de contacto por Email.2. Tipos de Soluciones a la MedidaGrid de 5 tarjetas interactiva en cards blancas (rounded-[20px]):SaaS y MVP: Validación rápida y desarrollo de nuevas aplicaciones comercializables.Portales y Plataformas: Portales de autogestión para clientes, proveedores o distribuidores.Dashboards: Centralización de analítica e indicadores clave de negocio en tiempo real.Herramientas Internas: Reemplazo de hojas de cálculo complejas por software seguro.Aplicaciones Web Personalizadas: Plataformas a la medida accesibles desde cualquier navegador.3. Diagnóstico: \"Cuando el software comercial queda corto\"El software genérico a menudo obliga a la empresa a adaptar sus procesos. 77 Studio diseña el producto alrededor de los procesos reales de la empresa.4. Proceso de Desarrollo de Producto en 5 PasosEntendemos: Definición clara del problema y requisitos de negocio.Diseñamos: Prototipado UX/UI, wireframes y flujos de usuario.Construimos: Desarrollo ágil en código moderno con arquitectura escalable.Lanzamos: Despliegue en producción y pruebas con usuarios reales.Evolucionamos: Iteración continua basada en retroalimentación y datos de uso.5. Cierre ComercialMockup principal de producto sobre fondo claro + bloque CTA oscuro con acento violeta (#7C3AED) y CTAs a WhatsApp + Formulario.",
+    "contentTruncated": false,
+    "search": {
+      "id": "05-productos-digitales",
+      "slug": "servicios/productos-digitales",
+      "route": "/productos-digitales",
+      "module": "05-productos-digitales",
+      "title": "77 studio - productos digitales, saas & dashboards",
+      "description": "construccion agil de software a medida, aplicaciones web, plataformas saas y paneles ejecutivos.",
+      "category": "servicios",
+      "audience": "fundadores-startups",
+      "keywords": [
+        "productos digitales",
+        "saas",
+        "software a medida",
+        "mvp",
+        "dashboards",
+        "paneles de control",
+        "aplicaciones web",
+        "desarrollo de software",
+        "plataformas digitales",
+        "startups",
+        "arquitectura cloud"
+      ],
+      "content": "05 | productos digitales - especificacion de vista & layout mdxobjetivo comercial: posicionar a 77 studio como product studio y partner tecnologico para el diseno y construccion de saas, mvps, portales, dashboards y software a la medida.frontmatter & metadata1. hero sectionmensaje principal: si tu empresa necesita una herramienta que todavia no existe, podemos construirla.subtitulo: productos digitales para empresas: convertimos necesidades e ideas en productos digitales adaptados a cada negocio.visual: mockup elegante de producto/dashboard en navegador con paneles flotantes e interfaz administrativa responsive. estetica de product studio, no fabrica de software tradicional.ctas duales:whatsapp con mensaje prellenado de productos digitales.formulario de contacto por email.2. tipos de soluciones a la medidagrid de 5 tarjetas interactiva en cards blancas (rounded-[20px]):saas y mvp: validacion rapida y desarrollo de nuevas aplicaciones comercializables.portales y plataformas: portales de autogestion para clientes, proveedores o distribuidores.dashboards: centralizacion de analitica e indicadores clave de negocio en tiempo real.herramientas internas: reemplazo de hojas de calculo complejas por software seguro.aplicaciones web personalizadas: plataformas a la medida accesibles desde cualquier navegador.3. diagnostico: \"cuando el software comercial queda corto\"el software generico a menudo obliga a la empresa a adaptar sus procesos. 77 studio disena el producto alrededor de los procesos reales de la empresa.4. proceso de desarrollo de producto en 5 pasosentendemos: definicion clara del problema y requisitos de negocio.disenamos: prototipado ux/ui, wireframes y flujos de usuario.construimos: desarrollo agil en codigo moderno con arquitectura escalable.lanzamos: despliegue en produccion y pruebas con usuarios reales.evolucionamos: iteracion continua basada en retroalimentacion y datos de uso.5. cierre comercialmockup principal de producto sobre fondo claro + bloque cta oscuro con acento violeta (#7c3aed) y ctas a whatsapp + formulario."
+    }
+  },
+  {
+    "id": "06-nosotros",
+    "slug": "empresa/nosotros",
+    "title": "77 Studio - Acerca de Nosotros | Colombia + USA",
+    "description": "Un equipo creativo y tecnológico construido para resolver retos digitales.",
+    "module": "06-nosotros",
+    "route": "/nosotros",
+    "whatsappMessage": "Hola 77 Studio 👋 Vi su historia y equipo y quisiera conversar sobre un proyecto.",
+    "category": "empresa",
+    "audience": "todas",
+    "keywords": [
+      "acerca de nosotros",
+      "quienes somos",
+      "equipo 77 studio",
+      "historia",
+      "presencia internacional",
+      "colombia",
+      "estados unidos",
+      "usa",
+      "filosofia de trabajo",
+      "partner creativo",
+      "talento remoto"
+    ],
+    "related_slugs": [
+      "general/home",
+      "empresa/contacto",
+      "audiencias/nuevos-clientes"
+    ],
+    "content": "06 | Acerca de Nosotros - Especificación de Vista & Layout MDXObjetivo Comercial: Validar credibilidad, respaldar el posicionamiento internacional (Colombia ↔ USA) y mostrar las caras y capacidades reales detrás de 77 Studio.Frontmatter & Metadata1. Hero SectionMensaje Principal: Un equipo creativo y tecnológico construido para resolver retos digitales.Subtítulo: SOMOS 77 STUDIO: Creatividad, estrategia y tecnología dentro de un mismo equipo.Visual: Fotografía real del equipo en un entorno de trabajo auténtico, integrada con pantallas de proyectos activos.CTAs Duales:WhatsApp directo con el equipo fundador.Formulario de contacto por Email.2. Nuestra Evolución: \"Más que una agencia\"Trayectoria real desde el mundo de la dirección creativa y el marketing hacia capacidades integrales de software, automatización e inteligencia artificial.3. Filosofía de Trabajo\"La tecnología cambia. Nuestro enfoque sigue siendo resolver problemas reales de negocio.\"Fotografías de workshops, sesiones de estrategia y reuniones de planificación con clientes.4. Presencia Internacional (Colombia + Estados Unidos)Mapeo visual y presencia de sedes en Colombia y Estados Unidos con capacidad de trabajo remoto internacional sin fronteras de ubicación.5. Cierre ComercialFotografía grupal o escena auténtica del equipo + bloque de contacto directo WhatsApp + Email.",
+    "contentTruncated": false,
+    "search": {
+      "id": "06-nosotros",
+      "slug": "empresa/nosotros",
+      "route": "/nosotros",
+      "module": "06-nosotros",
+      "title": "77 studio - acerca de nosotros | colombia + usa",
+      "description": "un equipo creativo y tecnologico construido para resolver retos digitales.",
+      "category": "empresa",
+      "audience": "todas",
+      "keywords": [
+        "acerca de nosotros",
+        "quienes somos",
+        "equipo 77 studio",
+        "historia",
+        "presencia internacional",
+        "colombia",
+        "estados unidos",
+        "usa",
+        "filosofia de trabajo",
+        "partner creativo",
+        "talento remoto"
+      ],
+      "content": "06 | acerca de nosotros - especificacion de vista & layout mdxobjetivo comercial: validar credibilidad, respaldar el posicionamiento internacional (colombia ↔ usa) y mostrar las caras y capacidades reales detras de 77 studio.frontmatter & metadata1. hero sectionmensaje principal: un equipo creativo y tecnologico construido para resolver retos digitales.subtitulo: somos 77 studio: creatividad, estrategia y tecnologia dentro de un mismo equipo.visual: fotografia real del equipo en un entorno de trabajo autentico, integrada con pantallas de proyectos activos.ctas duales:whatsapp directo con el equipo fundador.formulario de contacto por email.2. nuestra evolucion: \"mas que una agencia\"trayectoria real desde el mundo de la direccion creativa y el marketing hacia capacidades integrales de software, automatizacion e inteligencia artificial.3. filosofia de trabajo\"la tecnologia cambia. nuestro enfoque sigue siendo resolver problemas reales de negocio.\"fotografias de workshops, sesiones de estrategia y reuniones de planificacion con clientes.4. presencia internacional (colombia + estados unidos)mapeo visual y presencia de sedes en colombia y estados unidos con capacidad de trabajo remoto internacional sin fronteras de ubicacion.5. cierre comercialfotografia grupal o escena autentica del equipo + bloque de contacto directo whatsapp + email."
+    }
+  },
+  {
+    "id": "07-contacto",
+    "slug": "empresa/contacto",
+    "title": "77 Studio - Contacto Directo",
+    "description": "Canales oficiales para agendar una llamada de diagnóstico o conversar directamente con nuestro equipo.",
+    "module": "07-contacto",
+    "route": "/contacto",
+    "whatsappMessage": "Hola 77 Studio 👋 Quisiera ponerme en contacto directo con su equipo.",
+    "category": "empresa",
+    "audience": "todas",
+    "keywords": [
+      "contacto",
+      "hablar con 77 studio",
+      "agendar reunion",
+      "llamada de diagnostico",
+      "whatsapp",
+      "formulario",
+      "correo electronico",
+      "asesoria",
+      "cotizacion"
+    ],
+    "related_slugs": [
+      "general/home",
+      "empresa/nosotros",
+      "audiencias/nuevos-clientes"
+    ],
+    "content": "07 | Contacto - Especificación de Vista & Layout MDXObjetivo Comercial: Maximizar la conversión de tráfico de alta intención otorgando la misma prioridad visual a WhatsApp y al Formulario por Email.Frontmatter & Metadata1. Hero & Layout General (2 Columnas)El layout de la página de contacto elimina distracciones pesadas y organiza la pantalla en dos columnas principales en escritorio (lg:grid lg:grid-cols-2 lg:gap-12):<div class=\"mx-auto max-w-[1290px] px-4 py-12 lg:py-20 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start\"> <!-- Columna Izquierda: Mensaje + Card WhatsApp --> <!-- Columna Derecha: Card Formulario Email --> </div>2. Columna Izquierda: WhatsApp Directo & Presencia InternacionalTítulo: Hablemos de tu proyecto.Copy: Ya sea que necesites mejorar tu marketing, desarrollar una nueva web, automatizar procesos o construir un producto digital, podemos empezar por una conversación directa.Card WhatsApp blanca (border border-stroke-2/60 rounded-[20px] p-6 shadow-sm):Icono destacado de WhatsApp.Microcopy: \"¿Quieres hablar directamente con nosotros? Cuéntanos brevemente qué necesitas y te orientamos desde la primera conversación.\"Botón: Abrir chat de WhatsApp (bg-opai-purple text-white rounded-xl py-3 px-6 font-ibm-plex-mono).Banner Internacional: Colombia ↔ Estados Unidos. Operación remota global.3. Columna Derecha: Formulario ComercialCard blanca limpia (rounded-[20px] border border-stroke-2/60 p-6 md:p-8 shadow-sm):<form id=\"contact-form\" action=\"/api/contact\" method=\"POST\" class=\"space-y-4\"> <input type=\"hidden\" name=\"origin_url\" value=\"\" id=\"hidden-origin\" /> <div> <label class=\"block font-sora text-sm font-medium text-background-13\">Nombre Completo *</label> <input type=\"text\" name=\"name\" required class=\"w-full mt-1 px-4 py-3 rounded-xl border border-stroke-2/60 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-opai-purple outline-none\" placeholder=\"Tu nombre\" /> </div> <div> <label class=\"block font-sora text-sm font-medium text-background-13\">Empresa *</label> <input type=\"text\" name=\"company\" required class=\"w-full mt-1 px-4 py-3 rounded-xl border border-stroke-2/60 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-opai-purple outline-none\" placeholder=\"Nombre de tu empresa\" /> </div> <div class=\"grid grid-cols-1 sm:grid-cols-2 gap-4\"> <div> <label class=\"block font-sora text-sm font-medium text-background-13\">Email Corporativo *</label> <input type=\"email\" name=\"email\" required class=\"w-full mt-1 px-4 py-3 rounded-xl border border-stroke-2/60 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-opai-purple outline-none\" placeholder=\"correo@empresa.com\" /> </div> <div> <label class=\"block font-sora text-sm font-medium text-background-13\">WhatsApp / Teléfono *</label> <input type=\"tel\" name=\"phone\" required class=\"w-full mt-1 px-4 py-3 rounded-xl border border-stroke-2/60 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-opai-purple outline-none\" placeholder=\"+123456789\" /> </div> </div> <div> <label class=\"block font-sora text-sm font-medium text-background-13\">¿En qué podemos ayudarte? *</label> <select name=\"service\" required class=\"w-full mt-1 px-4 py-3 rounded-xl border border-stroke-2/60 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-opai-purple outline-none\"> <option value=\"\">Selecciona una opción</option> <option value=\"marketing\">Marketing (Paid Media & Contenido)</option> <option value=\"web\">Desarrollo Web & Landings</option> <option value=\"ia-automatizacion\">IA & Automatización de Procesos</option> <option value=\"productos-digitales\">Productos Digitales & SaaS</option> <option value=\"general\">Consulta General</option> </select> </div> <div> <label class=\"block font-sora text-sm font-medium text-background-13\">Cuéntanos brevemente sobre tu proyecto *</label> <textarea name=\"message\" rows=\"4\" required class=\"w-full mt-1 px-4 py-3 rounded-xl border border-stroke-2/60 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-opai-purple outline-none\" placeholder=\"¿Qué quieres hacer o mejorar?\"></textarea> </div> <button type=\"submit\" class=\"w-full font-ibm-plex-mono bg-background-13 text-white py-4 rounded-xl font-medium hover:bg-black transition-colors shadow-sm\"> Enviar Solicitud de Contacto </button> </form>4. Script de Inyección de Origen (CRO)document.addEventListener('DOMContentLoaded', () => { const hiddenOrigin = document.getElementById('hidden-origin'); if (hiddenOrigin) { hiddenOrigin.value = window.location.href; } });",
+    "contentTruncated": false,
+    "search": {
+      "id": "07-contacto",
+      "slug": "empresa/contacto",
+      "route": "/contacto",
+      "module": "07-contacto",
+      "title": "77 studio - contacto directo",
+      "description": "canales oficiales para agendar una llamada de diagnostico o conversar directamente con nuestro equipo.",
+      "category": "empresa",
+      "audience": "todas",
+      "keywords": [
+        "contacto",
+        "hablar con 77 studio",
+        "agendar reunion",
+        "llamada de diagnostico",
+        "whatsapp",
+        "formulario",
+        "correo electronico",
+        "asesoria",
+        "cotizacion"
+      ],
+      "content": "07 | contacto - especificacion de vista & layout mdxobjetivo comercial: maximizar la conversion de trafico de alta intencion otorgando la misma prioridad visual a whatsapp y al formulario por email.frontmatter & metadata1. hero & layout general (2 columnas)el layout de la pagina de contacto elimina distracciones pesadas y organiza la pantalla en dos columnas principales en escritorio (lg:grid lg:grid-cols-2 lg:gap-12):<div class=\"mx-auto max-w-[1290px] px-4 py-12 lg:py-20 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start\"> <!-- columna izquierda: mensaje + card whatsapp --> <!-- columna derecha: card formulario email --> </div>2. columna izquierda: whatsapp directo & presencia internacionaltitulo: hablemos de tu proyecto.copy: ya sea que necesites mejorar tu marketing, desarrollar una nueva web, automatizar procesos o construir un producto digital, podemos empezar por una conversacion directa.card whatsapp blanca (border border-stroke-2/60 rounded-[20px] p-6 shadow-sm):icono destacado de whatsapp.microcopy: \"¿quieres hablar directamente con nosotros? cuentanos brevemente que necesitas y te orientamos desde la primera conversacion.\"boton: abrir chat de whatsapp (bg-opai-purple text-white rounded-xl py-3 px-6 font-ibm-plex-mono).banner internacional: colombia ↔ estados unidos. operacion remota global.3. columna derecha: formulario comercialcard blanca limpia (rounded-[20px] border border-stroke-2/60 p-6 md:p-8 shadow-sm):<form id=\"contact-form\" action=\"/api/contact\" method=\"post\" class=\"space-y-4\"> <input type=\"hidden\" name=\"origin_url\" value=\"\" id=\"hidden-origin\" /> <div> <label class=\"block font-sora text-sm font-medium text-background-13\">nombre completo *</label> <input type=\"text\" name=\"name\" required class=\"w-full mt-1 px-4 py-3 rounded-xl border border-stroke-2/60 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-opai-purple outline-none\" placeholder=\"tu nombre\" /> </div> <div> <label class=\"block font-sora text-sm font-medium text-background-13\">empresa *</label> <input type=\"text\" name=\"company\" required class=\"w-full mt-1 px-4 py-3 rounded-xl border border-stroke-2/60 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-opai-purple outline-none\" placeholder=\"nombre de tu empresa\" /> </div> <div class=\"grid grid-cols-1 sm:grid-cols-2 gap-4\"> <div> <label class=\"block font-sora text-sm font-medium text-background-13\">email corporativo *</label> <input type=\"email\" name=\"email\" required class=\"w-full mt-1 px-4 py-3 rounded-xl border border-stroke-2/60 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-opai-purple outline-none\" placeholder=\"correo@empresa.com\" /> </div> <div> <label class=\"block font-sora text-sm font-medium text-background-13\">whatsapp / telefono *</label> <input type=\"tel\" name=\"phone\" required class=\"w-full mt-1 px-4 py-3 rounded-xl border border-stroke-2/60 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-opai-purple outline-none\" placeholder=\"+123456789\" /> </div> </div> <div> <label class=\"block font-sora text-sm font-medium text-background-13\">¿en que podemos ayudarte? *</label> <select name=\"service\" required class=\"w-full mt-1 px-4 py-3 rounded-xl border border-stroke-2/60 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-opai-purple outline-none\"> <option value=\"\">selecciona una opcion</option> <option value=\"marketing\">marketing (paid media & contenido)</option> <option value=\"web\">desarrollo web & landings</option> <option value=\"ia-automatizacion\">ia & automatizacion de procesos</option> <option value=\"productos-digitales\">productos digitales & saas</option> <option value=\"general\">consulta general</option> </select> </div> <div> <label class=\"block font-sora text-sm font-medium text-background-13\">cuentanos brevemente sobre tu proyecto *</label> <textarea name=\"message\" rows=\"4\" required class=\"w-full mt-1 px-4 py-3 rounded-xl border border-stroke-2/60 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-opai-purple outline-none\" placeholder=\"¿que quieres hacer o mejorar?\"></textarea> </div> <button type=\"submit\" class=\"w-full font-ibm-plex-mono bg-background-13 text-white py-4 rounded-xl font-medium hover:bg-black transition-colors shadow-sm\"> enviar solicitud de contacto </button> </form>4. script de inyeccion de origen (cro)document.addeventlistener('domcontentloaded', () => { const hiddenorigin = document.getelementbyid('hidden-origin'); if (hiddenorigin) { hiddenorigin.value = window.location.href; } });"
+    }
+  },
+  {
+    "id": "08-integraciones-marketing",
+    "slug": "servicios/integraciones-marketing",
+    "title": "77 Studio - Integraciones de Marketing, Analytics & Tracking",
+    "description": "Medición precisa, píxeles de conversión y analítica avanzada para tus campañas y sitio web.",
+    "module": "08-integraciones-marketing",
+    "route": "/integraciones",
+    "whatsappMessage": "Hola 77 Studio 👋 Quisiera asesoría para configurar analítica, Meta CAPI y tracking en mi web.",
+    "category": "servicios",
+    "audience": "empresas",
+    "keywords": [
+      "integraciones de marketing",
+      "google analytics 4",
+      "ga4",
+      "meta pixel",
+      "capi",
+      "conversions api",
+      "google tag manager",
+      "gtm",
+      "tracking",
+      "medicion de conversiones",
+      "analitica web",
+      "crm sync",
+      "atribucion de pauta",
+      "roi publicitario"
+    ],
+    "related_slugs": [
+      "servicios/marketing",
+      "servicios/web",
+      "servicios/ia-automatizacion"
+    ],
+    "content": "08 | Integraciones de Marketing, Analytics & Meta / Google AdsMódulo 08: Especificación técnica para la arquitectura escalable de analítica, pixelado y atribución publicitaria de 77 Studio mediante Meta Business Suite (Pixel + CAPI), Google Ads / GTM / GA4 y el motor de captura de parámetros UTM.08.1 Arquitectura de Event Bus y AtribuciónPara garantizar la captura del 100% de los clientes potenciales (leads) sin perder atribución por bloqueadores de publicidad o restricciones de navegadores (iOS App Tracking Transparency), la plataforma utiliza un Event Bus híbrido (Front-end + Server-side). [Usuario interactúa con 77 Studio] │ ┌────────┴────────┐ ▼ ▼ [Client-side Pixel] [Server-side CAPI] - Meta Pixel - Meta Conversions API (CAPI) - Google Tag (GTM) - Google Ads Server Event - GA4 Events - CRM Webhook (Dokploy)08.2 Meta Business Suite (Meta Pixel + Conversions API CAPI)1. Client-side Meta PixelInyectado en BaseLayout.astro con soporte para consentimiento de cookies.PageView: Disparado en cada navegación de página.ViewContent: Disparado cuando el usuario visualiza módulos clave de servicios (/marketing, /web, /ia-automatizacion).Lead: Disparado al enviar con éxito un formulario de contacto.Contact: Disparado al hacer clic en el botón primario de WhatsApp prellenado.2. Server-side Meta Conversions API (CAPI)Para garantizar 0% pérdida de datos de conversión, se especifica el endpoint serverless en Astro: /api/events/meta-capi.ts.Payload: Hash SHA-256 de email, phone, user_agent, client_ip_address, event_id.Deduplicación: Uso de la cabecera event_id compartida entre el pixel de cliente y la API CAPI.// Ejemplo de payload /api/events/meta-capi.ts export async function POST({ request }) { const body = await request.json(); const eventId = body.eventId || crypto.randomUUID(); // Enviar a Meta Graph API v19.0 const response = await fetch(`https://graph.facebook.com/v19.0/${import.meta.env.META_PIXEL_ID}/events?access_token=${import.meta.env.META_CAPI_TOKEN}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ data: [{ event_name: body.eventName, // 'Lead' | 'Contact' event_time: Math.floor(Date.now() / 1000), event_id: eventId, user_data: { em: [hashSHA256(body.email)], ph: [hashSHA256(body.phone)], client_ip_address: body.ip, client_user_agent: body.userAgent }, custom_data: { service_origin: body.serviceOrigin, utm_source: body.utmSource } }] }) }); }08.3 Google Ads, Google Tag Manager (GTM) & GA41. Google Tag Manager ContainerID de Contenedor: GTM-XXXXXXX (configurable mediante PUBLIC_GTM_ID).Activadores (Triggers):Form_Submission_Success: Evento generate_lead.WhatsApp_Click: Evento click_whatsapp con valor asignado.2. Conversiones de Google AdsConfiguración del Tag de Conversión para campañas de Búsqueda y Performance Max:Conversión Principal: Envíos de formulario de cotización (conversion_label: \"lead_form\").Conversión Secundaria: Inicios de conversación de WhatsApp (conversion_label: \"whatsapp_click\").08.4 UTM Engine & Tracking de Origen en Conversión DualEl script utilitario src/utils/utm.ts rastrea y persiste los parámetros URL de la campaña publicitaria durante la sesión del usuario:Parámetros Almacenados:utm_source (ej. facebook, google, linkedin, newsletter)utm_medium (ej. cpc, paid_social, organic)utm_campaign (ej. campana-q3-ia-automatizacion)utm_content / utm_termgclid (Google Click Identifier) / fbclid (Facebook Click Identifier)Integración en la Conversión Dual:Formulario de Contacto:Inyección de campos ocultos <input type=\"hidden\" name=\"utm_source\" value={utmSource} /> para envío al CRM.WhatsApp Contextual:Si existen UTMs activos en la sesión, el mensaje prellenado incluye la marca de atribución:Ejemplo: \"Hola 77 Studio 👋 Estoy interesado en desarrollar una solución de IA para mi empresa. [Ref: Google Ads / Campaña IA Q3]\"08.5 Variables de Entorno para Integraciones de Marketing# Meta / Facebook Business PUBLIC_META_PIXEL_ID=1234567890 META_CAPI_TOKEN=EAAG... # Google Ads & Analytics PUBLIC_GTM_ID=GTM-XXXXXXX PUBLIC_GA4_MEASUREMENT_ID=G-XXXXXXXXXX GOOGLE_ADS_CONVERSION_ID=AW-XXXXXXXXX",
+    "contentTruncated": false,
+    "search": {
+      "id": "08-integraciones-marketing",
+      "slug": "servicios/integraciones-marketing",
+      "route": "/integraciones",
+      "module": "08-integraciones-marketing",
+      "title": "77 studio - integraciones de marketing, analytics & tracking",
+      "description": "medicion precisa, pixeles de conversion y analitica avanzada para tus campanas y sitio web.",
+      "category": "servicios",
+      "audience": "empresas",
+      "keywords": [
+        "integraciones de marketing",
+        "google analytics 4",
+        "ga4",
+        "meta pixel",
+        "capi",
+        "conversions api",
+        "google tag manager",
+        "gtm",
+        "tracking",
+        "medicion de conversiones",
+        "analitica web",
+        "crm sync",
+        "atribucion de pauta",
+        "roi publicitario"
+      ],
+      "content": "08 | integraciones de marketing, analytics & meta / google adsmodulo 08: especificacion tecnica para la arquitectura escalable de analitica, pixelado y atribucion publicitaria de 77 studio mediante meta business suite (pixel + capi), google ads / gtm / ga4 y el motor de captura de parametros utm.08.1 arquitectura de event bus y atribucionpara garantizar la captura del 100% de los clientes potenciales (leads) sin perder atribucion por bloqueadores de publicidad o restricciones de navegadores (ios app tracking transparency), la plataforma utiliza un event bus hibrido (front-end + server-side). [usuario interactua con 77 studio] │ ┌────────┴────────┐ ▼ ▼ [client-side pixel] [server-side capi] - meta pixel - meta conversions api (capi) - google tag (gtm) - google ads server event - ga4 events - crm webhook (dokploy)08.2 meta business suite (meta pixel + conversions api capi)1. client-side meta pixelinyectado en baselayout.astro con soporte para consentimiento de cookies.pageview: disparado en cada navegacion de pagina.viewcontent: disparado cuando el usuario visualiza modulos clave de servicios (/marketing, /web, /ia-automatizacion).lead: disparado al enviar con exito un formulario de contacto.contact: disparado al hacer clic en el boton primario de whatsapp prellenado.2. server-side meta conversions api (capi)para garantizar 0% perdida de datos de conversion, se especifica el endpoint serverless en astro: /api/events/meta-capi.ts.payload: hash sha-256 de email, phone, user_agent, client_ip_address, event_id.deduplicacion: uso de la cabecera event_id compartida entre el pixel de cliente y la api capi.// ejemplo de payload /api/events/meta-capi.ts export async function post({ request }) { const body = await request.json(); const eventid = body.eventid || crypto.randomuuid(); // enviar a meta graph api v19.0 const response = await fetch(https://graph.facebook.com/v19.0/${import.meta.env.meta_pixel_id}/events?access_token=${import.meta.env.meta_capi_token}, { method: 'post', headers: { 'content-type': 'application/json' }, body: json.stringify({ data: [{ event_name: body.eventname, // 'lead' | 'contact' event_time: math.floor(date.now() / 1000), event_id: eventid, user_data: { em: [hashsha256(body.email)], ph: [hashsha256(body.phone)], client_ip_address: body.ip, client_user_agent: body.useragent }, custom_data: { service_origin: body.serviceorigin, utm_source: body.utmsource } }] }) }); }08.3 google ads, google tag manager (gtm) & ga41. google tag manager containerid de contenedor: gtm-xxxxxxx (configurable mediante public_gtm_id).activadores (triggers):form_submission_success: evento generate_lead.whatsapp_click: evento click_whatsapp con valor asignado.2. conversiones de google adsconfiguracion del tag de conversion para campanas de busqueda y performance max:conversion principal: envios de formulario de cotizacion (conversion_label: \"lead_form\").conversion secundaria: inicios de conversacion de whatsapp (conversion_label: \"whatsapp_click\").08.4 utm engine & tracking de origen en conversion dualel script utilitario src/utils/utm.ts rastrea y persiste los parametros url de la campana publicitaria durante la sesion del usuario:parametros almacenados:utm_source (ej. facebook, google, linkedin, newsletter)utm_medium (ej. cpc, paid_social, organic)utm_campaign (ej. campana-q3-ia-automatizacion)utm_content / utm_termgclid (google click identifier) / fbclid (facebook click identifier)integracion en la conversion dual:formulario de contacto:inyeccion de campos ocultos <input type=\"hidden\" name=\"utm_source\" value={utmsource} /> para envio al crm.whatsapp contextual:si existen utms activos en la sesion, el mensaje prellenado incluye la marca de atribucion:ejemplo: \"hola 77 studio 👋 estoy interesado en desarrollar una solucion de ia para mi empresa. [ref: google ads / campana ia q3]\"08.5 variables de entorno para integraciones de marketing# meta / facebook business public_meta_pixel_id=1234567890 meta_capi_token=eaag... # google ads & analytics public_gtm_id=gtm-xxxxxxx public_ga4_measurement_id=g-xxxxxxxxxx google_ads_conversion_id=aw-xxxxxxxxx"
+    }
+  },
+  {
+    "id": "09-ia-agent-chat",
+    "slug": "tecnologia/ia-agent-chat",
+    "title": "77 Studio - Agente de IA Chat & Widget de Consulta",
+    "description": "Asistente inteligente con grounding contextual en tiempo real para atención al cliente y ventas.",
+    "module": "09-ia-agent-chat",
+    "route": "/tecnologia/chat-agent",
+    "whatsappMessage": "Hola 77 Studio 👋 Quisiera implementar un agente de IA y chat inteligente en mi empresa.",
+    "category": "tecnologia",
+    "audience": "empresas",
+    "keywords": [
+      "agente de ia",
+      "chat widget",
+      "asistente virtual",
+      "eve agent",
+      "grounding de conocimiento",
+      "streaming sse",
+      "atencion al cliente automatizada",
+      "calificacion de leads",
+      "inteligencia artificial conversacional",
+      "gemini"
+    ],
+    "related_slugs": [
+      "servicios/ia-automatizacion",
+      "servicios/web",
+      "tecnologia/setup"
+    ],
+    "content": "09 | Agente de IA Chat, Consulta de Conocimiento & API ServerlessMódulo 09: Especificación técnica para la integración del Agente de IA Consultor de Servicios de 77 Studio, compuesto por un widget flotante interactivo (<AIChatWidget />), la API serverless agnóstica /api/chat.ts y la indexación RAG alimentada por public/knowledge.json.09.1 Arquitectura del Servicio de Agente de IAEl sitio web cuenta con un asistente inteligente capaz de responder cualquier duda técnica o comercial sobre los servicios de 77 Studio (Marketing, Web Astro, IA & Automatización, Productos Digitales). [Usuario escribe en <AIChatWidget />] │ ▼ POST request a /api/chat.ts │ ┌────────────────┴────────────────┐ ▼ ▼ [Carga de public/knowledge.json] [Generación de System Prompt] (Generado con npm run 77 knowledge) - Asistente Experto 77 Studio - Cero alucinaciones - Enlace a WhatsApp contextual └────────────────┬────────────────┘ │ ▼ [Procesamiento LLM (OpenAI / Gemini)] │ ▼ [Respuesta fluida + Botón a WhatsApp/Form]09.2 Componente UI del Widget (<AIChatWidget />)Ubicación: Esquina inferior derecha (estilo flotante redondeado rounded-full con sombra shadow-xl).Diseño Visual: Estética acorde al Design System de 77 Studio (Fondo blanco/cristal backdrop-blur, acento violeta #7C3AED, badge font-ibm-plex-mono).Comportamiento:Mensaje flotante de bienvenida contextual (ej. \"¿Buscas automatizar procesos con IA o escalar tus ventas con Meta Ads? Pregúntame lo que quieras.\").Estado de carga interactivo con animación de nodos.Generación de respuestas en formato Markdown enriquecido.09.3 Endpoint Serverless Agnóstico /api/chat.tsEl endpoint en Astro es 100% agnóstico respecto al proveedor de inteligencia artificial, permitiendo alternar fácilmente entre OpenAI (GPT-4o), Google Gemini o un modelo propio en Dokploy.// src/pages/api/chat.ts (Pseudocódigo de Especificación) import type { APIRoute } from 'astro'; import fs from 'node:fs'; import path from 'node:path'; export const POST: APIRoute = async ({ request }) => { const { messages } = await request.json(); const lastUserMessage = messages[messages.length - 1]?.content || ''; // 1. Cargar Base de Conocimiento estructurada (RAG liviano) const knowledgePath = path.join(process.cwd(), 'public', 'knowledge.json'); let knowledgeContext = ''; if (fs.existsSync(knowledgePath)) { const knowledgeData = JSON.parse(fs.readFileSync(knowledgePath, 'utf-8')); // Filtrar documentos que coincidan con términos clave del mensaje knowledgeContext = knowledgeData.documents .map(doc => `--- DOCUMENTO: ${doc.title} ---\\n${doc.contentSnippet}`) .join('\\n\\n'); } // 2. System Prompt Estricto const systemPrompt = ` Eres el Consultor Inteligente de 77 Studio (Digital Studio + Creative Partner + Technology & AI Company). Tu objetivo es responder de manera profesional, concisa y comercial las preguntas del usuario basándote EXCLUSIVAMENTE en la siguiente base de conocimiento oficial: === BASE DE CONOCIMIENTO OFICIAL 77 STUDIO === ${knowledgeContext} =============================================== Reglas de Respuesta: 1. No inventes precios ni servicios que no estén en la base de conocimiento. 2. Ofrece siempre agendar una conversación por WhatsApp o formulario si el usuario muestra alta intención. `; // 3. Selección Agnóstica del Proveedor (OpenAI vs Gemini) const provider = import.meta.env.AI_PROVIDER || 'openai'; let replyText = ''; if (provider === 'gemini') { replyText = await callGeminiAPI(systemPrompt, messages, import.meta.env.AI_API_KEY); } else { replyText = await callOpenAIAPI(systemPrompt, messages, import.meta.env.AI_API_KEY); } return new Response(JSON.stringify({ response: replyText }), { headers: { 'Content-Type': 'application/json' } }); };09.4 Compilación Automática de Conocimiento con la CLIPara mantener al Agente de IA siempre actualizado con cualquier nuevo servicio, tarifa o caso de éxito documentado en la carpeta 77/:# Comando CLI para re-indexar la base de conocimiento npm run 77 knowledgeEste comando procesa todos los archivos MDX (77/00-setup a 77/09-ia-agent-chat), compila el JSON estructurado public/knowledge.json y lo deja listo para el consumo del endpoint de IA.09.5 Variables de Entorno del Agente de IA# Seleccionar proveedor de IA: 'openai' | 'gemini' | 'custom' AI_PROVIDER=openai # Clave de API según el proveedor seleccionado AI_API_KEY=sk-proj-xxxxxxxxxxxxxxxxxxxxxxxx # Modelo preferido AI_MODEL=gpt-4o-mini",
+    "contentTruncated": false,
+    "search": {
+      "id": "09-ia-agent-chat",
+      "slug": "tecnologia/ia-agent-chat",
+      "route": "/tecnologia/chat-agent",
+      "module": "09-ia-agent-chat",
+      "title": "77 studio - agente de ia chat & widget de consulta",
+      "description": "asistente inteligente con grounding contextual en tiempo real para atencion al cliente y ventas.",
+      "category": "tecnologia",
+      "audience": "empresas",
+      "keywords": [
+        "agente de ia",
+        "chat widget",
+        "asistente virtual",
+        "eve agent",
+        "grounding de conocimiento",
+        "streaming sse",
+        "atencion al cliente automatizada",
+        "calificacion de leads",
+        "inteligencia artificial conversacional",
+        "gemini"
+      ],
+      "content": "09 | agente de ia chat, consulta de conocimiento & api serverlessmodulo 09: especificacion tecnica para la integracion del agente de ia consultor de servicios de 77 studio, compuesto por un widget flotante interactivo (<aichatwidget />), la api serverless agnostica /api/chat.ts y la indexacion rag alimentada por public/knowledge.json.09.1 arquitectura del servicio de agente de iael sitio web cuenta con un asistente inteligente capaz de responder cualquier duda tecnica o comercial sobre los servicios de 77 studio (marketing, web astro, ia & automatizacion, productos digitales). [usuario escribe en <aichatwidget />] │ ▼ post request a /api/chat.ts │ ┌────────────────┴────────────────┐ ▼ ▼ [carga de public/knowledge.json] [generacion de system prompt] (generado con npm run 77 knowledge) - asistente experto 77 studio - cero alucinaciones - enlace a whatsapp contextual └────────────────┬────────────────┘ │ ▼ [procesamiento llm (openai / gemini)] │ ▼ [respuesta fluida + boton a whatsapp/form]09.2 componente ui del widget (<aichatwidget />)ubicacion: esquina inferior derecha (estilo flotante redondeado rounded-full con sombra shadow-xl).diseno visual: estetica acorde al design system de 77 studio (fondo blanco/cristal backdrop-blur, acento violeta #7c3aed, badge font-ibm-plex-mono).comportamiento:mensaje flotante de bienvenida contextual (ej. \"¿buscas automatizar procesos con ia o escalar tus ventas con meta ads? preguntame lo que quieras.\").estado de carga interactivo con animacion de nodos.generacion de respuestas en formato markdown enriquecido.09.3 endpoint serverless agnostico /api/chat.tsel endpoint en astro es 100% agnostico respecto al proveedor de inteligencia artificial, permitiendo alternar facilmente entre openai (gpt-4o), google gemini o un modelo propio en dokploy.// src/pages/api/chat.ts (pseudocodigo de especificacion) import type { apiroute } from 'astro'; import fs from 'node:fs'; import path from 'node:path'; export const post: apiroute = async ({ request }) => { const { messages } = await request.json(); const lastusermessage = messages[messages.length - 1]?.content || ''; // 1. cargar base de conocimiento estructurada (rag liviano) const knowledgepath = path.join(process.cwd(), 'public', 'knowledge.json'); let knowledgecontext = ''; if (fs.existssync(knowledgepath)) { const knowledgedata = json.parse(fs.readfilesync(knowledgepath, 'utf-8')); // filtrar documentos que coincidan con terminos clave del mensaje knowledgecontext = knowledgedata.documents .map(doc => --- documento: ${doc.title} ---\\n${doc.contentsnippet}) .join('\\n\\n'); } // 2. system prompt estricto const systemprompt =  eres el consultor inteligente de 77 studio (digital studio + creative partner + technology & ai company). tu objetivo es responder de manera profesional, concisa y comercial las preguntas del usuario basandote exclusivamente en la siguiente base de conocimiento oficial: === base de conocimiento oficial 77 studio === ${knowledgecontext} =============================================== reglas de respuesta: 1. no inventes precios ni servicios que no esten en la base de conocimiento. 2. ofrece siempre agendar una conversacion por whatsapp o formulario si el usuario muestra alta intencion. ; // 3. seleccion agnostica del proveedor (openai vs gemini) const provider = import.meta.env.ai_provider || 'openai'; let replytext = ''; if (provider === 'gemini') { replytext = await callgeminiapi(systemprompt, messages, import.meta.env.ai_api_key); } else { replytext = await callopenaiapi(systemprompt, messages, import.meta.env.ai_api_key); } return new response(json.stringify({ response: replytext }), { headers: { 'content-type': 'application/json' } }); };09.4 compilacion automatica de conocimiento con la clipara mantener al agente de ia siempre actualizado con cualquier nuevo servicio, tarifa o caso de exito documentado en la carpeta 77/:# comando cli para re-indexar la base de conocimiento npm run 77 knowledgeeste comando procesa todos los archivos mdx (77/00-setup a 77/09-ia-agent-chat), compila el json estructurado public/knowledge.json y lo deja listo para el consumo del endpoint de ia.09.5 variables de entorno del agente de ia# seleccionar proveedor de ia: 'openai' | 'gemini' | 'custom' ai_provider=openai # clave de api segun el proveedor seleccionado ai_api_key=sk-proj-xxxxxxxxxxxxxxxxxxxxxxxx # modelo preferido ai_model=gpt-4o-mini"
+    }
+  },
+  {
+    "id": "10-esteban",
+    "slug": "equipo/esteban",
+    "title": "Esteban Pantoja - Desarrollador de Software | 77 Studio",
+    "description": "Perfil profesional de Esteban Pantoja, Desarrollador de Software e Ingeniero de Sistemas en 77 Studio.",
+    "module": "10-esteban",
+    "route": "/equipo/esteban",
+    "whatsappMessage": "Hola 77 Studio 👋 Quisiera consultar sobre el trabajo y proyectos de Esteban Pantoja.",
+    "category": "equipo",
+    "audience": "todas",
+    "keywords": [
+      "esteban pantoja",
+      "desarrollador de software",
+      "ingenieria de sistemas",
+      "equipo 77 studio",
+      "desarrollo web",
+      "soluciones digitales",
+      "mocoa",
+      "putumayo",
+      "nicolas salas"
+    ],
+    "related_slugs": [
+      "empresa/nosotros",
+      "empresa/contacto",
+      "servicios/web",
+      "servicios/productos-digitales"
+    ],
+    "content": "import { ProfileCard, TechBadge, ProjectTimeline, HeartIcon } from '@/components';Perfil: Esteban PantojaSobre EstebanEsteban es un Desarrollador de Software de 25 años, reconocible por sus característicos lentes y su gran calidad humana; quienes lo conocen saben que es bueno para amar y un excelente compañero de equipo.Actualmente cursa la carrera de Ingeniería de Sistemas, donde se destaca por su capacidad analítica y su activa colaboración en la documentación y desarrollo de proyectos técnicos y académicos de ingeniería. Aunque su base y residencia actual están en Mocoa, siempre lleva a Villa presente.Cuando no está escribiendo código o estudiando, su gran escape es rodar en su Yamaha YZ.Experiencia ProfesionalEsteban tiene un perfil dinámico y multitarea. Trabaja para varias empresas aportando soluciones tecnológicas a medida, destacándose por su versatilidad en el desarrollo de software.Proyectos Destacados: 77 StudioHa sido una pieza fundamental para la empresa 77 Studio, donde ha liderado y ejecutado diferentes proyectos de software, demostrando un alto nivel de compromiso, rigor técnico y calidad en la entrega.Habilidades y TecnologíasVida PersonalAmistades: Es un gran amigo y cercano a Nicolás Salas.Hobbies: Rodar en su Yamaha YZ, compartir tiempo con sus seres queridos y explorar nuevas tecnologías.\"Entre líneas de código, proyectos de ingeniería y rutas en la YZ, siempre hay tiempo para ser una buena persona.\"",
+    "contentTruncated": false,
+    "search": {
+      "id": "10-esteban",
+      "slug": "equipo/esteban",
+      "route": "/equipo/esteban",
+      "module": "10-esteban",
+      "title": "esteban pantoja - desarrollador de software | 77 studio",
+      "description": "perfil profesional de esteban pantoja, desarrollador de software e ingeniero de sistemas en 77 studio.",
+      "category": "equipo",
+      "audience": "todas",
+      "keywords": [
+        "esteban pantoja",
+        "desarrollador de software",
+        "ingenieria de sistemas",
+        "equipo 77 studio",
+        "desarrollo web",
+        "soluciones digitales",
+        "mocoa",
+        "putumayo",
+        "nicolas salas"
+      ],
+      "content": "import { profilecard, techbadge, projecttimeline, hearticon } from '@/components';perfil: esteban pantojasobre estebanesteban es un desarrollador de software de 25 anos, reconocible por sus caracteristicos lentes y su gran calidad humana; quienes lo conocen saben que es bueno para amar y un excelente companero de equipo.actualmente cursa la carrera de ingenieria de sistemas, donde se destaca por su capacidad analitica y su activa colaboracion en la documentacion y desarrollo de proyectos tecnicos y academicos de ingenieria. aunque su base y residencia actual estan en mocoa, siempre lleva a villa presente.cuando no esta escribiendo codigo o estudiando, su gran escape es rodar en su yamaha yz.experiencia profesionalesteban tiene un perfil dinamico y multitarea. trabaja para varias empresas aportando soluciones tecnologicas a medida, destacandose por su versatilidad en el desarrollo de software.proyectos destacados: 77 studioha sido una pieza fundamental para la empresa 77 studio, donde ha liderado y ejecutado diferentes proyectos de software, demostrando un alto nivel de compromiso, rigor tecnico y calidad en la entrega.habilidades y tecnologiasvida personalamistades: es un gran amigo y cercano a nicolas salas.hobbies: rodar en su yamaha yz, compartir tiempo con sus seres queridos y explorar nuevas tecnologias.\"entre lineas de codigo, proyectos de ingenieria y rutas en la yz, siempre hay tiempo para ser una buena persona.\""
+    }
+  },
+  {
+    "id": "audiencias/empresas",
+    "slug": "audiencias/empresas",
+    "title": "Guía de Atención y Soluciones para Empresas Consolidadas | 77 Studio",
+    "description": "Propuesta de valor y enfoque consultivo para directores de marketing, gerentes comerciales y directivos de empresas.",
+    "category": "audiencias",
+    "audience": "empresas",
+    "keywords": [
+      "empresas",
+      "directores marketing",
+      "gerentes comerciales",
+      "cto",
+      "ceo",
+      "roi",
+      "eficiencia operativa",
+      "crm corporativo",
+      "integracion tecnologica",
+      "escalabilidad",
+      "cuellos de botella"
+    ],
+    "related_slugs": [
+      "servicios/ia-automatizacion",
+      "servicios/productos-digitales",
+      "servicios/integraciones-marketing",
+      "servicios/marketing"
+    ],
+    "content": "Playbook: Atención a Empresas & Líderes Corporativos1. Perfil del InterlocutorDirectores de Marketing (CMO), Gerentes Comerciales, Directores de Operaciones (COO), CEOs y CTOs de empresas en crecimiento o consolidadas.Cuentan con un equipo de ventas u operativo en marcha, pero sufren por:Leads que se enfrían por falta de seguimiento rápido.Tareas manuales y hojas de cálculo fragmentadas.Herramientas desconectadas (CRM, pauta, WhatsApp, pasarelas de pago).Software genérico que no se adapta a sus flujos internos.2. Enfoque Comercial & TonoTono: Profesional, consultivo, orientado a ROI, métricas y eficiencia operativa.Enfoque: Cómo la tecnología, la automatización y la inteligencia artificial resuelven cuellos de botella reales sin fricción para el equipo humano.3. Servicios Clave para EmpresasIA + Automatización de Procesos (servicios/ia-automatizacion):Enrutamiento inteligente de leads a vendedores.Seguimiento comercial automatizado multicanal (WhatsApp, Email, CRM).Asistentes de IA contextuales para atención y soporte 24/7.Productos Digitales a la Medida (servicios/productos-digitales):Portales de autogestión para clientes, distribuidores o proveedores.Dashboards de analítica en tiempo real para toma de decisiones ejecutivas.Herramientas operativas internas que reemplazan software lento o rígido.Integraciones & Analítica Avanzada (servicios/integraciones-marketing):Conexión de CRM (HubSpot, Salesforce, Zoho, etc.) con pauta digital.Configuración de Meta Conversion API (CAPI) y Google Analytics 4 para atribución precisa.4. Próximo Paso RecomendadoAgendar una Sesión de Mapeo Técnico / Diagnóstico de Operaciones con los líderes de tecnología o estrategia de 77 Studio para estructurar una propuesta técnica y comercial a la medida.",
+    "contentTruncated": false,
+    "search": {
+      "id": "audiencias/empresas",
+      "slug": "audiencias/empresas",
+      "route": "",
+      "module": "",
+      "title": "guia de atencion y soluciones para empresas consolidadas | 77 studio",
+      "description": "propuesta de valor y enfoque consultivo para directores de marketing, gerentes comerciales y directivos de empresas.",
+      "category": "audiencias",
+      "audience": "empresas",
+      "keywords": [
+        "empresas",
+        "directores marketing",
+        "gerentes comerciales",
+        "cto",
+        "ceo",
+        "roi",
+        "eficiencia operativa",
+        "crm corporativo",
+        "integracion tecnologica",
+        "escalabilidad",
+        "cuellos de botella"
+      ],
+      "content": "playbook: atencion a empresas & lideres corporativos1. perfil del interlocutordirectores de marketing (cmo), gerentes comerciales, directores de operaciones (coo), ceos y ctos de empresas en crecimiento o consolidadas.cuentan con un equipo de ventas u operativo en marcha, pero sufren por:leads que se enfrian por falta de seguimiento rapido.tareas manuales y hojas de calculo fragmentadas.herramientas desconectadas (crm, pauta, whatsapp, pasarelas de pago).software generico que no se adapta a sus flujos internos.2. enfoque comercial & tonotono: profesional, consultivo, orientado a roi, metricas y eficiencia operativa.enfoque: como la tecnologia, la automatizacion y la inteligencia artificial resuelven cuellos de botella reales sin friccion para el equipo humano.3. servicios clave para empresasia + automatizacion de procesos (servicios/ia-automatizacion):enrutamiento inteligente de leads a vendedores.seguimiento comercial automatizado multicanal (whatsapp, email, crm).asistentes de ia contextuales para atencion y soporte 24/7.productos digitales a la medida (servicios/productos-digitales):portales de autogestion para clientes, distribuidores o proveedores.dashboards de analitica en tiempo real para toma de decisiones ejecutivas.herramientas operativas internas que reemplazan software lento o rigido.integraciones & analitica avanzada (servicios/integraciones-marketing):conexion de crm (hubspot, salesforce, zoho, etc.) con pauta digital.configuracion de meta conversion api (capi) y google analytics 4 para atribucion precisa.4. proximo paso recomendadoagendar una sesion de mapeo tecnico / diagnostico de operaciones con los lideres de tecnologia o estrategia de 77 studio para estructurar una propuesta tecnica y comercial a la medida."
+    }
+  },
+  {
+    "id": "audiencias/fundadores-startups",
+    "slug": "audiencias/fundadores-startups",
+    "title": "Guía de Atención para Fundadores de Startups & Creadores de Producto | 77 Studio",
+    "description": "Cómo presentar el servicio de desarrollo ágil de MVPs, SaaS y diseño de producto digital para emprendedores y fundadores.",
+    "category": "audiencias",
+    "audience": "fundadores-startups",
+    "keywords": [
+      "fundadores",
+      "startups",
+      "mvp",
+      "saas",
+      "desarrollo rapido",
+      "validacion mercado",
+      "prototipo",
+      "product studio",
+      "product market fit",
+      "software escalable"
+    ],
+    "related_slugs": [
+      "servicios/productos-digitales",
+      "servicios/web",
+      "servicios/ia-automatizacion"
+    ],
+    "content": "Playbook: Atención a Fundadores de Startups & Creadores de Producto1. Perfil del InterlocutorEmprendedores, fundadores técnicos o de negocio levantando capital, validando una idea en el mercado o buscando construir su primer MVP (Minimum Viable Product).Necesitan:Velocidad de ejecución para salir al mercado rápido.Diseño de interfaz moderno y de calidad mundial (estética de Silicon Valley / Product Studio).Arquitectura escalable en la nube sin sobrecostos de infraestructura.2. Enfoque Comercial & TonoTono: Ágil, técnico, moderno, enfocado en time-to-market y validación real con usuarios.Diferenciador 77 Studio: No somos una fábrica de software tradicional que tarda 9 meses en entregar un prototipo. Diseñamos y construimos MVPs funcionales y testeables en semanas.3. Servicios Recomendados para StartupsDesarrollo de SaaS & MVP (servicios/productos-digitales):Arquitectura moderna (Next.js/Astro, TypeScript, Tailwind, bases de datos serverless).Autenticación, pagos con Stripe/Wompi y panel de administración.Landing Page de Validación & Captación (servicios/web):Página de alta conversión para lista de espera (waitlist) o preventa con analítica integrada.Flujos de Onboarding & Notificaciones con IA (servicios/ia-automatizacion):Secuencias automatizadas de bienvenida y activación de usuarios.4. Próximo Paso RecomendadoAgendar un Sprint de Definición de Producto de 30 min para revisar wireframes, definir el alcance mínimo testeable y presentar un cronograma de lanzamiento.",
+    "contentTruncated": false,
+    "search": {
+      "id": "audiencias/fundadores-startups",
+      "slug": "audiencias/fundadores-startups",
+      "route": "",
+      "module": "",
+      "title": "guia de atencion para fundadores de startups & creadores de producto | 77 studio",
+      "description": "como presentar el servicio de desarrollo agil de mvps, saas y diseno de producto digital para emprendedores y fundadores.",
+      "category": "audiencias",
+      "audience": "fundadores-startups",
+      "keywords": [
+        "fundadores",
+        "startups",
+        "mvp",
+        "saas",
+        "desarrollo rapido",
+        "validacion mercado",
+        "prototipo",
+        "product studio",
+        "product market fit",
+        "software escalable"
+      ],
+      "content": "playbook: atencion a fundadores de startups & creadores de producto1. perfil del interlocutoremprendedores, fundadores tecnicos o de negocio levantando capital, validando una idea en el mercado o buscando construir su primer mvp (minimum viable product).necesitan:velocidad de ejecucion para salir al mercado rapido.diseno de interfaz moderno y de calidad mundial (estetica de silicon valley / product studio).arquitectura escalable en la nube sin sobrecostos de infraestructura.2. enfoque comercial & tonotono: agil, tecnico, moderno, enfocado en time-to-market y validacion real con usuarios.diferenciador 77 studio: no somos una fabrica de software tradicional que tarda 9 meses en entregar un prototipo. disenamos y construimos mvps funcionales y testeables en semanas.3. servicios recomendados para startupsdesarrollo de saas & mvp (servicios/productos-digitales):arquitectura moderna (next.js/astro, typescript, tailwind, bases de datos serverless).autenticacion, pagos con stripe/wompi y panel de administracion.landing page de validacion & captacion (servicios/web):pagina de alta conversion para lista de espera (waitlist) o preventa con analitica integrada.flujos de onboarding & notificaciones con ia (servicios/ia-automatizacion):secuencias automatizadas de bienvenida y activacion de usuarios.4. proximo paso recomendadoagendar un sprint de definicion de producto de 30 min para revisar wireframes, definir el alcance minimo testeable y presentar un cronograma de lanzamiento."
+    }
+  },
+  {
+    "id": "audiencias/nuevos-clientes",
+    "slug": "audiencias/nuevos-clientes",
+    "title": "Guía de Atención y Propuesta para Nuevos Clientes | 77 Studio",
+    "description": "Cómo atender y presentar los servicios de 77 Studio a personas o negocios que recién nos conocen.",
+    "category": "audiencias",
+    "audience": "nuevos-clientes",
+    "keywords": [
+      "primer contacto",
+      "nuevo cliente",
+      "como empezar",
+      "como trabajamos",
+      "diagnostico inicial",
+      "llamada de exploracion",
+      "presupuesto inicial",
+      "desconfianza agencias"
+    ],
+    "related_slugs": [
+      "servicios/web",
+      "servicios/marketing",
+      "empresa/contacto",
+      "empresa/nosotros"
+    ],
+    "content": "Playbook: Atención a Nuevos Clientes & Primer Contacto1. Perfil del InterlocutorPersonas o empresas que están explorando a 77 Studio por primera vez.Vienen de experiencias frustrantes con freelancers o agencias tradicionales que no entregan a tiempo o no entienden el negocio.Necesitan claridad sobre qué significa tener a 77 Studio como Digital Studio + Creative Partner.2. Mensaje Clave & Propuesta de ValorUn solo equipo integral: No necesitas contratar una agencia de diseño por un lado, un programador por otro y una agencia de pauta por otro.Transparencia y velocidad: Procesos ágiles, entregas medibles y comunicación directa sin burocracia.Alcance internacional: Operación y talento en Colombia y Estados Unidos para trabajar de forma remota sin fricción.3. Servicios Recomendados para EmpezarDesarrollo o Rediseño Web (servicios/web): Crear o actualizar la página web / landing page para que represente profesionalmente a la empresa y convierta visitas en prospectos calificados.Estrategia de Pauta Digital (servicios/marketing): Lanzar campañas en Meta Ads o Google Ads con creativos de alto impacto para generar demanda inmediata.Diagnóstico de Procesos (servicios/ia-automatizacion): Identificar tareas repetitivas en ventas o atención para conectar con CRM y WhatsApp.4. Próximo Paso Recomendado (Llamada a la Acción)Ofrecer un Diagnóstico Inicial de 15 minutos (sin costo ni compromiso) para analizar el estado actual de su presencia digital y sugerir la mejor ruta de trabajo.Redirigir a WhatsApp o formulario de contacto (/contacto).",
+    "contentTruncated": false,
+    "search": {
+      "id": "audiencias/nuevos-clientes",
+      "slug": "audiencias/nuevos-clientes",
+      "route": "",
+      "module": "",
+      "title": "guia de atencion y propuesta para nuevos clientes | 77 studio",
+      "description": "como atender y presentar los servicios de 77 studio a personas o negocios que recien nos conocen.",
+      "category": "audiencias",
+      "audience": "nuevos-clientes",
+      "keywords": [
+        "primer contacto",
+        "nuevo cliente",
+        "como empezar",
+        "como trabajamos",
+        "diagnostico inicial",
+        "llamada de exploracion",
+        "presupuesto inicial",
+        "desconfianza agencias"
+      ],
+      "content": "playbook: atencion a nuevos clientes & primer contacto1. perfil del interlocutorpersonas o empresas que estan explorando a 77 studio por primera vez.vienen de experiencias frustrantes con freelancers o agencias tradicionales que no entregan a tiempo o no entienden el negocio.necesitan claridad sobre que significa tener a 77 studio como digital studio + creative partner.2. mensaje clave & propuesta de valorun solo equipo integral: no necesitas contratar una agencia de diseno por un lado, un programador por otro y una agencia de pauta por otro.transparencia y velocidad: procesos agiles, entregas medibles y comunicacion directa sin burocracia.alcance internacional: operacion y talento en colombia y estados unidos para trabajar de forma remota sin friccion.3. servicios recomendados para empezardesarrollo o rediseno web (servicios/web): crear o actualizar la pagina web / landing page para que represente profesionalmente a la empresa y convierta visitas en prospectos calificados.estrategia de pauta digital (servicios/marketing): lanzar campanas en meta ads o google ads con creativos de alto impacto para generar demanda inmediata.diagnostico de procesos (servicios/ia-automatizacion): identificar tareas repetitivas en ventas o atencion para conectar con crm y whatsapp.4. proximo paso recomendado (llamada a la accion)ofrecer un diagnostico inicial de 15 minutos (sin costo ni compromiso) para analizar el estado actual de su presencia digital y sugerir la mejor ruta de trabajo.redirigir a whatsapp o formulario de contacto (/contacto)."
+    }
+  }
+];
