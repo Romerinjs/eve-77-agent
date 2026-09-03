@@ -64,6 +64,37 @@ async function runTests() {
   }
   console.log(`   ✅ Documento encontrado: "${resSlug.documents[0]?.title}"`);
 
+  // 7. Test Búsqueda Equipo: Esteban Pantoja (Query conversacional)
+  console.log("\n🧪 [TEST 6] Búsqueda: 'pero no sabes nada de esteban pantoja?'");
+  const resEstebanConv = await searchKnowledge({ query: "pero no sabes nada de esteban pantoja?" });
+  const topEsteban = resEstebanConv.documents[0];
+  console.log(`   Resultados encontrados: ${resEstebanConv.total}`);
+  console.log(`   Top match: ${topEsteban?.slug} (Score: ${topEsteban?.score})`);
+  if (!topEsteban || topEsteban.slug !== "equipo/esteban") {
+    throw new Error(`❌ Falló match esperado para Esteban Pantoja, recibido: ${topEsteban?.slug}`);
+  }
+  console.log("   ✅ Match correcto con equipo/esteban");
+
+  // 8. Test Resiliencia ante Slug Alucinado/Aproximado
+  console.log("\n🧪 [TEST 7] Búsqueda con Slug Alucinado: query='Esteban Pantoja', slug='equipo/esteban-pantoja'");
+  const resEstebanAlucinado = await searchKnowledge({ query: "Esteban Pantoja", slug: "equipo/esteban-pantoja" });
+  const topAlucinado = resEstebanAlucinado.documents[0];
+  console.log(`   Resultados encontrados: ${resEstebanAlucinado.total}`);
+  console.log(`   Top match: ${topAlucinado?.slug} (Score: ${topAlucinado?.score})`);
+  if (!topAlucinado || topAlucinado.slug !== "equipo/esteban") {
+    throw new Error(`❌ Falló match resiliente para slug alucinado, recibido: ${topAlucinado?.slug}`);
+  }
+  console.log("   ✅ Resiliencia confirmada: recuperó equipo/esteban a pesar del slug alucinado");
+
+  // 9. Test Persona Desconocida (debe dar 0 resultados para permitir respuesta corporativa según instrucciones)
+  console.log("\n🧪 [TEST 8] Búsqueda Persona Desconocida: query='Carlos Perez'");
+  const resDesconocido = await searchKnowledge({ query: "Carlos Perez" });
+  console.log(`   Resultados encontrados: ${resDesconocido.total}`);
+  if (resDesconocido.total !== 0) {
+    throw new Error(`❌ Se esperaban 0 resultados para persona inexistente, recibido: ${resDesconocido.total}`);
+  }
+  console.log("   ✅ 0 resultados confirmados para persona no registrada");
+
   console.log("\n🎉 ¡TODOS LOS TESTS PASARON EXITOSAMENTE!");
 }
 

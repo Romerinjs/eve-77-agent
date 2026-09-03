@@ -9,14 +9,14 @@ const inputSchema = z
       .trim()
       .default("")
       .describe(
-        "Términos o palabras clave que se deben buscar en la base de conocimiento oficial de 77 Studio (ej. 'meta ads', 'desarrollo web', 'automatizacion crm', 'precios').",
+        "Términos o palabras clave que se deben buscar en la base de conocimiento oficial de 77 Studio (ej. 'Esteban Pantoja', 'equipo', 'meta ads', 'desarrollo web', 'automatizacion crm', 'precios').",
       ),
     slug: z
       .string()
       .regex(/^[a-zA-Z0-9/_.-]+$/)
       .optional()
       .describe(
-        "Slug o ID exacto del documento (ej. 'servicios/marketing', 'servicios/web', 'audiencias/nuevos-clientes', 'empresa/contacto').",
+        "Slug o ID exacto del documento solo si lo conoces con certeza (ej. 'equipo/esteban', 'servicios/marketing', 'servicios/web', 'audiencias/nuevos-clientes', 'empresa/contacto'). Para búsquedas libres o por nombre, déjalo vacío y usa 'query'.",
       ),
     audience: z
       .enum(["nuevos-clientes", "empresas", "fundadores-startups"])
@@ -38,7 +38,7 @@ const inputSchema = z
 
 export default defineTool({
   description:
-    "Busca información oficial, verídica y vigente en la base de conocimiento de 77 Studio sobre servicios (Marketing, Web, IA & Automatización, Productos Digitales), playbooks de atención por audiencia y datos de contacto. Usa esta herramienta obligatoriamente antes de responder cualquier duda comercial o técnica. NUNCA inventes precios, condiciones o servicios que no existan en los documentos.",
+    "Busca información oficial, verídica y vigente en la base de conocimiento de 77 Studio sobre servicios (Marketing, Web, IA & Automatización, Productos Digitales), equipo de trabajo (ej. Esteban Pantoja), playbooks de atención por audiencia y datos de contacto. Usa esta herramienta obligatoriamente antes de responder cualquier duda sobre la empresa, equipo o servicios. NUNCA inventes precios, miembros de equipo o condiciones que no existan en los documentos.",
   inputSchema,
   async execute(input) {
     return searchKnowledge(input);

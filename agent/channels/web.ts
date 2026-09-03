@@ -1,8 +1,9 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { createMemoryState } from "@chat-adapter/state-memory";
+import { createRedisState } from "@chat-adapter/state-redis";
 import { createWebAdapter } from "@chat-adapter/web";
-import type { Message, Thread } from "chat";
+import { toAiMessages, type Message, type Thread } from "chat";
 import { chatSdkChannel } from "eve/channels/chat-sdk";
 import { generateText, tool } from "ai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
@@ -42,7 +43,26 @@ warmKnowledgeCache()
     console.error("❌ [EVE KNOWLEDGE] Error indexando conocimiento:", err);
   });
 
-// 3. Crear el adaptador Web oficial de Chat SDK
+// 3. Resolver adaptador de estado híbrido (Redis en Producción / RAM en Local)
+function getResolvedStateAdapter() {
+  const redisUrl = process.env.REDIS_URL || process.env.KV_URL;
+  if (redisUrl && (redisUrl.startsWith("redis://") || redisUrl.startsWith("rediss://"))) {
+    try {
+      console.log("💾 [EVE STATE] Persistencia distribuida activada con Upstash Redis.");
+      const state = createRedisState({ url: redisUrl, keyPrefix: "eve-77" });
+      state.connect().catch((err) => {
+        console.error("❌ [EVE STATE] Error conectando a Redis:", err);
+      });
+      return state;
+    } catch (err) {
+      console.warn("⚠️ [EVE STATE] Error iniciando Redis adapter. Usando MemoryState como respaldo:", err);
+    }
+  }
+  console.log("🧠 [EVE STATE] Usando MemoryState (RAM local para desarrollo).");
+  return createMemoryState();
+}
+
+// 4. Crear el adaptador Web oficial de Chat SDK
 export const { bot, channel } = chatSdkChannel({
   userName: "77 Studio Assistant",
   adapters: {
@@ -56,7 +76,7 @@ export const { bot, channel } = chatSdkChannel({
       },
     }),
   },
-  state: createMemoryState(),
+  state: getResolvedStateAdapter(),
 });
 
 // Cache de instrucciones
@@ -72,7 +92,7 @@ function getInstructionsSync(): string {
   return cachedInstructions;
 }
 
-// 4. Manejador unificado de consultas entrantes desde el Chat Web
+// 5. Manejador unificado de consultas entrantes desde el Chat Web
 async function handleWebMessage(thread: Thread, message: Message) {
   const userText = message.text || (message as any).rawText || (message as any).content || "";
   
@@ -111,7 +131,21 @@ async function handleWebMessage(thread: Thread, message: Message) {
   const google = createGoogleGenerativeAI({ apiKey });
   const instructions = getInstructionsSync();
 
-  let turnMessages: any[] = [{ role: "user", content: sanitizedQuery }];
+  // 🔄 Recuperar historial previo del hilo para soporte multiturno
+  let historyMessages: any[] = [];
+  try {
+    const fetchResult = await thread.adapter.fetchMessages(thread.id, { limit: 10 });
+    if (fetchResult && fetchResult.messages && fetchResult.messages.length > 0) {
+      const previousMessages = fetchResult.messages.filter((m: any) => m.id !== message.id);
+      if (previousMessages.length > 0) {
+        historyMessages = await toAiMessages(previousMessages);
+      }
+    }
+  } catch (e) {
+    console.log("ℹ️ [WEB CHAT] Hilo nuevo o sin historial recuperable.");
+  }
+
+  let turnMessages: any[] = [...historyMessages, { role: "user", content: sanitizedQuery }];
   let finalResponseText = "";
 
   try {
@@ -125,11 +159,20 @@ async function handleWebMessage(thread: Thread, message: Message) {
         tools: {
           search_knowledge: tool({
             description:
-              "Busca información oficial en la base de conocimiento de 77 Studio sobre servicios, playbooks, equipo y datos de contacto.",
+              "Busca información oficial, verídica y vigente en la base de conocimiento de 77 Studio sobre servicios, equipo (ej. Esteban Pantoja), playbooks y datos de contacto.",
             inputSchema: z.object({
-              query: z.string().default(""),
-              slug: z.string().optional(),
-              audience: z.enum(["nuevos-clientes", "empresas", "fundadores-startups"]).optional(),
+              query: z
+                .string()
+                .default("")
+                .describe("Términos o palabras clave que se deben buscar (ej. 'Esteban Pantoja', 'meta ads', 'desarrollo web')."),
+              slug: z
+                .string()
+                .optional()
+                .describe("Slug o ID exacto del documento solo si lo conoces con certeza (ej. 'equipo/esteban', 'servicios/web'). Déjalo vacío para búsquedas generales."),
+              audience: z
+                .enum(["nuevos-clientes", "empresas", "fundadores-startups"])
+                .optional()
+                .describe("Perfil del interlocutor para priorizar información relevante según su etapa o tipo de negocio."),
             }),
             execute: async (args) => {
               console.log(`🔍 [TOOL search_knowledge] Ejecutando búsqueda con:`, args);
@@ -147,6 +190,18 @@ async function handleWebMessage(thread: Thread, message: Message) {
         finalResponseText = result.text;
         break;
       }
+    }
+
+    // 🛡️ Si el modelo agotó los turnos de llamadas a herramientas sin emitir texto final,
+    // forzar una síntesis final directa (sin herramientas) con todo el contexto acumulado.
+    if (!finalResponseText || !finalResponseText.trim()) {
+      console.log(`⚠️ [WEB CHAT] Síntesis final requerida tras llamadas a herramientas...`);
+      const forcedResult = await generateText({
+        model: google(modelName),
+        system: instructions,
+        messages: turnMessages,
+      });
+      finalResponseText = forcedResult.text;
     }
 
     console.log(`\n📤 [WEB CHAT OUTBOUND] Enviando respuesta (${finalResponseText.length} caracteres):`);

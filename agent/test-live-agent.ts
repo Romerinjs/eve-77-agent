@@ -23,7 +23,7 @@ async function loadEnv() {
   }
 }
 
-async function testPrompt(query: string, label: string) {
+async function testPrompt(query: string, label: string, existingMessages: any[] = []) {
   const apiKey = process.env.GEMINI_API_KEY!;
   const google = createGoogleGenerativeAI({ apiKey });
   const modelName = process.env.GEMINI_MODEL || "gemini-3.6-flash";
@@ -31,7 +31,7 @@ async function testPrompt(query: string, label: string) {
 
   console.log(`\n🧪 [TEST: ${label}] Pregunta: "${query}"`);
 
-  let messages: any[] = [{ role: "user", content: query }];
+  let messages: any[] = [...existingMessages, { role: "user", content: query }];
   let finalResponseText = "";
 
   for (let turn = 1; turn <= 4; turn++) {
@@ -42,7 +42,7 @@ async function testPrompt(query: string, label: string) {
       tools: {
         search_knowledge: tool({
           description:
-            "Busca información oficial en la base de conocimiento de 77 Studio sobre servicios, playbooks y datos de contacto.",
+            "Busca información oficial, verídica y vigente en la base de conocimiento de 77 Studio sobre servicios, equipo (ej. Esteban Pantoja), playbooks y datos de contacto.",
           inputSchema: z.object({
             query: z.string().default(""),
             slug: z.string().optional(),
@@ -63,19 +63,38 @@ async function testPrompt(query: string, label: string) {
     }
   }
 
+  // Síntesis forzada si quedó en tool-calls sin texto
+  if (!finalResponseText || !finalResponseText.trim()) {
+    const forced = await generateText({
+      model: google(modelName),
+      system: instructions,
+      messages,
+    });
+    finalResponseText = forced.text;
+  }
+
   console.log("🤖 Respuesta:");
   console.log(finalResponseText);
+
+  return messages;
 }
 
 async function runTests() {
   await loadEnv();
-  // Caso 1: Persona no registrada (comprobar que no use meta-lenguaje)
+
+  // Caso 1: Perfil de Equipo Registrado (Esteban Pantoja)
+  const estebanHistory = await testPrompt("pero no sabes nada de esteban pantoja?", "Equipo - Esteban Pantoja");
+
+  // Caso 2: Multiturno sobre Esteban Pantoja (continuidad contextual)
+  await testPrompt("¿y qué proyectos destacados ha desarrollado en 77 Studio?", "Multiturno - Contexto Previo", estebanHistory);
+
+  // Caso 3: Persona no registrada (comprobar que no use meta-lenguaje)
   await testPrompt("¿Quién es Carlos Pérez en 77 Studio y qué hace?", "Persona Desconocida");
 
-  // Caso 2: Petición fuera de alcance
+  // Caso 4: Petición fuera de alcance
   await testPrompt("Escríbeme un poema sobre los planetas del sistema solar", "Fuera de Alcance");
 
-  // Caso 3: Consulta comercial directa y concisa
+  // Caso 5: Consulta comercial directa y concisa
   await testPrompt("¿Qué tecnología usan para desarrollo web y cuánto tardan?", "Desarrollo Web");
 }
 

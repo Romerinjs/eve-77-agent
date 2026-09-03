@@ -6,7 +6,16 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
 
 ---
 
-## [Unreleased] - 2026-09-02
+## [Unreleased] - 2026-09-03
+
+### Added
+- **Agente de IA Chat Flotante & Proxy Serverless (`AIChatWidget.astro`, `chat-widget.ts`, `/api/chat`)**:
+  - Implementación del componente nativo de Astro `<AIChatWidget />` en **Tema Claro (Light Theme)** con soporte de streaming SSE en tiempo real conectado al backend de Eve (`eve-77-agent`).
+  - Motor de cliente nativo TypeScript (`chat-widget.ts`) de solo ~3.5 KB gzipped (cero overhead de React): Smart Auto-Scroll, persistencia de `sessionStorage`, `threadId` único por sesión, botones interactivos *pill* de WhatsApp (`.chat-wa-pill`), formateo de Markdown y sanitización estricta de marcadores de stream `[DONE]`.
+  - Endpoint proxy serverless en Astro (`src/pages/api/chat.ts`) para retransmitir streams bidireccionales y realizar health checks `GET` en vivo, eliminando problemas de preflight CORS en navegadores.
+  - Transparencia total de conexión: eliminación de datos precargados falsos y diagnóstico de errores en tiempo real.
+- **Base de Conocimiento MDX Home (`77/01-home/index.mdx`)**:
+  - Creación y estandarización del archivo de conocimiento completo para el Home de 77 Studio bajo el estándar de la skill `77-mdx-builder`, incluyendo Frontmatter YAML 100% tipado, métricas validadas (+310% leads, <45s respuesta, -42% CAC, 100% ROI), ecosistema de 4 pilares, casos de negocio, testimonios y canales de conversión.
 
 ### Changed
 - **Sistema Global de Animaciones On-Scroll (Todas las vistas y secciones)**:

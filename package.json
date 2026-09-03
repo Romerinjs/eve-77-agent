@@ -17,6 +17,7 @@
   "dependencies": {
     "@ai-sdk/google": "^4.0.63",
     "@chat-adapter/state-memory": "^4.39.0",
+    "@chat-adapter/state-redis": "^4.39.0",
     "@chat-adapter/web": "^4.39.0",
     "ai": "^7.0.82",
     "chat": "^4.39.0",

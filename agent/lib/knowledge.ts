@@ -205,8 +205,30 @@ function scoreDocument(
   doc: CachedDocument,
   terms: string[],
   targetAudience?: string,
+  targetSlug?: string,
 ): number {
   let score = 0;
+  let matchingTermsCount = 0;
+
+  // Boost de Coincidencia de Slug / Route / Module
+  if (targetSlug) {
+    if (
+      doc.search.id === targetSlug ||
+      doc.search.slug === targetSlug ||
+      doc.search.route === targetSlug ||
+      doc.search.route === `/${targetSlug}` ||
+      doc.search.module === targetSlug
+    ) {
+      score += 50; // Match exacto
+    } else if (
+      doc.search.slug.includes(targetSlug) ||
+      targetSlug.includes(doc.search.slug) ||
+      doc.search.id.includes(targetSlug) ||
+      targetSlug.includes(doc.search.id)
+    ) {
+      score += 20; // Match parcial
+    }
+  }
 
   // Boost de Audiencia
   if (targetAudience) {
@@ -222,7 +244,13 @@ function scoreDocument(
     return score > 0 ? score : 1;
   }
 
+  const stopWords = new Set(["de", "la", "el", "en", "un", "una", "y", "o", "a", "al", "del", "que", "es", "no", "si", "por", "para", "con", "los", "las"]);
+
   for (const term of terms) {
+    if (stopWords.has(term)) {
+      continue;
+    }
+
     let termScore = 0;
 
     // Keywords = Peso Máximo (8x)
@@ -254,7 +282,16 @@ function scoreDocument(
       termScore += 1;
     }
 
-    score += termScore;
+    if (termScore > 0) {
+      matchingTermsCount++;
+      score += termScore;
+    }
+  }
+
+  // Descartar coincidencias incidentales de ruido (ej. 1 sola palabra de 2+ términos que solo aparece de pasada en el texto plano)
+  const significantTerms = terms.filter((t) => t.length > 2 && !stopWords.has(t));
+  if (significantTerms.length >= 2 && matchingTermsCount < 2 && score <= 2 && !targetSlug) {
+    return 0;
   }
 
   return score;
@@ -276,20 +313,33 @@ export async function searchKnowledge(input: SearchKnowledgeInput = {}) {
   const targetSlug = input?.slug ? normalize(input.slug) : undefined;
   const targetAudience = input?.audience ? normalize(input.audience) : undefined;
 
-  const matches = documents
-    .filter((doc) => {
-      if (!targetSlug) return true;
-      return (
+  // Si se pasó un slug pero no query, o un slug aproximado, extraer términos del slug
+  const allTerms = [...terms];
+  if (targetSlug && terms.length === 0) {
+    const slugTerms = targetSlug.split(/[/_-]/).filter((t) => t.length > 2);
+    allTerms.push(...slugTerms);
+  }
+
+  // Si se busca un slug exacto sin query, priorizar si existe coincidencia exacta
+  let candidateDocs = documents;
+  if (targetSlug && terms.length === 0) {
+    const exactMatches = documents.filter(
+      (doc) =>
         doc.search.id === targetSlug ||
         doc.search.slug === targetSlug ||
         doc.search.route === targetSlug ||
         doc.search.route === `/${targetSlug}` ||
-        doc.search.module === targetSlug
-      );
-    })
+        doc.search.module === targetSlug,
+    );
+    if (exactMatches.length > 0) {
+      candidateDocs = exactMatches;
+    }
+  }
+
+  const matches = candidateDocs
     .map((document) => ({
       document,
-      score: scoreDocument(document, terms, targetAudience),
+      score: scoreDocument(document, allTerms, targetAudience, targetSlug),
     }))
     .filter(({ score }) => score > 0)
     .sort((a, b) => b.score - a.score || a.document.slug.localeCompare(b.document.slug));
