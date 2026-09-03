@@ -9,6 +9,7 @@
     "start": "npx eve start --port 3007",
     "chat": "tsx agent/chat-cli.ts",
     "eval": "npx eve eval",
+    "test:guards": "tsx agent/lib/guardrails.test.ts",
     "test:knowledge": "tsx agent/lib/knowledge.test.ts",
     "test:live": "tsx agent/test-live-agent.ts",
     "typecheck": "tsc --noEmit"

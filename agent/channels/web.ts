@@ -8,6 +8,7 @@ import { generateText, tool } from "ai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { z } from "zod";
 import { searchKnowledge, warmKnowledgeCache } from "../lib/knowledge.js";
+import { checkGuardrails } from "../lib/guardrails.js";
 
 // Desactivar warnings internos del SDK
 process.env.AI_SDK_LOG_WARNINGS = "false";
@@ -85,6 +86,16 @@ async function handleWebMessage(thread: Thread, message: Message) {
   console.log(`🧵 Thread ID: ${thread.id}`);
   console.log(`======================================================`);
 
+  // 🛡️ Aplicar Guardrails y Rate Limiting antes de consumir tokens de LLM
+  const guard = checkGuardrails(thread.id, userText);
+  if (!guard.allowed) {
+    console.warn(`🛡️ [GUARDRAIL APPLIED] Acción: ${guard.reason} para hilo ${thread.id}`);
+    await thread.post(guard.message);
+    return;
+  }
+
+  const sanitizedQuery = guard.sanitizedText;
+
   const apiKey =
     process.env.GEMINI_API_KEY ||
     process.env.GOOGLE_GENERATIVE_AI_API_KEY ||
@@ -100,7 +111,7 @@ async function handleWebMessage(thread: Thread, message: Message) {
   const google = createGoogleGenerativeAI({ apiKey });
   const instructions = getInstructionsSync();
 
-  let turnMessages: any[] = [{ role: "user", content: userText }];
+  let turnMessages: any[] = [{ role: "user", content: sanitizedQuery }];
   let finalResponseText = "";
 
   try {
