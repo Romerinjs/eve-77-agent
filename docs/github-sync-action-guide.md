@@ -95,10 +95,11 @@ jobs:
         with:
           node-version: 24
 
-      - name: 5. Instalar dependencias y validar motor de conocimiento
+      - name: 5. Instalar dependencias, empaquetar bundle y validar motor
         working-directory: agent-repo
         run: |
           npm ci
+          npm run bundle:knowledge
           npm run test:knowledge
           npm run typecheck
 

@@ -1,0 +1,946 @@
+{
+  "name": "Agente",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "4567d618-5896-434a-af7e-7d5c3b92bc65",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1104,
+        288
+      ],
+      "id": "a99fe7e5-0810-4c96-86ca-765f96fb6b87",
+      "name": "Webhook",
+      "webhookId": "4567d618-5896-434a-af7e-7d5c3b92bc65"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"instance.server_url\": \"{{ $json.webhookUrl }}\",\n  \"message.message_id\": \"{{ $json.body.message.id }}\",\n  \"message.chat_id\": \"{{ $json.body.conversation.id }}\",\n  \"message.content_type\": \"{{ $json.body.message.type }}\",\n  \"message.content\": \"{{ $json.body.message.kapso?.transcript?.text || $json.body.message.text?.body }}\",\n  \"message.timestamp\": \"{{ $json.body.conversation.updated_at }}\",\n  \"user.name\": \"{{ $json.body.conversation.contact_name }}\",\n  \"user.phone\": \"{{ $json.body.conversation.phone_number }}\",\n  \"user.phoneId\": \"{{ $json.body.conversation.phone_number_id }}\"\n  \"image\" : {{ $json.body.message.type === 'image' ? $json.body.message.kapso.media_url : \"\" }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -896,
+        288
+      ],
+      "id": "79908816-6d22-4bfd-b1c8-98d84ebfe68a",
+      "name": "Set Fields"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "buffer_acumulado",
+        "key": "={{ $('Set Fields').item.json.message.chat_id }}_buffer",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        48,
+        400
+      ],
+      "id": "9adfaf89-41c9-442b-9dc2-71b126714705",
+      "name": "1. Ver si hay algo1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "redis": {
+          "id": "sxekuq348veH0XRh",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "={{ $('Set Fields').item.json.message.chat_id }}_buffer",
+        "value": "==\"text\": \"{{ $json.buffer_acumulado ? $json.buffer_acumulado + '\\n' + ($node[\"Set Fields\"].json.message.content || \"\")  : ($node[\"Set Fields\"].json.message.content ) }}\",\n\"description\": \"{{ $if($('Analyze an image').isExecuted, $('Analyze an image').item.json.content.parts[0].text, \"\") }}\""
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        240,
+        400
+      ],
+      "id": "bfffa6f5-1f22-498b-92c1-9041a1a0f7cc",
+      "name": "2. Acumular Texto1",
+      "credentials": {
+        "redis": {
+          "id": "sxekuq348veH0XRh",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "={{ $('Set Fields').item.json.message.chat_id }}_ultimo_id",
+        "value": "={{ $('Set Fields').item.json.message.message_id }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        448,
+        400
+      ],
+      "id": "8c73d438-645f-49f4-9efb-36100913b9b6",
+      "name": "3. Marcar ID Ganador1",
+      "credentials": {
+        "redis": {
+          "id": "sxekuq348veH0XRh",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        640,
+        400
+      ],
+      "id": "ba427486-5289-46b0-846f-1dc97c79145e",
+      "name": "4. Esperar ráfaga1",
+      "webhookId": "cf7f1170-052d-4f44-921b-4125efa37db1"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "id_en_redis",
+        "key": "={{ $('Set Fields').item.json.message.chat_id }}_ultimo_id",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        848,
+        400
+      ],
+      "id": "f58495c9-3b74-45b7-9988-809bdedd06e1",
+      "name": "5. ¿Soy el último?1",
+      "credentials": {
+        "redis": {
+          "id": "sxekuq348veH0XRh",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "compare",
+              "leftValue": "={{ $json.id_en_redis }}",
+              "rightValue": "={{ $('Set Fields').item.json.message.message_id }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        400
+      ],
+      "id": "1dca9512-468c-4db4-92c2-2c3b8dc1ff01",
+      "name": "6. ¿Pasar al Agente?1"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "texto_completo",
+        "key": "={{ $('Set Fields').item.json.message.chat_id }}_buffer",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        1248,
+        288
+      ],
+      "id": "bcf50479-e6c0-403e-a345-22217e05288c",
+      "name": "7. Obtener Texto Final1",
+      "credentials": {
+        "redis": {
+          "id": "sxekuq348veH0XRh",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Obtenemos el texto acumulado de Redis\nlet rawText = $input.first().json.texto_completo || \"\";\n\n// 2. Rescatamos la descripción de la imagen PRIMERO (si existe y no está vacía)\nlet description = \"\";\nconst descriptionMatch = rawText.match(/\"description\":\\s*\"([^\"]+)\"/);\nif (descriptionMatch && descriptionMatch[1].trim() !== \"\") {\n  description = descriptionMatch[1];\n}\n\n// 3. Limpieza extrema del texto (Quitamos todo el código basura de Redis)\nlet content = rawText\n  .replace(/=\"text\":/g, \"\")                 // Quita la llave rara inicial\n  .replace(/\"text\":/g, \"\")                  // Quita etiquetas \"text\": repetidas\n  .replace(/\"description\":\\s*\"[^\"]*\"/g, \"\") // Borra la parte de description para no mezclarla\n  .replace(/\\\\n/g, \" \")                     // Reemplaza los \\n literales por espacios\n  .replace(/\\n/g, \" \")                      // Reemplaza saltos de línea reales\n  .replace(/=/g, \"\")                        // Borra signos de igual sueltos\n  .replace(/\"/g, \"\")                        // Elimina TODAS las comillas sobrantes\n  .replace(/\\s+/g, \" \")                     // Condensa múltiples espacios en uno solo\n  .trim();\n\n// Si al final quedó una coma suelta por la unión de Redis, la quitamos\ncontent = content.replace(/,$/, \"\").trim();\n\n// 4. Recuperamos los datos del Set Fields\nconst datosIniciales = $('Set Fields').first().json;\n// Calculamos la hora exacta de Colombia\nconst fechaCol = new Date(new Date().toLocaleString(\"en-US\", {timeZone: \"America/Bogota\"}));\nconst h = fechaCol.getHours();\nconst m = fechaCol.getMinutes();\n\nlet saludo = \"Buenas noches\"; // Por defecto (cubre de 6:31pm a 3:59am)\nif (h >= 4 && h < 12) {\n    saludo = \"Buenos días\";\n} else if (h >= 12 && (h < 18 || (h === 18 && m <= 30))) {\n    saludo = \"Buenas tardes\";\n}\n\nreturn {\n  instance: datosIniciales.instance,\n  message: {\n    ...datosIniciales.message,\n    // ¡Aquí ya irá tu texto súper limpio!\n    content: content, \n    description: description || undefined,\n    timestamp: new Date().toISOString(),\n    saludo: saludo\n  },\n  user: datosIniciales.user,\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        288
+      ],
+      "id": "05f25334-ac07-4d66-a2c7-7cc0de5da665",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "imageUrls": "={{ $json.image }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -384,
+        112
+      ],
+      "id": "cdd51c24-314e-486a-a213-ce81358a4ad7",
+      "name": "Analyze an image",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "uiFzaIDsebX6pWwP",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6f483c8f-11e1-4078-93b8-c8a342bc6a50",
+              "leftValue": "={{ $json.image }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -688,
+        288
+      ],
+      "id": "c274d9a3-3b59-469d-bf52-95845ab45077",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -160,
+        304
+      ],
+      "id": "f6f70591-d1ad-4fa9-9f35-9e21662296bf",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Aquí tienes la interacción más reciente del prospecto:\n\nMensaje de texto/audio: \n{{ $json.message.content || \"\"}}\n\nImagen adjunta (descripción del sistema): \n\n{{ $json.message.description || \"\"}}\n\nSaludo: \n\n{{ $json.message.saludo }}\n\nEstructura de salida de información:\n{ \nphone:{{ $json.user.phone }}\nmessage: respuesta generada por ti, aquí no envíes la url\nurl: en caso de qué tu respuesta tenga una url\nmensaje_boton: un mensaje referente a si la url es de un google calendar o de la guia ejemplo si es calendar seria \"Agenda tu reunión \" y si es de guia seria \"Lee la Guía\"\n}",
+        "options": {
+          "systemMessage": "Eres SOFIA, Asistente Virtual y SDR de 77 Studio. Tu misión es atender prospectos, entender sus necesidades, resolver dudas usando EXCLUSIVAMENTE tu base de conocimiento, y calificar si son aptos para nuestros servicios.\n\nREGLAS ESTRICTAS DE COMUNICACIÓN (ESTILO WHATSAPP):\n1. SÉ SÚPER BREVE: ¡PROHIBIDO enviar párrafos largos! Tus respuestas deben tener máximo 2 o 3 líneas. Usa un tono natural, empático y humano.\n2. PRESENTACIÓN INICIAL: Solo di tu nombre y tu cargo, asistente de 77Studio , además ten en cuenta el saludo. Ejemplo: \"¡Hola! Soy Sofia, de 77studio buenos día. ¿En qué puedo ayudarte hoy?\".\n3. UNA IDEA POR MENSAJE: No expliques todos los servicios de golpe. Responde únicamente a lo que el usuario acaba de preguntar.\n4. SIEMPRE TERMINA CON UNA PREGUNTA: El 90% de tus mensajes deben terminar con una pregunta corta para guiar la conversación (ej. \"¿De qué trata tu negocio?\", \"¿Has invertido en publicidad antes?\").\n5. CERO ALUCINACIONES: Para hablar de precios, servicios o protocolos, BUSCA SIEMPRE en tus documentos (embeddings). Si el dato no está ahí, di honestamente que no lo tienes a la mano pero que el equipo lo revisará en la llamada.\n6. MANUAL DE ESTILO: Aplica estrictamente el tono y estilo indicado en tus documentos internos sobre \"cómo responder\".\n\nLÓGICA DE CALIFICACIÓN (PASO A PASO):\nDurante la charla, debes averiguar sutilmente el estado del negocio del prospecto y su presupuesto mensual para marketing.\n\n- PROSPECTO CALIFICADO (Negocio activo y presupuesto de $500 USD o más): \nTu objetivo es agendar una reunión. Felicítalos por su crecimiento y envíales este enlace: \n\"¡Excelente! Me encantaría que hablemos en detalle. Elige el horario que mejor te quede aquí: \n\"https://calendar.app.google/9ygzNzhLH5Gy7iwz6\"\n\n\n- PROSPECTO NO CALIFICADO (Negocio sin iniciar o presupuesto menor a $500 USD): \nAplica el Protocolo Ruta de Comunidad. Despídete amablemente, explica que la publicidad requiere estructura previa y entrégales el recurso gratuito: \n\"Para empezar con el pie derecho, te comparto esta guía gratuita que te ayudará a estructurar tus bases: \"guia.77studio.co\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2048,
+        288
+      ],
+      "id": "dd4e379d-158f-4200-8bee-93bd90f980c5",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3-flash-preview",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1920,
+        576
+      ],
+      "id": "aff987c0-1b67-424b-b4a3-c290fa0339d1",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "uiFzaIDsebX6pWwP",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Code in JavaScript1').first().json.user.phoneId }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        2032,
+        576
+      ],
+      "id": "9d729ab0-c95f-4469-be55-46d0b15d11d0",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "A0GnHV1rZH2JRV1M",
+          "name": "Postgres account rag"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Usa esta herramienta para buscar información oficial de la agencia 77 Studio. Contiene el portafolio de servicios (Meta Ads, Google Ads, Diseño Web, Automatización), los requisitos mínimos de los clientes, los precios, el presupuesto mínimo requerido de $500 USD, las reglas de calificación comercial y la lógica para saber si un prospecto está calificado o si debe ser enviado a la Ruta de Comunidad. Consúltala siempre que el usuario pregunte por servicios, precios, o cómo trabajamos.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        2176,
+        496
+      ],
+      "id": "ff16b4e1-807c-477c-97fe-967ddc50acf9",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "0G7S2Nb5RiKvS8Tp",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-embedding-001"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2272,
+        704
+      ],
+      "id": "f29f6164-a0fd-4784-a883-37479a49b9c8",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "uiFzaIDsebX6pWwP",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kapso.ai/meta/whatsapp/v24.0/893958243809432/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "c177ec5344524a645fe737963102134a758705866bfb1169bb6995cbfea3967d"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"messaging_product\": \"whatsapp\",\n  \"to\": \"{{ $json.phone }}\",\n  \"type\": \"text\",\n  \"text\": {\n    \"body\": \"{{ $json.message }}\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2944,
+        192
+      ],
+      "id": "3ee1700f-c1a9-49ee-aa1a-862575877790",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "={{ $('Code in JavaScript1').item.json.message.chat_id }}_buffer"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        1408,
+        512
+      ],
+      "id": "7090a1b6-94d5-42b4-a333-86a13de905b5",
+      "name": "Redis",
+      "credentials": {
+        "redis": {
+          "id": "sxekuq348veH0XRh",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "={{ $('Code in JavaScript1').item.json.message.message_id }}_buffer"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        1536,
+        640
+      ],
+      "id": "a3799bf4-1043-4254-a359-9592d23c5dd7",
+      "name": "Redis1",
+      "credentials": {
+        "redis": {
+          "id": "sxekuq348veH0XRh",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "050681ea-0e7d-439e-9722-3cc05edf0fc5",
+              "leftValue": "={{ $json.message.content }}",
+              "rightValue": "\"\"",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1648,
+        272
+      ],
+      "id": "f7902883-22b8-4720-9e3b-1024c200f4be",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Obtenemos el texto que te arrojó la IA \nlet aiResponse = $input.first().json.output || \"\";\n\n// 2. Le quitamos la \"basura\" de Markdown (```json y ```)\nlet cleanText = aiResponse.replace(/```json/gi, \"\").replace(/```/g, \"\").trim();\n\n// 3. Convertimos ese texto limpio en un objeto real de JSON\nlet parsedData = {};\ntry {\n  parsedData = JSON.parse(cleanText);\n} catch (error) {\n  throw new Error(\"La IA no devolvió un JSON válido: \" + cleanText);\n}\n\n// 4. EL TRUCO PARA LOS SALTOS DE LÍNEA:\n// Convertimos los \"Enters\" reales en el código \"\\n\" literal.\n// Así, n8n no se rompe y Kapso lo traduce como un salto de línea en WhatsApp.\nlet mensajeSeguro = parsedData.message.replace(/\\r?\\n/g, \"\\\\n\");\n\n// 5. Entregamos los datos separados a n8n\nreturn {\n  phone: parsedData.phone,\n  message: mensajeSeguro,\n  url: parsedData.url,\n  boton: parsedData.mensaje_boton\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2400,
+        288
+      ],
+      "id": "e8630f02-d845-4311-94ac-5ae5b3b08a87",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "9eeb55d0-6b68-4529-9911-7a9f9aa5be61",
+              "leftValue": "={{ $json.url }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2608,
+        288
+      ],
+      "id": "bccf8141-f610-4c04-bb26-6a9a4185d219",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kapso.ai/meta/whatsapp/v24.0/893958243809432/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "c177ec5344524a645fe737963102134a758705866bfb1169bb6995cbfea3967d"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"messaging_product\": \"whatsapp\",\n  \"to\": \"{{ $json.phone }}\",\n  \"type\": \"interactive\",\n  \"interactive\": {\n    \"type\": \"cta_url\",\n    \"body\": {\n      \"text\": \"{{ $json.message }}\"\n    },\n    \"action\": {\n      \"name\": \"cta_url\",\n      \"parameters\": {\n        \"display_text\": \"{{ $json.boton }}\",\n        \"url\": \"{{ $json.url }}\"\n      }\n    }\n  }\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2896,
+        368
+      ],
+      "id": "8d2f322e-bcc1-4531-b497-3621555db8ed",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kapso.ai/meta/whatsapp/v24.0/893958243809432/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "c177ec5344524a645fe737963102134a758705866bfb1169bb6995cbfea3967d"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"messaging_product\": \"whatsapp\",\n  \"to\": \"{{ $json.phone }}\",\n  \"type\": \"text\",\n  \"text\": {\n    \"body\": \"{{ $json.message }}\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2976,
+        704
+      ],
+      "id": "1de4feaf-6615-4340-bfd8-d99f8b36c6ed",
+      "name": "HTTP Request2"
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.77studio.co",
+            "user-agent": "Ruby",
+            "content-length": "1208",
+            "accept": "*/*",
+            "accept-encoding": "gzip;q=1.0,deflate;q=0.6,identity;q=0.3",
+            "baggage": "sentry-trace_id=5d5801bb716648ddb7bb90549d0d067f,sentry-environment=production,sentry-release=22e2c47f2decc2512c4cfbb8e0a68caf5f66aa86,sentry-public_key=8ca2cccc6fc9b2350baf295c391c484b",
+            "content-type": "application/json",
+            "sentry-trace": "5d5801bb716648ddb7bb90549d0d067f-a67efc0f2930446d",
+            "x-forwarded-for": "74.220.48.249",
+            "x-forwarded-host": "n8n.77studio.co",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "2ae6ac8b4b79",
+            "x-idempotency-key": "0997293ce2cbe7657727899d72e738e23393f1e4b6ac94138c0ec8f7e0ea6c3f",
+            "x-real-ip": "74.220.48.249",
+            "x-webhook-event": "whatsapp.message.received",
+            "x-webhook-payload-version": "v2",
+            "x-webhook-signature": "823484101d0da208fa20e26699dab84fcbcae0a0a87680b7a338bd64c9e57de9"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "message": {
+              "context": null,
+              "from": "573168858161",
+              "id": "wamid.HBgMNTczMTY4ODU4MTYxFQIAEhggQUNDQTE4NDUzM0FFMzdBMDNDOERFQzZBQzZFNTczN0QA",
+              "kapso": {
+                "direction": "inbound",
+                "status": "delivered",
+                "processing_status": "pending",
+                "has_media": false,
+                "origin": "cloud_api",
+                "content": "Tengo un negocio de café y tengo un presupuesto de 10 usd"
+              },
+              "text": {
+                "body": "Tengo un negocio de café y tengo un presupuesto de 10 usd"
+              },
+              "timestamp": "1774402512",
+              "type": "text"
+            },
+            "conversation": {
+              "id": "8a92c71c-15bc-4105-bdc4-28c002e71746",
+              "contact_name": "Esteban",
+              "created_at": "2026-03-24T22:32:26-03:00",
+              "kapso": {
+                "messages_count": 3,
+                "last_message_id": "wamid.HBgMNTczMTY4ODU4MTYxFQIAEhggQUNDQTE4NDUzM0FFMzdBMDNDOERFQzZBQzZFNTczN0QA",
+                "last_message_type": "text",
+                "last_message_timestamp": "2026-03-25T01:35:12.704896Z",
+                "last_message_text": "Tengo un negocio de café y tengo un presupuesto de 10 usd",
+                "last_inbound_at": "2026-03-25T01:35:12.704896Z",
+                "last_outbound_at": "2026-03-25T01:32:45.096387Z"
+              },
+              "last_active_at": "2026-03-24T22:35:12-03:00",
+              "metadata": {},
+              "phone_number": "573168858161",
+              "phone_number_id": "893958243809432",
+              "status": "active",
+              "updated_at": "2026-03-24T22:35:12-03:00"
+            },
+            "is_new_conversation": false,
+            "phone_number_id": "893958243809432"
+          },
+          "webhookUrl": "https://n8n.77studio.co/webhook/4567d618-5896-434a-af7e-7d5c3b92bc65",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Set Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Fields": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1. Ver si hay algo1": {
+      "main": [
+        [
+          {
+            "node": "2. Acumular Texto1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2. Acumular Texto1": {
+      "main": [
+        [
+          {
+            "node": "3. Marcar ID Ganador1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3. Marcar ID Ganador1": {
+      "main": [
+        [
+          {
+            "node": "4. Esperar ráfaga1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4. Esperar ráfaga1": {
+      "main": [
+        [
+          {
+            "node": "5. ¿Soy el último?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "5. ¿Soy el último?1": {
+      "main": [
+        [
+          {
+            "node": "6. ¿Pasar al Agente?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "6. ¿Pasar al Agente?1": {
+      "main": [
+        [
+          {
+            "node": "7. Obtener Texto Final1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "7. Obtener Texto Final1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Redis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze an image": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Analyze an image",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "1. Ver si hay algo1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        []
+      ]
+    },
+    "Redis": {
+      "main": [
+        [
+          {
+            "node": "Redis1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "77612359-eadb-4457-8496-8c2bf2de44e9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f9a751c247921ccb7b83c84fb9371a9c5d974fffb5263a52eefb87a0d7be0fe1"
+  },
+  "id": "WoXTtHVEdLFqtYPJ",
+  "tags": []
+}

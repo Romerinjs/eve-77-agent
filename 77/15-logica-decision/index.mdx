@@ -1,0 +1,129 @@
+---
+title: "77 Studio - Lógica de Decisión Técnica & Reglas Operativas (n8n + Gemini)"
+description: "Árbol de decisión, variables críticas de evaluación, reglas de persistencia, activación de CTAs a WhatsApp (+57 314 8490955) y restricciones operativas absolutas."
+module: "15-logica-decision"
+route: "/comercial/logica-decision"
+whatsappMessage: "Hola 77 Studio 👋 Quisiera consultar sobre la arquitectura técnica y lógica de automatización de su agente comercial."
+slug: "comercial/logica-decision"
+category: "tecnologia"
+audience: "empresas"
+keywords:
+  - logica de decision
+  - reglas operativas
+  - arbol de decision
+  - sdr automatizado n8n
+  - variables criticas
+  - reglas de persistencia
+  - protocolo ruta comunidad
+  - restricciones absolutas
+  - pseudocodigo sdr
+  - condiciones de terminacion
+  - cta whatsapp 573148490955
+related_slugs:
+  - "audiencias/calificacion-comercial"
+  - "comercial/guia-conversacional"
+  - "servicios/ia-automatizacion"
+  - "servicios/portafolio-icp"
+  - "tecnologia/setup"
+---
+
+# Lógica de Decisión y Reglas Operativas (SDR Automatizado)
+
+Documento de especificación técnica y lógica de decisión para la orquestación del **Agente Comercial IA de 77 Studio SAS** en entornos de ejecución automatizados (n8n + Gemini / Eve Runtime).
+
+---
+
+## 1. Principio Operativo General
+
+El sistema opera bajo una regla de triaje y activación de CTAs:
+* **Si cumple con los criterios mínimos:** Activar el CTA prioritario hacia WhatsApp al **+57 314 8490955** ([💬 Chatear por WhatsApp](https://wa.me/573148490955?text=Hola%2077%20Studio%20👋%20Quisiera%20agendar%20una%20sesión%20de%20diagnóstico%20con%20el%20equipo.)) y agendar llamada estratégica por Meet.
+* **Si no cumple con los criterios mínimos:** Activar el Protocolo de Ruta de Comunidad (guía educativa descargable) y cerrar cordialmente.
+* **Si hay dudas complejas o preguntas de precios:** Incitar al CTA a WhatsApp para atención directa con un consultor humano.
+
+---
+
+## 2. Variables Críticas de Evaluación
+
+El motor de decisión evalúa obligatoriamente las siguientes variables:
+
+| Variable | Tipo | Condición de Aprobación |
+| :--- | :--- | :--- |
+| `negocio_activo` | Booleano | **SI** (empresa u operación en marcha). |
+| `ha_vendido_antes` | Booleano | **SI** (producto o servicio validado comercialmente). |
+| `disposicion_inversion` | Booleano | **SI** (compromiso para invertir en crecimiento digital). |
+| `capacidad_operativa` | Booleano | **SI** (equipo disponible para atender leads). |
+| `interes_crecimiento` | Enum | **ALTO** (deseo explícito de estructurar y escalar su captación). |
+
+---
+
+## 3. Árbol de Decisión Principal
+
+### Caso A: Negocio No Activo / En Etapa de Idea
+* **Condición:** `negocio_activo == NO` o `ha_vendido_antes == NO`.
+* **Acción:** No agendar llamada comercial. Redirigir a recurso educativo. Cerrar conversación con profesionalismo.
+
+### Caso B: Sin Disposición de Inversión
+* **Condición:** `disposicion_inversion == NO` (no cuenta con capacidad para invertir en estrategia o pauta).
+* **Acción:** No negociar, no ofrecer descuentos ni tarifas reducidas. Activar Ruta de Comunidad y compartir guía descargable.
+
+### Caso C: Negocio Activo + Disposición de Inversión (Calificado)
+* **Condición:** `negocio_activo == SI` && `disposicion_inversion == SI` && `interes == ALTO`.
+* **Acción:** Confirmar intención, activar CTA a WhatsApp (**+57 314 8490955**), proponer agendamiento por Meet y formalizar la cita con los líderes de 77 Studio.
+
+### Caso D: Evasión de Preguntas de Diagnóstico o Insistencia en Precios
+* **Condición:** El prospecto evita responder las preguntas de calificación o solo insiste en pedir precios sin contexto.
+* **Acción:** Explicar que los proyectos se cotizan a la medida en llamada de diagnóstico. Reintentar máximo **2 veces**. Si persiste la evasión, invitar al WhatsApp y cerrar cordialmente.
+
+### Caso E: Dudas Técnicas Complejas o Consultas No Catalogadas
+* **Condición:** Preguntas arquitectónicas, operativas o comerciales que superan los documentos indexados.
+* **Acción:** Activar el CTA directo a WhatsApp: `[💬 Consultar por WhatsApp](https://wa.me/573148490955?text=Hola%2077%20Studio%20👋%20Tengo%20una%20consulta%20técnica%20sobre%20mi%20proyecto.)`.
+
+---
+
+## 4. Reglas de Persistencia y Límites de Interacción
+
+* **Reintentos Permitidos:** Reformular una pregunta clave un máximo de **2 veces** si la respuesta no es clara.
+* **Límite de Inactividad:** No enviar más de 2 mensajes consecutivos si el prospecto no responde.
+* **Sin Presión:** Jamás insistir ni rogar por un agendamiento.
+
+---
+
+## 5. Condiciones de Terminación de la Conversación
+
+El agente finaliza formalmente la interacción cuando:
+1. Se concreta el agendamiento o se redirige a WhatsApp.
+2. Se entrega el recurso educativo de la Ruta de Comunidad.
+3. El prospecto deja de responder tras 2 intentos de seguimiento.
+4. El prospecto confirma explícitamente que no desea continuar.
+
+---
+
+## 6. Restricciones Operativas Absolutas
+
+El agente **TIENE PROHIBIDO**:
+* ❌ Dar precios, estimaciones financieras, tarifas fijas o rangos de costo.
+* ❌ Garantizar ventas, contratos cerrados o prometer retorno de inversión (ROI) fijo.
+* ❌ Negociar o rebajar honorarios de consultoría.
+* ❌ Enviar propuestas formales o contratos legales.
+* ❌ Extender conversaciones no comerciales fuera del alcance de 77 Studio.
+
+---
+
+## 7. Pseudocódigo Operativo del Motor de Decisión
+
+```typescript
+if (!negocio_activo || !ha_vendido_antes) {
+  activarRutaComunidad("Negocio en etapa inicial. Compartir guía educativa.");
+  cerrarConversacion();
+} else if (!disposicion_inversion) {
+  activarRutaComunidad("Sin disposición de inversión. Compartir guía educativa.");
+  cerrarConversacion();
+} else if (negocio_activo && disposicion_inversion && interes_crecimiento === "ALTO") {
+  activarCtaWhatsApp("+573148490955");
+  proponerLlamadaEstrategica("Meet de diagnóstico de 15 minutos.");
+} else if (duda_compleja) {
+  activarCtaWhatsApp("+573148490955", "Consulta con especialista.");
+} else if (evasion_preguntas >= 2) {
+  cerrarConversacion("Cierre profesional por falta de datos para diagnóstico.");
+}
+```

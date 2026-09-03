@@ -193,14 +193,14 @@ async function handleWebMessage(thread: Thread, message: Message) {
     }
 
     // 🛡️ Si el modelo agotó los turnos de llamadas a herramientas sin emitir texto final,
-    // forzar una síntesis final directa (sin herramientas) para redactar una respuesta natural y corporativa.
+    // forzar una síntesis final directa (sin herramientas) con la voz de Sofía (3 a 5 líneas, comercial).
     if (!finalResponseText || !finalResponseText.trim()) {
       console.log(`⚠️ [WEB CHAT] Síntesis final requerida tras llamadas a herramientas...`);
       try {
         const forcedResult = await generateText({
           model: google(modelName),
           system: instructions,
-          prompt: `El usuario preguntó: "${sanitizedQuery}". Redacta una respuesta directa y concisa siguiendo estrictamente tus directrices de asesor de 77 Studio. Si no se encontró información sobre una persona o tema en la base de datos de 77 Studio, niega el conocimiento de forma natural y corporativa e invita al usuario a escribir por WhatsApp.`,
+          prompt: `El usuario preguntó: "${sanitizedQuery}". Responde como Sofía, asesora comercial de 77 Studio, en un mensaje conciso de 3 a 5 líneas. NO hagas resúmenes académicos al final ni des precios. Si se trata de un servicio, explica brevemente el beneficio comercial e invita al WhatsApp de 77 Studio (+57 314 8490955 / +1 202 933 7792) para agendar diagnóstico. Si la persona o tema no existe, niega el conocimiento cordialmente e invita al WhatsApp.`,
         });
         finalResponseText = forcedResult.text;
       } catch (e) {
@@ -213,10 +213,10 @@ async function handleWebMessage(thread: Thread, message: Message) {
     console.log(`======================================================\n`);
 
     // Responder al hilo web
-    await thread.post(finalResponseText || "En 77 Studio estamos listos para asesorarte. ¿En qué área de desarrollo web, marketing o automatización podemos ayudarte?");
+    await thread.post(finalResponseText || "Hola 👋, soy Sofía de 77 Studio. Estamos listos para asesorarte en marketing, desarrollo web y automatización con IA. ¿En qué podemos apoyarte hoy?");
   } catch (error: any) {
     console.error("❌ [WEB CHAT] Error procesando consulta:", error);
-    await thread.post("Disculpa, ocurrió un error interno procesando tu consulta. Por favor intenta de nuevo o escríbenos por WhatsApp.");
+    await thread.post("Disculpa, ocurrió un inconveniente momentáneo procesando tu mensaje. Por favor intenta de nuevo o escríbenos directamente por WhatsApp al +57 314 8490955.");
   }
 }
 

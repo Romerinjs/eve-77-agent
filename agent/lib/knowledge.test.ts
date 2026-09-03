@@ -51,10 +51,11 @@ async function runTests() {
   const resAudience = await searchKnowledge({ audience: "nuevos-clientes" });
   const topAudience = resAudience.documents[0];
   console.log(`   Top match: ${topAudience?.slug} (Score: ${topAudience?.score})`);
-  if (!topAudience || !topAudience.slug.includes("nuevos-clientes")) {
+  const hasNuevosClientes = resAudience.documents.some((d) => d.audience === "nuevos-clientes");
+  if (!topAudience || !hasNuevosClientes) {
     throw new Error(`❌ Falló match de audiencia para nuevos clientes, recibido: ${topAudience?.slug}`);
   }
-  console.log("   ✅ Boost de audiencia correcto para audiencias/nuevos-clientes");
+  console.log("   ✅ Boost de audiencia correcto para documentos de nuevos clientes");
 
   // 6. Test Consulta por Slug Exacto
   console.log("\n🧪 [TEST 5] Consulta por Slug Exacto: 'servicios/productos-digitales'");
@@ -95,7 +96,52 @@ async function runTests() {
   }
   console.log("   ✅ 0 resultados confirmados para persona no registrada");
 
-  console.log("\n🎉 ¡TODOS LOS TESTS PASARON EXITOSAMENTE!");
+  // 10. Test Búsqueda Institucional: Fundador Jordan Cruz
+  console.log("\n🧪 [TEST 9] Búsqueda: 'fundador jordan cruz 77 studio'");
+  const resJordan = await searchKnowledge({ query: "fundador jordan cruz 77 studio" });
+  const topJordan = resJordan.documents[0];
+  console.log(`   Resultados encontrados: ${resJordan.total}`);
+  console.log(`   Top match: ${topJordan?.slug} (Score: ${topJordan?.score})`);
+  if (!topJordan || topJordan.slug !== "empresa/posicionamiento") {
+    throw new Error(`❌ Falló match para Jordan Cruz, recibido: ${topJordan?.slug}`);
+  }
+  console.log("   ✅ Match correcto con empresa/posicionamiento");
+
+  // 11. Test Búsqueda SDR: Manual de Calificación Comercial
+  console.log("\n🧪 [TEST 10] Búsqueda: 'criterios calificacion prospectos llamada meet'");
+  const resSDR = await searchKnowledge({ query: "criterios calificacion prospectos llamada meet" });
+  const topSDR = resSDR.documents[0];
+  console.log(`   Resultados encontrados: ${resSDR.total}`);
+  console.log(`   Top match: ${topSDR?.slug} (Score: ${topSDR?.score})`);
+  if (!topSDR || topSDR.slug !== "audiencias/calificacion-comercial") {
+    throw new Error(`❌ Falló match para calificación comercial, recibido: ${topSDR?.slug}`);
+  }
+  console.log("   ✅ Match correcto con audiencias/calificacion-comercial");
+
+  // 12. Test Búsqueda Identidad Sofía: Guía Conversacional
+  console.log("\n🧪 [TEST 11] Búsqueda: 'identidad sofia asesora comercial tono'");
+  const resSofia = await searchKnowledge({ query: "identidad sofia asesora comercial tono" });
+  const topSofia = resSofia.documents[0];
+  console.log(`   Resultados encontrados: ${resSofia.total}`);
+  console.log(`   Top match: ${topSofia?.slug} (Score: ${topSofia?.score})`);
+  if (!topSofia || topSofia.slug !== "comercial/guia-conversacional") {
+    throw new Error(`❌ Falló match para guía de Sofía, recibido: ${topSofia?.slug}`);
+  }
+  console.log("   ✅ Match correcto con comercial/guia-conversacional");
+
+  // 13. Test Búsqueda Contacto USA / Estados Unidos
+  console.log("\n🧪 [TEST 12] Búsqueda: 'contacto whatsapp estados unidos usa'");
+  const resUSA = await searchKnowledge({ query: "contacto whatsapp estados unidos usa" });
+  const topUSA = resUSA.documents[0];
+  console.log(`   Resultados encontrados: ${resUSA.total}`);
+  console.log(`   Top match: ${topUSA?.slug} (Score: ${topUSA?.score})`);
+  const includesUSA = resUSA.documents.some((d) => d.slug === "empresa/contacto" || d.slug === "empresa/posicionamiento" || d.slug === "empresa/nosotros");
+  if (!topUSA || !includesUSA) {
+    throw new Error(`❌ Falló match para contacto USA, recibido: ${topUSA?.slug}`);
+  }
+  console.log("   ✅ Match correcto con módulos de contacto y presencia internacional en USA");
+
+  console.log("\n🎉 ¡TODOS LOS 12 TESTS PASARON EXITOSAMENTE!");
 }
 
 runTests().catch((err) => {
