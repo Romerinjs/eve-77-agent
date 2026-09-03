@@ -90,14 +90,19 @@ jobs:
           mkdir -p agent-repo/77
           cp -R web-repo/77/* agent-repo/77/
 
-      - name: 4. Instalar dependencias y validar motor de conocimiento
+      - name: 4. Configurar Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: 5. Instalar dependencias y validar motor de conocimiento
         working-directory: agent-repo
         run: |
           npm ci
           npm run test:knowledge
           npm run typecheck
 
-      - name: 5. Commit y Push a eve-77-agent
+      - name: 6. Commit y Push a eve-77-agent
         working-directory: agent-repo
         run: |
           git config user.name "77-studio-bot"
