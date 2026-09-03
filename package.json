@@ -5,8 +5,8 @@
   "type": "module",
   "main": "agent/agent.ts",
   "scripts": {
-    "dev": "tsx watch agent/agent.ts",
-    "start": "tsx agent/agent.ts",
+    "dev": "npx eve dev --port 3007",
+    "start": "npx eve start --port 3007",
     "chat": "tsx agent/chat-cli.ts",
     "eval": "npx eve eval",
     "test:knowledge": "tsx agent/lib/knowledge.test.ts",
@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.13.5",
+    "just-bash": "^3.4.2",
     "tsx": "^4.19.3",
     "typescript": "^5.7.3"
   }

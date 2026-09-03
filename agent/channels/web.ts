@@ -2,46 +2,18 @@ import { createMemoryState } from "@chat-adapter/state-memory";
 import { createWebAdapter } from "@chat-adapter/web";
 import type { Message, Thread } from "chat";
 import { chatSdkChannel } from "eve/channels/chat-sdk";
-import { generateText, tool } from "ai";
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { readFile } from "node:fs/promises";
-import path from "node:path";
-import { z } from "zod";
-import { searchKnowledge, warmKnowledgeCache } from "../lib/knowledge.js";
+import { warmKnowledgeCache } from "../lib/knowledge.js";
 
-// Pre-cargar base de conocimiento en RAM
-warmKnowledgeCache().catch((err) => {
-  console.error("Error pre-cargando base de conocimiento:", err);
-});
+// Pre-cargar base de conocimiento en RAM al iniciar
+warmKnowledgeCache()
+  .then(() => {
+    console.log("✅ [EVE KNOWLEDGE] Base de conocimiento 77 Studio cargada e indexada en RAM.");
+  })
+  .catch((err) => {
+    console.error("❌ [EVE KNOWLEDGE] Error pre-cargando base de conocimiento:", err);
+  });
 
-async function getApiKey(): Promise<string> {
-  if (process.env.GEMINI_API_KEY) return process.env.GEMINI_API_KEY;
-  if (process.env.GOOGLE_GENERATIVE_AI_API_KEY) return process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-  if (process.env.GOOGLE_AI_API_KEY) return process.env.GOOGLE_AI_API_KEY;
-
-  try {
-    const envContent = await readFile(path.resolve(process.cwd(), ".env"), "utf8");
-    for (const line of envContent.split("\n")) {
-      const trimmed = line.trim();
-      if (!trimmed || trimmed.startsWith("#")) continue;
-      const [key, ...rest] = trimmed.split("=");
-      if (key && rest.length > 0) {
-        process.env[key.trim()] = rest.join("=").trim();
-      }
-    }
-  } catch {
-    // Si no hay .env
-  }
-
-  return (
-    process.env.GEMINI_API_KEY ||
-    process.env.GOOGLE_GENERATIVE_AI_API_KEY ||
-    process.env.GOOGLE_AI_API_KEY ||
-    ""
-  );
-}
-
-export const { bot, channel } = chatSdkChannel({
+export const { bot, channel, send } = chatSdkChannel({
   userName: "77 Studio Assistant",
   adapters: {
     web: createWebAdapter({
@@ -55,59 +27,39 @@ export const { bot, channel } = chatSdkChannel({
     }),
   },
   state: createMemoryState(),
+  streaming: true,
+  streamingEditIntervalMs: 250,
 });
 
-let cachedInstructions: string | null = null;
-async function getInstructions() {
-  if (!cachedInstructions) {
-    try {
-      cachedInstructions = await readFile(path.resolve(process.cwd(), "agent", "instructions.md"), "utf8");
-    } catch {
-      cachedInstructions = "Eres Eve, el consultor oficial de inteligencia artificial y crecimiento de 77 Studio.";
-    }
-  }
-  return cachedInstructions;
-}
+// 1. Manejador de nuevo mensaje / nuevo hilo entrante desde la web
+bot.onNewMention(async (thread: Thread, message: Message) => {
+  console.log(`\n💬 [WEB CHAT] Nuevo hilo iniciado por visitante: "${message.text}"`);
+  
+  // Suscribir el hilo para recibir los siguientes mensajes de la misma conversación
+  await thread.subscribe();
 
-bot.onDirectMessage(async (thread: Thread, message: Message) => {
-  const apiKey = await getApiKey();
-  const modelName = process.env.GEMINI_MODEL || "gemini-3.6-flash";
-  const google = createGoogleGenerativeAI({ apiKey });
-  const instructions = await getInstructions();
-
-  let turnMessages: any[] = [{ role: "user", content: message.text }];
-  let finalResponseText = "";
-
-  for (let turn = 1; turn <= 4; turn++) {
-    const result = await generateText({
-      model: google(modelName),
-      system: instructions,
-      messages: turnMessages,
-      tools: {
-        search_knowledge: tool({
-          description:
-            "Busca información oficial en la base de conocimiento de 77 Studio sobre servicios, playbooks y datos de contacto.",
-          inputSchema: z.object({
-            query: z.string().default(""),
-            slug: z.string().optional(),
-            audience: z.enum(["nuevos-clientes", "empresas", "fundadores-startups"]).optional(),
-          }),
-          execute: async (args) => {
-            return await searchKnowledge(args);
-          },
-        }),
-      },
-    });
-
-    turnMessages = [...turnMessages, ...result.response.messages];
-
-    if (result.text && result.finishReason !== "tool-calls") {
-      finalResponseText = result.text;
-      break;
-    }
-  }
-
-  await thread.post(finalResponseText || "Disculpa, no pude procesar esa consulta en este momento.");
+  // Iniciar la sesión con el cerebro de eve
+  await send(message.text, {
+    thread,
+    title: "Consulta Web 77 Studio",
+  });
 });
+
+// 2. Manejador de mensajes de seguimiento en la misma conversación
+bot.onSubscribedMessage(async (thread: Thread, message: Message) => {
+  console.log(`\n💬 [WEB CHAT] Mensaje de seguimiento: "${message.text}"`);
+
+  // Continuar la sesión existente
+  await send(message.text, {
+    thread,
+  });
+});
+
+// 3. Manejador de acciones / botones interactivos
+bot.onAction(async (thread: Thread, action: any) => {
+  console.log(`🔘 [WEB CHAT] Acción de botón pulsada: ${action?.actionId || action}`);
+});
+
+console.log("🚀 [EVE CHANNEL] Canal Web montado en /eve/v1/web listo para recibir conexiones.");
 
 export default channel;
