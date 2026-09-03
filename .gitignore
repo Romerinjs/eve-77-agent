@@ -5,5 +5,5 @@ dist
 .turbo
 .DS_Store
 *.log
-
+.eve
 .vercel
