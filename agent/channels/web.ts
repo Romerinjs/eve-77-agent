@@ -36,8 +36,8 @@ loadEnvSync();
 
 // 2. Pre-cargar base de conocimiento en RAM
 warmKnowledgeCache()
-  .then(() => {
-    console.log("📚 [EVE KNOWLEDGE] Base de conocimiento (14 MDX) indexada en RAM.");
+  .then((docs) => {
+    console.log(`📚 [EVE KNOWLEDGE] Base de conocimiento (${docs.length} MDX) indexada en RAM.`);
   })
   .catch((err) => {
     console.error("❌ [EVE KNOWLEDGE] Error indexando conocimiento:", err);
@@ -193,15 +193,19 @@ async function handleWebMessage(thread: Thread, message: Message) {
     }
 
     // 🛡️ Si el modelo agotó los turnos de llamadas a herramientas sin emitir texto final,
-    // forzar una síntesis final directa (sin herramientas) con todo el contexto acumulado.
+    // forzar una síntesis final directa (sin herramientas) para redactar una respuesta natural y corporativa.
     if (!finalResponseText || !finalResponseText.trim()) {
       console.log(`⚠️ [WEB CHAT] Síntesis final requerida tras llamadas a herramientas...`);
-      const forcedResult = await generateText({
-        model: google(modelName),
-        system: instructions,
-        messages: turnMessages,
-      });
-      finalResponseText = forcedResult.text;
+      try {
+        const forcedResult = await generateText({
+          model: google(modelName),
+          system: instructions,
+          prompt: `El usuario preguntó: "${sanitizedQuery}". Redacta una respuesta directa y concisa siguiendo estrictamente tus directrices de asesor de 77 Studio. Si no se encontró información sobre una persona o tema en la base de datos de 77 Studio, niega el conocimiento de forma natural y corporativa e invita al usuario a escribir por WhatsApp.`,
+        });
+        finalResponseText = forcedResult.text;
+      } catch (e) {
+        console.error("⚠️ [WEB CHAT] Error en síntesis forzada:", e);
+      }
     }
 
     console.log(`\n📤 [WEB CHAT OUTBOUND] Enviando respuesta (${finalResponseText.length} caracteres):`);

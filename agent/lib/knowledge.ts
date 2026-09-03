@@ -1,5 +1,6 @@
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import matter from "gray-matter";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
@@ -165,21 +166,42 @@ async function readDocument(filePath: string, rootDir: string): Promise<CachedDo
 }
 
 async function loadKnowledgeCache(): Promise<CachedDocument[]> {
-  const roots = [
-    { path: path.resolve(process.cwd(), "77"), name: "77" },
-    { path: path.resolve(process.cwd(), "content", "knowledge"), name: "knowledge" },
+  const currentDir = path.dirname(fileURLToPath(import.meta.url));
+  const candidate77Dirs = [
+    path.resolve(process.cwd(), "77"),
+    path.resolve(currentDir, "../../77"),
+    path.resolve(currentDir, "../77"),
   ];
 
+  const candidateKnowledgeDirs = [
+    path.resolve(process.cwd(), "content", "knowledge"),
+    path.resolve(currentDir, "../../content/knowledge"),
+  ];
+
+  const roots: { path: string; name: string }[] = [];
+  for (const p of candidate77Dirs) {
+    if (!roots.some((r) => r.path === p)) {
+      roots.push({ path: p, name: "77" });
+    }
+  }
+  for (const p of candidateKnowledgeDirs) {
+    if (!roots.some((r) => r.path === p)) {
+      roots.push({ path: p, name: "knowledge" });
+    }
+  }
+
   const allDocuments: CachedDocument[] = [];
-  const seenIds = new Set<string>();
+  const seenSlugs = new Set<string>();
 
   for (const root of roots) {
     const files = await walk(root.path);
-    const docs = await Promise.all(files.map((file) => readDocument(file, root.path)));
-    for (const doc of docs) {
-      if (!seenIds.has(doc.slug)) {
-        seenIds.add(doc.slug);
-        allDocuments.push(doc);
+    if (files.length > 0) {
+      const docs = await Promise.all(files.map((file) => readDocument(file, root.path)));
+      for (const doc of docs) {
+        if (!seenSlugs.has(doc.slug)) {
+          seenSlugs.add(doc.slug);
+          allDocuments.push(doc);
+        }
       }
     }
   }
@@ -367,6 +389,6 @@ export function invalidateKnowledgeCache(): void {
 /**
  * Pre-carga el caché en memoria RAM en el arranque del servidor.
  */
-export async function warmKnowledgeCache(): Promise<void> {
-  await getKnowledgeCache();
+export async function warmKnowledgeCache(): Promise<CachedDocument[]> {
+  return await getKnowledgeCache();
 }
