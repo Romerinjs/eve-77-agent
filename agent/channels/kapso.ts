@@ -283,7 +283,7 @@ async function processDebouncedTurn(
   }
 }
 
-// 7. Manejador de eventos entrantes de Chat SDK con Debouncer (10s)
+// 7. Manejador de eventos entrantes de Chat SDK
 async function handleKapsoInbound(thread: Thread, message: Message) {
   const userText = message.text || (message as any).rawText || (message as any).content || "";
   
@@ -305,20 +305,8 @@ async function handleKapsoInbound(thread: Thread, message: Message) {
 
   const senderName = (message.author as any)?.displayName || (message.author as any)?.name || (message.author as any)?.userName || "";
 
-  // Encolar en el debouncer de 10 segundos
-  whatsappDebouncer.enqueue(
-    thread.id,
-    {
-      text: userText,
-      imageUrls,
-      messageId: message.id,
-      senderName,
-      timestamp: Date.now(),
-    },
-    async (threadId, aggregatedText, allImages, lastItem) => {
-      await processDebouncedTurn(thread, aggregatedText, allImages, lastItem.senderName || "");
-    }
-  );
+  // En Vercel Serverless, procesar de inmediato (Kapso ya aplica su buffer nativo de 5s en la nube)
+  await processDebouncedTurn(thread, userText, imageUrls, senderName);
 }
 
 // Registrar manejadores de eventos
