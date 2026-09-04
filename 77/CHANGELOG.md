@@ -9,6 +9,25 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
 ## [Unreleased] - 2026-09-03
 
 ### Added
+- **Arquitectura de Internacionalización Bilingüe Nativa en Astro v5 (`src/lib/i18n/`, `src/pages/en/`)**:
+  - Configuración nativa i18n en `astro.config.mjs` con `defaultLocale: 'es'`, `locales: ['es', 'en']` y prefijo deshabilitado para idioma por defecto (`prefixDefaultLocale: false`).
+  - Creación de diccionarios tipados centralizados en `src/lib/i18n/` para cadenas globales (`ui.ts`), utilidades de cálculo de ruta y traducción (`utils.ts`) y diccionarios modulares por página (`src/lib/i18n/pages/{home,marketing,web,ia-automatizacion,productos-digitales,nosotros,contacto}/`).
+  - Creación del árbol de páginas en inglés bajo `src/pages/en/` para las 7 rutas principales (`/en/`, `/en/marketing`, `/en/web`, `/en/ia-automatizacion`, `/en/productos-digitales`, `/en/nosotros`, `/en/contacto`).
+  - Switch interactivo de idioma `ES / EN` en el Header (`Header.astro`) con cálculo dinámico de la ruta espejo activa.
+  - Adaptación bilingüe de todos los componentes globales y de sección ([HeroHome](file:///c:/Users/ACER/Documents/OIDUTS-88/projects/web-77-studio/src/components/home/HeroHome.astro), [HeroMarketing](file:///c:/Users/ACER/Documents/OIDUTS-88/projects/web-77-studio/src/components/marketing/HeroMarketing.astro), [HeroWeb](file:///c:/Users/ACER/Documents/OIDUTS-88/projects/web-77-studio/src/components/web/HeroWeb.astro), [HeroIA](file:///c:/Users/ACER/Documents/OIDUTS-88/projects/web-77-studio/src/components/ia/HeroIA.astro), [HeroProductos](file:///c:/Users/ACER/Documents/OIDUTS-88/projects/web-77-studio/src/components/productos/HeroProductos.astro), [HeroNosotros](file:///c:/Users/ACER/Documents/OIDUTS-88/projects/web-77-studio/src/components/nosotros/HeroNosotros.astro), [HeroContacto](file:///c:/Users/ACER/Documents/OIDUTS-88/projects/web-77-studio/src/components/contacto/HeroContacto.astro), [DualCTA](file:///c:/Users/ACER/Documents/OIDUTS-88/projects/web-77-studio/src/components/DualCTA.astro), [ContactForm](file:///c:/Users/ACER/Documents/OIDUTS-88/projects/web-77-studio/src/components/ContactForm.astro), [AIChatWidget](file:///c:/Users/ACER/Documents/OIDUTS-88/projects/web-77-studio/src/components/chat/AIChatWidget.astro), [MobileStickyBar](file:///c:/Users/ACER/Documents/OIDUTS-88/projects/web-77-studio/src/components/MobileStickyBar.astro) y más de 30 subcomponentes interactivos).
+  - Enlaces y mensajes contextuales de WhatsApp bilingües en `src/utils/whatsapp.ts`.
+  - Validación de compilación exitosa con 14 rutas estáticas prerenderizadas en `npm run build`.
+
+### Changed
+- **Adaptación del Widget de Chat Web a Sofía AI (`AIChatWidget.astro`, `chat-widget.ts`, `chat-widget.css`, `/api/chat.ts`)**:
+  - Actualización de identidad oficial a **Sofía AI 77 Studio**.
+  - Header: Título `Sofía AI 77 Studio` con insignia oficial de verificación (`verified.webp`), foto de perfil personalizada (`profile-sofia-pic.jpg`), punto de conexión en esquina inferior derecha con tooltip interactivo (*Conectado* / *Offline*) y eliminación del subtítulo redundante.
+  - Botón flotante disparador (estado cerrado): Relleno morado degradado de marca con el logotipo oficial blanco `77studio.png` y punto de conexión verde.
+  - Mensaje de bienvenida oficial orientado a calificación y soporte comercial para los 4 servicios de 77 Studio.
+  - Implementación de 4 preguntas frecuentes sugeridas estructuradas (`QUICK_QUESTIONS`) con íconos (`🚀`, `💼`, `⚡`, `💬`), textos legibles y disparo reactivo de queries al hacer clic.
+  - Input con placeholder `"Escribe tu consulta para Sofía..."` y mejora de estilos de micro-interacción en píldoras y tarjetas de estado.
+
+### Added
 - **Agente de IA Chat Flotante & Proxy Serverless (`AIChatWidget.astro`, `chat-widget.ts`, `/api/chat`)**:
   - Implementación del componente nativo de Astro `<AIChatWidget />` en **Tema Claro (Light Theme)** con soporte de streaming SSE en tiempo real conectado al backend de Eve (`eve-77-agent`).
   - Motor de cliente nativo TypeScript (`chat-widget.ts`) de solo ~3.5 KB gzipped (cero overhead de React): Smart Auto-Scroll, persistencia de `sessionStorage`, `threadId` único por sesión, botones interactivos *pill* de WhatsApp (`.chat-wa-pill`), formateo de Markdown y sanitización estricta de marcadores de stream `[DONE]`.
