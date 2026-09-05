@@ -168,8 +168,8 @@ async function readDocument(filePath: string, rootDir: string): Promise<CachedDo
 import { STATIC_KNOWLEDGE_DOCUMENTS } from "./knowledge-data.js";
 
 async function loadKnowledgeCache(): Promise<CachedDocument[]> {
-  const allDocuments: CachedDocument[] = [...STATIC_KNOWLEDGE_DOCUMENTS];
-  const seenSlugs = new Set<string>(allDocuments.map((d) => d.slug));
+  const diskDocuments: CachedDocument[] = [];
+  const seenSlugs = new Set<string>();
 
   try {
     const currentDir = path.dirname(fileURLToPath(import.meta.url));
@@ -203,7 +203,7 @@ async function loadKnowledgeCache(): Promise<CachedDocument[]> {
         for (const doc of docs) {
           if (!seenSlugs.has(doc.slug)) {
             seenSlugs.add(doc.slug);
-            allDocuments.push(doc);
+            diskDocuments.push(doc);
           }
         }
       }
@@ -212,7 +212,18 @@ async function loadKnowledgeCache(): Promise<CachedDocument[]> {
     // Fallback silencioso si el runtime serverless no permite acceso al sistema de archivos
   }
 
-  return allDocuments;
+  // Si encontramos documentos en disco, usamos esos y completamos con static si faltara alguno
+  if (diskDocuments.length > 0) {
+    for (const staticDoc of STATIC_KNOWLEDGE_DOCUMENTS) {
+      if (!seenSlugs.has(staticDoc.slug)) {
+        seenSlugs.add(staticDoc.slug);
+        diskDocuments.push(staticDoc);
+      }
+    }
+    return diskDocuments;
+  }
+
+  return [...STATIC_KNOWLEDGE_DOCUMENTS];
 }
 
 /**

@@ -10,6 +10,7 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { z } from "zod";
 import { searchKnowledge, warmKnowledgeCache } from "../lib/knowledge.js";
 import { checkGuardrails } from "../lib/guardrails.js";
+import { getInstructionsForChannel } from "../lib/instructions.js";
 
 // Desactivar warnings internos del SDK
 process.env.AI_SDK_LOG_WARNINGS = "false";
@@ -79,18 +80,7 @@ export const { bot, channel } = chatSdkChannel({
   state: getResolvedStateAdapter(),
 });
 
-// Cache de instrucciones
-let cachedInstructions: string | null = null;
-function getInstructionsSync(): string {
-  if (!cachedInstructions) {
-    try {
-      cachedInstructions = readFileSync(path.resolve(process.cwd(), "agent", "instructions.md"), "utf8");
-    } catch {
-      cachedInstructions = "Eres el consultor y asesor oficial de 77 Studio.";
-    }
-  }
-  return cachedInstructions;
-}
+
 
 // 5. Manejador unificado de consultas entrantes desde el Chat Web
 async function handleWebMessage(thread: Thread, message: Message) {
@@ -129,7 +119,7 @@ async function handleWebMessage(thread: Thread, message: Message) {
 
   const modelName = process.env.GEMINI_MODEL || "gemini-3.6-flash";
   const google = createGoogleGenerativeAI({ apiKey });
-  const instructions = getInstructionsSync();
+  const instructions = getInstructionsForChannel("web");
 
   // 🔄 Recuperar historial previo del hilo para soporte multiturno
   let historyMessages: any[] = [];

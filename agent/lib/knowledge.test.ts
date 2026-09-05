@@ -141,7 +141,18 @@ async function runTests() {
   }
   console.log("   ✅ Match correcto con módulos de contacto y presencia internacional en USA");
 
-  console.log("\n🎉 ¡TODOS LOS 12 TESTS PASARON EXITOSAMENTE!");
+  // 14. Test Búsqueda Director Comercial & Calendar Meet
+  console.log("\n🧪 [TEST 13] Búsqueda: 'hablar con director comercial agendar calendar meet'");
+  const resDirector = await searchKnowledge({ query: "hablar con director comercial agendar calendar meet" });
+  const topDirector = resDirector.documents[0];
+  console.log(`   Resultados encontrados: ${resDirector.total}`);
+  console.log(`   Top match: ${topDirector?.slug} (Score: ${topDirector?.score})`);
+  if (!topDirector || topDirector.slug !== "empresa/contacto") {
+    throw new Error(`❌ Falló match para Director Comercial, recibido: ${topDirector?.slug}`);
+  }
+  console.log("   ✅ Match correcto con empresa/contacto");
+
+  console.log("\n🎉 ¡TODOS LOS 13 TESTS PASARON EXITOSAMENTE!");
 }
 
 runTests().catch((err) => {

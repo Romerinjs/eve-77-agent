@@ -11,6 +11,7 @@
     "eval": "npx eve eval",
     "test:guards": "tsx agent/lib/guardrails.test.ts",
     "test:knowledge": "tsx agent/lib/knowledge.test.ts",
+    "test:instructions": "tsx agent/lib/instructions.test.ts",
     "test:live": "tsx agent/test-live-agent.ts",
     "bundle:knowledge": "tsx scripts/bundle-knowledge.ts",
     "typecheck": "tsc --noEmit"

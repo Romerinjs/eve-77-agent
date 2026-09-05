@@ -11,6 +11,7 @@ import { z } from "zod";
 import { searchKnowledge, warmKnowledgeCache } from "../lib/knowledge.js";
 import { checkGuardrails } from "../lib/guardrails.js";
 import { whatsappDebouncer } from "../lib/debouncer.js";
+import { getInstructionsForChannel } from "../lib/instructions.js";
 
 // Desactivar warnings internos del SDK
 process.env.AI_SDK_LOG_WARNINGS = "false";
@@ -85,18 +86,7 @@ export const { bot, channel } = chatSdkChannel({
   state: getResolvedStateAdapter(),
 });
 
-// Cache de instrucciones
-let cachedInstructions: string | null = null;
-function getInstructionsSync(): string {
-  if (!cachedInstructions) {
-    try {
-      cachedInstructions = readFileSync(path.resolve(process.cwd(), "agent", "instructions.md"), "utf8");
-    } catch {
-      cachedInstructions = "Eres Sofía, asesora comercial de 77 Studio. Responde conciso (2-3 líneas) y guía al agendamiento de diagnóstico o WhatsApp humano.";
-    }
-  }
-  return cachedInstructions;
-}
+
 
 // Helper: Saludo dinámico según la hora en Colombia (GMT-5)
 function getColombiaGreeting(): string {
@@ -174,7 +164,7 @@ async function processDebouncedTurn(
 
   const modelName = process.env.GEMINI_MODEL || "gemini-3.6-flash";
   const google = createGoogleGenerativeAI({ apiKey });
-  const instructions = getInstructionsSync();
+  const instructions = getInstructionsForChannel("kapso");
 
   // Si se recibieron imágenes, extraer su descripción
   let imageContext = "";
