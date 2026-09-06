@@ -102,6 +102,72 @@ function getColombiaGreeting(): string {
   }
 }
 
+/**
+ * Sanitiza nombres de contacto provenientes de perfiles de WhatsApp / Kapso
+ * Convierte usernames o handles técnicos (ej. "romerinjs", "carlos_dev99") a nombres naturales (ej. "Romer", "Carlos").
+ */
+export function sanitizeContactName(rawName?: string): string {
+  if (!rawName) return "Visitante";
+  let name = rawName.trim();
+  
+  // Si es solo número de teléfono o ID, retornar fallback
+  if (/^(\+?\d+[\s-]?)+$/.test(name) || name.length <= 1) {
+    return "Visitante";
+  }
+
+  // Quitar sufijos técnicos comunes o números finales (ej. romerinjs, user_123, carlos.dev)
+  name = name.replace(/(injs|js|ts|dev|bot|official|_?\d+)$/i, "");
+  name = name.replace(/[_\.\-]+/g, " ").trim();
+
+  // Si quedó vacío o muy corto
+  if (!name || name.length < 2) return "Visitante";
+
+  // Capitalizar primera letra de cada palabra
+  return name
+    .split(/\s+/)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(" ");
+}
+
+/**
+ * Limpia y formatea respuestas para WhatsApp Nativo (Opción A):
+ * - Convierte markdown links [Texto](URL) a URL directa o texto plano.
+ * - Convierte doble asterisco **texto** a *texto* (formato de negrita de WhatsApp).
+ * - Elimina líneas divisorias '---' y encabezados Markdown '#'.
+ */
+export function formatWhatsAppResponse(rawText: string): string {
+  if (!rawText) return "";
+
+  let text = rawText;
+
+  // 1. Eliminar encabezados Markdown (# Título -> *Título*)
+  text = text.replace(/^#{1,6}\s*(.+)$/gm, "*$1*");
+
+  // 2. Eliminar líneas divisorias (---, ___, ***)
+  text = text.replace(/^[\s\-_*]{3,}$/gm, "");
+
+  // 3. Limpiar links de markdown [Texto](URL) -> Texto o URL
+  // Si el texto dentro de corchetes ya contiene la URL o emojis de acción, dejar la URL limpia
+  text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, (match, label, url) => {
+    // Si la etiqueta es solo agendar o enlace, retornar la URL directamente
+    if (/agendar|calendar|link|enlace|clic|aqui|aquí|meet/i.test(label)) {
+      return url;
+    }
+    return `${label}: ${url}`;
+  });
+
+  // 4. Convertir doble asterisco **negrita** a *negrita* (WhatsApp nativo)
+  text = text.replace(/\*\*(.*?)\*\*/g, "*$1*");
+
+  // 5. Limpiar asteriscos sobrantes si quedaron triples
+  text = text.replace(/\*{3,}(.*?)\*{3,}/g, "*$1*");
+
+  // 6. Normalizar saltos de línea excesivos (máximo 2 saltos consecutivos)
+  text = text.replace(/\n{3,}/g, "\n\n");
+
+  return text.trim();
+}
+
 // 5. Análisis Multimodal de Imágenes con Gemini Flash
 async function analyzeImage(imageUrl: string, google: any, modelName: string): Promise<string> {
   try {
@@ -192,11 +258,12 @@ async function processDebouncedTurn(
   }
 
   const saludo = getColombiaGreeting();
+  const cleanContact = sanitizeContactName(senderName);
   let turnMessages: any[] = [
     ...historyMessages,
     {
       role: "user",
-      content: `[Saludo actual: ${saludo}][Contacto: ${senderName || "Visitante"}]\n${fullPrompt}`,
+      content: `[Saludo actual: ${saludo}][Contacto: ${cleanContact}]\n${fullPrompt}`,
     },
   ];
 
@@ -251,18 +318,20 @@ async function processDebouncedTurn(
       const forcedResult = await generateText({
         model: google(modelName),
         system: instructions,
-        prompt: `El cliente preguntó por WhatsApp: "${fullPrompt}". Responde como Sofía, Asesora Comercial de 77 Studio, en un mensaje súper conciso de 2 a 3 líneas estilo WhatsApp. NUNCA pidas presupuesto. Explica brevemente el valor del servicio e invita a agendar llamada de diagnóstico o escribir por WhatsApp (+57 314 8490955).`,
+        prompt: `El cliente preguntó por WhatsApp: "${fullPrompt}". Responde como Sofía, Asesora Comercial de 77 Studio, en un mensaje súper conciso de 2 a 3 líneas estilo WhatsApp nativo. NUNCA pidas presupuesto. Explica brevemente el valor del servicio e invita a agendar llamada de diagnóstico en Google Meet: https://calendar.app.google/9ygzNzhLH5Gy7iwz6.`,
       });
       finalResponseText = forcedResult.text;
     }
 
-    console.log(`\n📤 [KAPSO OUTBOUND] Enviando respuesta a WhatsApp (${finalResponseText.length} caracteres):`);
-    console.log(finalResponseText);
+    const sanitizedOutbound = formatWhatsAppResponse(finalResponseText);
+
+    console.log(`\n📤 [KAPSO OUTBOUND] Enviando respuesta a WhatsApp (${sanitizedOutbound.length} caracteres):`);
+    console.log(sanitizedOutbound);
     console.log(`======================================================\n`);
 
     // Enviar respuesta al hilo de WhatsApp vía Kapso
     await thread.post(
-      finalResponseText ||
+      sanitizedOutbound ||
         "¡Hola! 👋 Soy Sofía de 77 Studio. Con gusto te asesoro en desarrollo web, marketing y automatizaciones con IA para tu empresa. ¿En qué área te gustaría que nos enfoquemos?"
     );
   } catch (error) {
