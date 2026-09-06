@@ -6,7 +6,33 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
 
 ---
 
-## [Unreleased] - 2026-09-03
+## [Unreleased] - 2026-09-05
+
+### Added
+- **Roster de Equipo Interactivo Estilo Fighter Selection Screen (`TeamRosterSection.astro`, `nosotros.astro`, `en/nosotros.astro`)**:
+  - Implementación de la vista interactiva de selección de personajes para los 10 integrantes de 77 Studio, inspirada en la pantalla de luchadores de *La Velada del Año* y adaptada al Manual de Diseño de 77 Studio.
+  - Spotlight Central Superior con imagen completa (`/img/equipo/*.jpg|png`), marcas de agua dinámicas con nombre del integrante y logotipo 77 flotante (`/img/logo-variaciones/morado5.png`), badges de cargo y HUB (`COLOMBIA ↔ USA`).
+  - Mosaico inferior de 10 integrantes interactivo utilizando las miniaturas `*2.jpg` con estados de hover, anillo luminoso violeta (`border-opai-purple`), micro-animaciones y soporte para interacción táctil en móvil.
+  - Integración de degradados oscuros de alta definición (`/img/degrades/negativo 1 h-100.jpg`) y resplandores ambientales.
+  - Integrantes y roles oficiales: Jordan Cruz (CEO & Fundador), Tania Pérez (Directora Operativa), Juliana Marín (Líder en Producción Audiovisual), Juan Nieto (Filmmaker), David González (Filmmaker), Elías Pérez (Diseñador Gráfico), Brandon Marín (Diseñador Gráfico), Alexa Zamora (Social Media Manager), Licxa Tamayo (Social Media Manager), Laura Montoya (Social Media Manager).
+  - Soporte i18n nativo bilingüe (ES / EN) en `src/lib/i18n/pages/nosotros/index.ts`.
+- **Actualización de Documentación MDX de Nosotros (`77/06-nosotros/index.mdx`)**:
+  - Especificación completa de la sección de Roster interactivo, mapeo de assets de fotos (normales para spotlight y `*2.jpg` para mosaico), roles y palabras clave indexadas.
+- **Módulo de Conocimiento MDX Error 404 (`77/10-error-404/index.mdx`)**:
+  - Especificación formal para recuperación de tráfico y enlaces rotos bajo el estándar de la skill `77-mdx-builder`.
+  - Frontmatter YAML 100% tipado con 11 palabras clave indexadas para el motor en RAM de Sofía (`public/knowledge.json`).
+  - Redacción AIDA/CRO orientada a redirección inteligente hacia los 4 servicios principales y soporte comercial directo.
+- **Vistas Astro 404 Bilingües & Sistema de Rescate (`src/pages/404.astro`, `src/pages/en/404.astro`, `src/components/not-found/NotFoundHero.astro`)**:
+  - Implementación visual alineada al Design System de 77 Studio: lienzo `bg-background-8`, tipografía gigante Sora para `404`, badge técnico mono y gradientes violeta de acento.
+  - Botón interactivo cápsula `.button` con ícono violeta `bg-opai-purple` y botón secundario de WhatsApp con mensaje contextualizado.
+  - Grid de navegación rápida a los 4 servicios core (Marketing, Web, IA y Productos Digitales) con micro-interacciones hover y redirección localizada según el idioma activo (`es` / `en`).
+  - Tarjeta de llamada a la acción integrada para abrir el chat de Sofía AI en vivo.
+- **Diccionario i18n para Error 404 (`src/lib/i18n/pages/not-found/index.ts`)**:
+  - Textos y metadatos SEO localizados para español e inglés.
+- **Ajustes Visuales de Header, Widget de IA y Presencia Internacional**:
+  - Recorte y centrado perfecto del logo `negro2.png` en el Header (`Header.astro`).
+  - Simplificación de tarjeta de error en widget de Sofía (`chat-widget.ts`) mostrando únicamente el mensaje claro y el botón a WhatsApp directo.
+  - Eliminación de franjas negras en el banner de Presencia Internacional (`InternationalPresence.astro`, `banner-usa-col.png`).
 
 ### Added
 - **Arquitectura de Internacionalización Bilingüe Nativa en Astro v5 (`src/lib/i18n/`, `src/pages/en/`)**:

@@ -1,6 +1,6 @@
 ---
 title: "77 Studio - Acerca de Nosotros | Colombia + USA"
-description: "Un equipo creativo y tecnológico construido para resolver retos digitales."
+description: "Un equipo creativo y tecnológico de alto impacto para resolver retos de marketing, web, automatización e inteligencia artificial."
 module: "06-nosotros"
 route: "/nosotros"
 whatsappMessage: "Hola 77 Studio 👋 Vi su historia y equipo y quisiera conversar sobre un proyecto."
@@ -11,6 +11,8 @@ keywords:
   - acerca de nosotros
   - quienes somos
   - equipo 77 studio
+  - jordan cruz ceo
+  - roster de equipo
   - historia
   - presencia internacional
   - colombia
@@ -27,7 +29,7 @@ related_slugs:
 
 # 06 | Acerca de Nosotros - Especificación de Vista & Layout MDX
 
-> **Objetivo Comercial:** Validar credibilidad, respaldar el posicionamiento internacional (Colombia ↔ USA) y mostrar las caras y capacidades reales detrás de 77 Studio.
+> **Objetivo Comercial:** Validar credibilidad, respaldar el posicionamiento internacional (Colombia ↔ USA) y mostrar las caras, roles y capacidades reales detrás de 77 Studio mediante una experiencia interactiva de alta retención visual.
 
 ---
 
@@ -36,7 +38,7 @@ related_slugs:
 ```ts
 export const pageMeta = {
   title: "Acerca de Nosotros | 77 Studio Digital & AI Partner",
-  description: "Conoce al equipo detrás de 77 Studio. Operación en Colombia y Estados Unidos para proyectos de marketing, web, automatización e IA.",
+  description: "Conoce al equipo detrás de 77 Studio. Operación en Colombia y Estados Unidos para proyectos de marketing, web, automatización e IA (Colombia ↔ USA).",
   canonical: "https://77.studio/nosotros",
   ogImage: "/images/og-nosotros.jpg"
 };
@@ -44,36 +46,87 @@ export const pageMeta = {
 
 ---
 
-## 1. Hero Section
+## 1. Hero Section (`HeroNosotros.astro`)
 
-- **Mensaje Principal**: Un equipo creativo y tecnológico construido para resolver retos digitales.
-- **Subtítulo**: SOMOS 77 STUDIO: Creatividad, estrategia y tecnología dentro de un mismo equipo.
-- **Visual**: Fotografía real del equipo en un entorno de trabajo auténtico, integrada con pantallas de proyectos activos.
-- **CTAs Duales**:
-  - WhatsApp directo con el equipo fundador.
-  - Formulario de contacto por Email.
+- **Mensaje Principal**: Creatividad para llamar la atención. Tecnología para escalar.
+- **Subtítulo**: Somos un estudio digital que reúne estrategia comercial, desarrollo web moderno e inteligencia artificial para impulsar empresas en Colombia, Estados Unidos y Latinoamérica.
+- **Visual**: Slideshow dinámico de fotos reales del equipo de trabajo en el estudio (`/img/equipo/`).
+- **CTAs Duales**: WhatsApp directo con el equipo (`Hablemos de tu equipo`) + Botón a formulario (`Conoce nuestras capacidades`).
+- **3 Hubs Operativos Desacoplados**: Estrategia & Contenido, Desarrollo Web & SaaS, Automatización & IA.
 
 ---
 
-## 2. Nuestra Evolución: "Más que una agencia"
+## 2. Roster de Equipo Interactivo (`TeamRosterSection.astro`)
+
+> **Concepto Visual:** Inspirado en la pantalla de selección de personajes / luchadores de *La Velada del Año*, adaptado con el manual de diseño de 77 Studio (Light Theme `#f4f6fa`, violeta eléctrico `#8d59ff`, fondo con degradado `/img/degrades/negativo 1 p-100.jpg` y logos vectoriales).
+
+### 📐 Arquitectura del Componente:
+1. **Spotlight Stage (Vista Central Superior)**:
+   - Visualización de la imagen cutout completa del integrante (fotos versión 1 en formato PNG transparente sin número).
+   - Tipografía Poppins bold en color blanco puro (`font-['Poppins'] text-white`, uppercase) con sombra de profundidad.
+   - Píldora de ocupación en color violeta `bg-opai-purple` directamente debajo del nombre.
+   - Marca de agua dinámica con el nombre del integrante y logo 77 flotante (`/img/logo-variaciones/morado1.png`).
+   - Estado inicial limpio con título y subtítulo de la sección cuando no hay hover activo.
+   - Transición fluida de crossfade por hardware (350ms) entre integrantes.
+
+2. **Mosaico / Grilla de Selección (Selector Inferior)**:
+   - 10 integrantes organizados en una tira continua de 10 columnas pegadas sin separación (`grid-cols-10 gap-0`).
+   - Fondos de tarjetas con variación secuencial de texturas degradadas oficiales:
+     1. `negativo 1 p-100.jpg`
+     2. `negativo 2 p-100.jpg`
+     3. `negativo 3 p-100.jpg`
+     4. `negativo 4 p-100.jpg`
+     5. `positivo 2 p-100.jpg`
+     6. `positivo 4 p-100.jpg`
+     7. `postivo 3 p-100.jpg`
+     8. `postivo 1 p-100.jpg` (repitiendo cíclicamente para las tarjetas 9 y 10).
+   - Fotografía cutout PNG transparente de cada integrante superpuesta con encuadre calibrado sobre el degradado.
+   - Solo el primer nombre visible en la base para evitar cortes de texto.
+   - Estado activo con indicador superior violeta y halo luminoso (`ring-2 ring-opai-purple z-20`).
+
+### 👥 Integrantes del Roster 77 Studio:
+
+| Integrante | Nombre Visible | Cargo Oficial | Fondo Degradado Card | Imagen Cutout (Versión 1 PNG) |
+|---|---|---|---|---|
+| **Jordan Cruz** | JORDAN | **CEO & Fundador** | `negativo 1 p-100.jpg` | `/img/equipo/jordan-cruz.png` |
+| **Tania Pérez** | TANIA | **Directora Operativa** | `negativo 2 p-100.jpg` | `/img/equipo/tania-perez.png` |
+| **Juliana Marín** | JULIANA | **Líder en Producción Audiovisual** | `negativo 3 p-100.jpg` | `/img/equipo/juliana-marin.png` |
+| **Juan Nieto** | JUAN | **Filmmaker** | `negativo 4 p-100.jpg` | `/img/equipo/juan-nieto.png` |
+| **David González** | DAVID | **Filmmaker** | `positivo 2 p-100.jpg` | `/img/equipo/david-gonzalez.png` |
+| **Elías Pérez** | ELÍAS | **Diseñador Gráfico** | `positivo 4 p-100.jpg` | `/img/equipo/elias-perez.png` |
+| **Brandon Marín** | BRANDON | **Diseñador Gráfico** | `postivo 3 p-100.jpg` | `/img/equipo/brandon-marin.png` |
+| **Alexa Zamora** | ALEXA | **Social Media Manager** | `postivo 1 p-100.jpg` | `/img/equipo/alexa-zamora.png` |
+| **Licxa Tamayo** | LICXA | **Social Media Manager** | `negativo 1 p-100.jpg` | `/img/equipo/licxa-tamayo.png` |
+| **Laura Montoya** | LAURA | **Social Media Manager** | `negativo 2 p-100.jpg` | `/img/equipo/laura-montoya.png` |
+
+---
+
+## 3. Nuestra Evolución: "Más que una agencia" (`EvolutionTimeline.astro`)
 
 - Trayectoria real desde el mundo de la dirección creativa y el marketing hacia capacidades integrales de software, automatización e inteligencia artificial.
 
 ---
 
-## 3. Filosofía de Trabajo
+## 4. Filosofía de Trabajo (`PhilosophySection.astro`)
 
 - *"La tecnología cambia. Nuestro enfoque sigue siendo resolver problemas reales de negocio."*
-- Fotografías de workshops, sesiones de estrategia y reuniones de planificación con clientes.
+- 4 Principios Fundamentales: Un Solo Equipo Integral, Tecnología con Sentido de Negocio, Mentalidad Sin Fronteras, Transparencia Absoluta.
 
 ---
 
-## 4. Presencia Internacional (Colombia + Estados Unidos)
+## 5. Capacidades y Disciplinas (`TeamCapabilitiesGrid.astro`)
 
-- Mapeo visual y presencia de sedes en Colombia y Estados Unidos con capacidad de trabajo remoto internacional sin fronteras de ubicación.
+- Carrusel infinito interactivo con switch `no scroll / scroll` para alternar entre carrusel continuo hacia la derecha y grilla 3x2.
+- 6 disciplinas: Estrategia Comercial, Paid Media, Contenido & Video, Ingeniería Web, Automatización CRM, IA Aplicada.
 
 ---
 
-## 5. Cierre Comercial
+## 6. Presencia Internacional (`GlobalPresenceSection.astro`)
 
-Fotografía grupal o escena auténtica del equipo + bloque de contacto directo WhatsApp + Email.
+- Mapeo visual de sedes y capacidad de colaboración remota fluida entre **Medellín (Colombia) ↔ Miami (Estados Unidos)**.
+
+---
+
+## 7. Cierre Comercial (`NosotrosContactSection.astro`)
+
+- Formulario de contacto estructurado + botón directo de WhatsApp context-aware (`nosotros`).
