@@ -7,3 +7,4 @@ dist
 *.log
 .eve
 .vercel
+.output

@@ -1,4 +1,4 @@
-import { formatWhatsAppResponse, prepareWhatsAppOutbound } from "./kapso.js";
+import { formatWhatsAppResponse, prepareWhatsAppOutbound } from "../channels/kapso.js";
 
 async function runKapsoTests() {
   console.log("🧪 [TEST] Iniciando pruebas de sanitización y botones interactivos de WhatsApp (Kapso)...");
