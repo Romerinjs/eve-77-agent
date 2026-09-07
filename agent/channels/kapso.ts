@@ -84,7 +84,10 @@ export const { bot, channel } = chatSdkChannel({
     kapso: kapsoAdapter,
   },
   state: getResolvedStateAdapter(),
-  concurrency: "concurrent",
+  concurrency: {
+    strategy: "burst",
+    debounceMs: 5000,
+  },
 });
 
 
@@ -157,8 +160,17 @@ export function formatWhatsAppResponse(rawText: string): string {
   // 4.2 Eliminar líneas completas de links redundantes a wa.me o directorios de WhatsApp
   text = text.replace(/^[*-]?\s*\*?(?:WhatsApp|Línea|Contacto|Teléfono)[^\n]*wa\.me[^\n]*\n?/gim, "");
   text = text.replace(/https?:\/\/wa\.me\/[^\s\)]+/gi, "");
-  // Eliminar viñetas huérfanas tipo "- Escribir por WhatsApp:" o "- Hablar por WhatsApp:**"
+  text = text.replace(/\(\s*\)/g, "");
+  text = text.replace(/\[\s*\]/g, "");
+
+  // Eliminar viñetas completas de canales de WhatsApp o números de teléfono (+57..., +1 202...)
+  text = text.replace(/^[*-]?\s*.*?(?:Chat\s+)?WhatsApp\s+(?:LATAM|USA|Colombia)?[^\n]*\n?/gim, "");
+  text = text.replace(/^[*-]?\s*.*?(?:\+57\s*314|\+1\s*202|202\s*933)[^\n]*\n?/gim, "");
   text = text.replace(/^[*-]?\s*\*?(?:Escribir|Hablar|Conversar|Contactar)?\s*(?:por\s+)?WhatsApp\s*:?\*?\s*$/gim, "");
+
+  // Eliminar frases introductorias a canales de WhatsApp redundantes
+  text = text.replace(/^[*-]?\s*(?:Si|O si)?\s*prefieres que (?:te ayudemos a )?coordin(?:emos|ar)[^\n]*\n?/gim, "");
+  text = text.replace(/^[*-]?\s*escríbenos a nuestros canales[^\n]*\n?/gim, "");
   text = text.replace(/manejamos la atención a través de nuestros canales oficiales:?/gi, "puedes agendar una sesión directa de diagnóstico.");
 
   // 4.3 Limpiar links markdown web absolutos [Texto](https://...)
@@ -180,6 +192,7 @@ export function formatWhatsAppResponse(rawText: string): string {
   text = text.replace(/\*{3,}/g, "*");
 
   // 8. Normalizar viñetas vacías o líneas huérfanas que hayan quedado
+  text = text.replace(/^\s*\*+\s*$/gm, "");
   text = text.replace(/^[*-]\s*$/gm, "");
 
   // 9. Eliminar asteriscos sueltos en los extremos del texto completo
@@ -204,31 +217,26 @@ export function prepareWhatsAppOutbound(rawText: string): {
   cleanText: string;
   cta?: { label: string; url: string };
 } {
-  let text = formatWhatsAppResponse(rawText);
+  let text = rawText;
+  let cta: { label: string; url: string } | undefined;
 
   // Detectar enlace de agendamiento oficial (Google Calendar)
   const calendarMatch = text.match(/https:\/\/calendar\.app\.google\/[a-zA-Z0-9_-]+/i);
   if (calendarMatch) {
     const url = calendarMatch[0];
+    cta = {
+      label: "Agendar Diagnóstico",
+      url,
+    };
     // Eliminar la línea completa o viñeta que contenía la URL para evitar líneas huérfanas
     text = text.replace(/^[*-]?\s*\*?(?:Agendar|Agenda|Llamada|Calendar|Link|Enlace|Espacio|Cita)[^\n]*https:\/\/calendar\.app\.google\/[^\s\)]*\n?/gim, "");
-    text = text
-      .replace(url, "")
-      .replace(/^[*-]\s*$/gm, "")
-      .replace(/(?:agendar|agenda|enlace|link|espacio|llamada)?:\s*$/gim, "")
-      .replace(/\n{3,}/g, "\n\n")
-      .trim();
-
-    return {
-      cleanText: text,
-      cta: {
-        label: "Agendar Diagnóstico",
-        url,
-      },
-    };
+    text = text.replace(url, "");
   }
 
-  return { cleanText: text };
+  // Sanitizar exhaustivamente el texto resultante (eliminando asteriscos huérfanos y líneas vacías)
+  const cleanText = formatWhatsAppResponse(text);
+
+  return { cleanText, cta };
 }
 
 // 5. Análisis Multimodal de Imágenes con Gemini Flash
@@ -320,13 +328,16 @@ async function processDebouncedTurn(
     console.log("ℹ️ [KAPSO] Hilo nuevo o sin historial recuperable.");
   }
 
-  const saludo = getColombiaGreeting();
+  const isFirstTurn = historyMessages.length === 0;
+  const saludoContext = isFirstTurn
+    ? `[Saludo inicial: ${getColombiaGreeting()}]`
+    : `[Conversación en curso: NO repitas saludos ni te presentes, ve directo al grano]`;
   const cleanContact = sanitizeContactName(senderName);
   let turnMessages: any[] = [
     ...historyMessages,
     {
       role: "user",
-      content: `[Saludo actual: ${saludo}][Contacto: ${cleanContact}]\n${fullPrompt}`,
+      content: `${saludoContext}[Contacto: ${cleanContact}][Regla de estilo: Máximo 1 o 2 párrafos ultra concisos, sin listas redundantes ni relleno]\n${fullPrompt}`,
     },
   ];
 
@@ -434,32 +445,56 @@ async function processDebouncedTurn(
 }
 
 // 7. Manejador de eventos entrantes de Chat SDK
-async function handleKapsoInbound(thread: Thread, message: Message) {
-  const userText = message.text || (message as any).rawText || (message as any).content || "";
-  
-  // Extraer imágenes adjuntas si existen
+async function handleKapsoInbound(
+  thread: Thread,
+  message: Message,
+  channel?: any,
+  context?: { skipped?: Message[]; totalSinceLastHandler?: number }
+) {
+  // Consolidar mensajes si Chat SDK entregó ráfaga agrupada mediante estrategia burst distribuida en Redis
+  const allMessages = [...(context?.skipped ?? []), message];
+  const userTexts: string[] = [];
   const imageUrls: string[] = [];
-  if (message.attachments && message.attachments.length > 0) {
-    for (const att of message.attachments) {
-      const mime = (att as any).mimeType || (att as any).contentType || (att as any).type || "";
-      if (typeof mime === "string" && (mime.startsWith("image/") || mime.includes("image")) && (att as any).url) {
-        imageUrls.push((att as any).url);
+
+  for (const msg of allMessages) {
+    const text = msg.text || (msg as any).rawText || (msg as any).content || "";
+    if (text.trim()) userTexts.push(text.trim());
+
+    if (msg.attachments && msg.attachments.length > 0) {
+      for (const att of msg.attachments) {
+        const mime = (att as any).mimeType || (att as any).contentType || (att as any).type || "";
+        if (typeof mime === "string" && (mime.startsWith("image/") || mime.includes("image")) && (att as any).url) {
+          imageUrls.push((att as any).url);
+        }
       }
     }
   }
 
+  const consolidatedText = userTexts.join("\n");
+
   // Si no hay texto ni imagen, descartar
-  if (!userText.trim() && imageUrls.length === 0) {
+  if (!consolidatedText.trim() && imageUrls.length === 0) {
     return;
   }
 
-  const senderName = (message.author as any)?.displayName || (message.author as any)?.name || (message.author as any)?.userName || "";
+  const senderName =
+    (message.author as any)?.displayName ||
+    (message.author as any)?.name ||
+    (message.author as any)?.userName ||
+    "";
 
-  // Encolar en el debouncer de WhatsApp (3.5s) para consolidar ráfagas de mensajes continuos
+  // Si Chat SDK ya ejecutó la estrategia 'burst' distribuida con Redis (context.skipped presente)
+  if (context?.skipped !== undefined) {
+    console.log(`📦 [KAPSO BURST NATIVO] Ráfaga consolidada por Chat SDK (${allMessages.length} mensaje(s)): "${consolidatedText}"`);
+    await processDebouncedTurn(thread, consolidatedText, imageUrls, senderName);
+    return;
+  }
+
+  // Encolar en el debouncer de WhatsApp (5s) para consolidar ráfagas en entornos sin burst activo
   await whatsappDebouncer.enqueue(
     thread.id,
     {
-      text: userText,
+      text: consolidatedText,
       imageUrls,
       messageId: message.id,
       senderName,

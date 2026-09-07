@@ -31,8 +31,8 @@ async function runTests() {
   if (!kapsoSub.includes("PROHIBIDO USAR ENLACES MARKDOWN")) {
     throw new Error("❌ La sub-instrucción de Kapso debe prohibir enlaces markdown.");
   }
-  if (!kapsoSub.includes("calendar.app.google") || !kapsoSub.includes("+57 314 8490955") || !kapsoSub.includes("+1 (202) 933-7792")) {
-    throw new Error("❌ La sub-instrucción de Kapso debe incluir los números de Dirección Comercial y Calendar.");
+  if (!kapsoSub.includes("calendar.app.google") || !kapsoSub.includes("PROHIBIDO DAR NÚMEROS DE TELÉFONO")) {
+    throw new Error("❌ La sub-instrucción de Kapso debe incluir Calendar y prohibir números telefónicos.");
   }
   if (!kapsoSub.includes("CERO EMOJIS") && !kapsoSub.includes("PROHIBIDO EL USO DE EMOJIS")) {
     throw new Error("❌ La sub-instrucción de Kapso debe prohibir estrictamente el uso de emojis.");
@@ -62,8 +62,8 @@ async function runTests() {
   if (!kapsoFull.includes("Sofía") || !kapsoFull.includes("DIRECTRICES ESPECÍFICAS DE CANAL (KAPSO)")) {
     throw new Error("❌ La composición para Kapso no contiene la base o el encabezado de canal.");
   }
-  if (!kapsoFull.includes("Máximo 2 párrafos")) {
-    throw new Error("❌ La composición para Kapso no contiene la directriz de extensión de máximo 2 párrafos.");
+  if (!/máximo (1 o )?2 párrafos/i.test(kapsoFull)) {
+    throw new Error("❌ La composición para Kapso no contiene la directriz de extensión de máximo 1 o 2 párrafos.");
   }
   console.log("   ✅ Composición Kapso validada correctamente (longitud:", kapsoFull.length, "caracteres)");
 
