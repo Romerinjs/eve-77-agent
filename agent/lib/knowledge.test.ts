@@ -174,7 +174,27 @@ async function runTests() {
   }
   console.log("   ✅ Roster general vinculado correctamente a empresa/nosotros");
 
-  console.log("\n🎉 ¡TODOS LOS 15 TESTS PASARON EXITOSAMENTE!");
+  // 17. Test Búsqueda Líder Técnico: Nicolás Salas
+  console.log("\n🧪 [TEST 16] Búsqueda: 'Nicolas Salas arquitecto web lider tecnico'");
+  const resNicolas = await searchKnowledge({ query: "Nicolas Salas arquitecto web lider tecnico" });
+  const topNicolas = resNicolas.documents[0];
+  console.log(`   Top match: ${topNicolas?.slug} (Score: ${topNicolas?.score})`);
+  if (!topNicolas || (topNicolas.slug !== "equipo/general" && topNicolas.slug !== "empresa/nosotros")) {
+    throw new Error(`❌ Falló match para Nicolás Salas, recibido: ${topNicolas?.slug}`);
+  }
+  console.log("   ✅ Match correcto para Nicolás Salas");
+
+  // 18. Test Búsqueda Desarrollador Full Stack: Romer Almeida
+  console.log("\n🧪 [TEST 17] Búsqueda: 'Romer Almeida frontend disenador ui ux'");
+  const resRomer = await searchKnowledge({ query: "Romer Almeida frontend disenador ui ux" });
+  const topRomer = resRomer.documents[0];
+  console.log(`   Top match: ${topRomer?.slug} (Score: ${topRomer?.score})`);
+  if (!topRomer || (topRomer.slug !== "equipo/general" && topRomer.slug !== "empresa/nosotros")) {
+    throw new Error(`❌ Falló match para Romer Almeida, recibido: ${topRomer?.slug}`);
+  }
+  console.log("   ✅ Match correcto para Romer Almeida");
+
+  console.log("\n🎉 ¡TODOS LOS 17 TESTS PASARON EXITOSAMENTE!");
 }
 
 runTests().catch((err) => {

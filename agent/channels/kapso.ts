@@ -3,7 +3,7 @@ import path from "node:path";
 import { createMemoryState } from "@chat-adapter/state-memory";
 import { createRedisState } from "@chat-adapter/state-redis";
 import { createKapsoAdapter } from "@kapso/chat-adapter";
-import { toAiMessages, type Message, type Thread } from "chat";
+import { toAiMessages, type Message, type Thread, Card, Actions, LinkButton } from "chat";
 import { chatSdkChannel } from "eve/channels/chat-sdk";
 import { generateText, tool } from "ai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
@@ -84,6 +84,7 @@ export const { bot, channel } = chatSdkChannel({
     kapso: kapsoAdapter,
   },
   state: getResolvedStateAdapter(),
+  concurrency: "concurrent",
 });
 
 
@@ -150,9 +151,13 @@ export function formatWhatsAppResponse(rawText: string): string {
   // 3.1 Limpiar links con rutas relativas web tipo [/nosotros](/nosotros) o [Servicios](/servicios)
   text = text.replace(/\[([^\]]+)\]\(\/[^\)]*\)/g, "$1");
 
-  // 3.2 Limpiar links markdown web absolutos [Texto](https://...)
+  // 3.2 Eliminar líneas completas de links redundantes a wa.me o directorios de WhatsApp
+  text = text.replace(/^[*-]?\s*\*?(?:WhatsApp|Línea|Contacto|Teléfono)[^\n]*wa\.me[^\n]*\n?/gim, "");
+  text = text.replace(/https?:\/\/wa\.me\/[^\s\)]+/gi, "");
+  text = text.replace(/manejamos la atención a través de nuestros canales oficiales:?/gi, "puedes agendar una sesión directa de diagnóstico.");
+
+  // 3.3 Limpiar links markdown web absolutos [Texto](https://...)
   text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, (match, label, url) => {
-    // Si la etiqueta es solo agendar o enlace, retornar la URL directamente
     if (/agendar|calendar|link|enlace|clic|aqui|aquí|meet/i.test(label)) {
       return url;
     }
@@ -168,13 +173,53 @@ export function formatWhatsAppResponse(rawText: string): string {
   // 6. Limpiar asteriscos sobrantes si quedaron triples
   text = text.replace(/\*{3,}(.*?)\*{3,}/g, "*$1*");
 
-  // 7. Normalizar saltos de línea excesivos (máximo 2 saltos consecutivos)
+  // 7. Normalizar viñetas vacías o líneas huérfanas que hayan quedado de wa.me
+  text = text.replace(/^[*-]\s*$/gm, "");
+
+  // 8. Normalizar saltos de línea excesivos (máximo 2 saltos consecutivos)
   text = text.replace(/\n{3,}/g, "\n\n");
 
-  // 8. Eliminar emojis para garantizar comunicación 100% limpia y ejecutiva
+  // 9. Eliminar emojis para garantizar comunicación 100% limpia y ejecutiva
   text = text.replace(/[\p{Extended_Pictographic}\uFE0F]/gu, "").replace(/[ ]{2,}/g, " ");
 
   return text.trim();
+}
+
+/**
+ * Prepara el contenido saliente para WhatsApp:
+ * Si contiene un enlace de Google Calendar o agendamiento, lo extrae para
+ * enviarlo como botón interactivo nativo de WhatsApp (CTA Button), evitando
+ * links largos planos que dañen la prosperidad visual del mensaje.
+ */
+export function prepareWhatsAppOutbound(rawText: string): {
+  cleanText: string;
+  cta?: { label: string; url: string };
+} {
+  let text = formatWhatsAppResponse(rawText);
+
+  // Detectar enlace de agendamiento oficial (Google Calendar)
+  const calendarMatch = text.match(/https:\/\/calendar\.app\.google\/[a-zA-Z0-9_-]+/i);
+  if (calendarMatch) {
+    const url = calendarMatch[0];
+    // Eliminar la línea completa o viñeta que contenía la URL para evitar líneas huérfanas
+    text = text.replace(/^[*-]?\s*\*?(?:Agendar|Agenda|Llamada|Calendar|Link|Enlace|Espacio|Cita)[^\n]*https:\/\/calendar\.app\.google\/[^\s\)]*\n?/gim, "");
+    text = text
+      .replace(url, "")
+      .replace(/^[*-]\s*$/gm, "")
+      .replace(/(?:agendar|agenda|enlace|link|espacio|llamada)?:\s*$/gim, "")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
+
+    return {
+      cleanText: text,
+      cta: {
+        label: "Agendar Diagnóstico",
+        url,
+      },
+    };
+  }
+
+  return { cleanText: text };
 }
 
 // 5. Análisis Multimodal de Imágenes con Gemini Flash
@@ -332,15 +377,43 @@ async function processDebouncedTurn(
       finalResponseText = forcedResult.text;
     }
 
-    const sanitizedOutbound = formatWhatsAppResponse(finalResponseText);
+    const { cleanText, cta } = prepareWhatsAppOutbound(finalResponseText);
 
-    console.log(`\n📤 [KAPSO OUTBOUND] Enviando respuesta a WhatsApp (${sanitizedOutbound.length} caracteres):`);
-    console.log(sanitizedOutbound);
+    console.log(`\n📤 [KAPSO OUTBOUND] Enviando respuesta a WhatsApp (${cleanText.length} caracteres${cta ? ` + Botón CTA: "${cta.label}"` : ""}):`);
+    console.log(cleanText);
+    if (cta) {
+      console.log(`🔘 Botón interactivo: [${cta.label}] -> ${cta.url}`);
+    }
     console.log(`======================================================\n`);
 
-    // Enviar respuesta al hilo de WhatsApp vía Kapso
+    // Si hay un botón interactivo (ej. Agendar Diagnóstico), enviarlo mediante Card nativa de WhatsApp
+    if (cta && cta.url) {
+      try {
+        await thread.post(
+          Card({
+            title: cleanText,
+            children: [
+              Actions([
+                LinkButton({
+                  label: cta.label,
+                  url: cta.url,
+                }),
+              ]),
+            ],
+          })
+        );
+        return;
+      } catch (cardError) {
+        console.warn("⚠️ [KAPSO] Error enviando botón interactivo de WhatsApp, usando fallback de texto:", cardError);
+        // Si el adaptador falla con Card, enviar texto limpio con la URL al final
+        await thread.post(`${cleanText}\n\n${cta.url}`);
+        return;
+      }
+    }
+
+    // Enviar mensaje de texto limpio estándar
     await thread.post(
-      sanitizedOutbound ||
+      cleanText ||
         "Hola, soy Sofía de 77 Studio. Con gusto te asesoro en desarrollo web, marketing y automatizaciones con IA para tu empresa. ¿En qué área te gustaría que nos enfoquemos?"
     );
   } catch (error) {
@@ -373,8 +446,20 @@ async function handleKapsoInbound(thread: Thread, message: Message) {
 
   const senderName = (message.author as any)?.displayName || (message.author as any)?.name || (message.author as any)?.userName || "";
 
-  // En Vercel Serverless, procesar de inmediato (Kapso ya aplica su buffer nativo de 5s en la nube)
-  await processDebouncedTurn(thread, userText, imageUrls, senderName);
+  // Encolar en el debouncer de WhatsApp (3.5s) para consolidar ráfagas de mensajes continuos
+  await whatsappDebouncer.enqueue(
+    thread.id,
+    {
+      text: userText,
+      imageUrls,
+      messageId: message.id,
+      senderName,
+      timestamp: Date.now(),
+    },
+    async (threadId, aggregatedText, allImages, lastItem) => {
+      await processDebouncedTurn(thread, aggregatedText, allImages, lastItem.senderName || senderName);
+    }
+  );
 }
 
 // Registrar manejadores de eventos

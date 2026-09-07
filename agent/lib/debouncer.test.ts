@@ -3,16 +3,16 @@ import { MessageDebouncer } from "./debouncer.js";
 async function testDebouncer() {
   console.log("🧪 [TEST] Iniciando prueba del Message Debouncer...");
 
+  // CASO 1: Ráfaga de 3 mensajes consecutivos con imágenes
   let flushCount = 0;
   let receivedText = "";
   let receivedImages: string[] = [];
 
-  const debouncer = new MessageDebouncer(1000); // 1 segundo para el test rápido
-
+  const debouncer = new MessageDebouncer(500); // 500ms para pruebas rápidas
   const threadId = "test-thread-whatsapp-123";
 
   // Enviar mensaje 1
-  debouncer.enqueue(
+  const p1 = debouncer.enqueue(
     threadId,
     {
       text: "Hola",
@@ -27,9 +27,9 @@ async function testDebouncer() {
     }
   );
 
-  // Enviar mensaje 2 a los 300ms
-  await new Promise((r) => setTimeout(r, 300));
-  debouncer.enqueue(
+  // Enviar mensaje 2 a los 100ms
+  await new Promise((r) => setTimeout(r, 100));
+  const p2 = debouncer.enqueue(
     threadId,
     {
       text: "¿Tienen servicio de desarrollo web en Astro?",
@@ -44,9 +44,9 @@ async function testDebouncer() {
     }
   );
 
-  // Enviar mensaje 3 con imagen a los 500ms
-  await new Promise((r) => setTimeout(r, 200));
-  debouncer.enqueue(
+  // Enviar mensaje 3 con imagen a los 200ms
+  await new Promise((r) => setTimeout(r, 100));
+  const p3 = debouncer.enqueue(
     threadId,
     {
       text: "Adjunto referencia de mi web actual",
@@ -62,8 +62,8 @@ async function testDebouncer() {
     }
   );
 
-  console.log("   ⏳ Esperando a que expire el temporizador del debouncer (1.5s)...");
-  await new Promise((r) => setTimeout(r, 1500));
+  // Esperar a que las promesas de enqueue se resuelvan tras el flush
+  await Promise.all([p1, p2, p3]);
 
   if (flushCount !== 1) {
     throw new Error(`❌ Se esperaba exactamente 1 ejecución consolidada, pero se recibieron ${flushCount}`);
@@ -85,10 +85,102 @@ async function testDebouncer() {
     throw new Error(`❌ Imagen no acumulada correctamente: ${JSON.stringify(receivedImages)}`);
   }
 
-  console.log(`✅ ¡Prueba de Debouncer superada!`);
+  console.log(`✅ [CASO 1] ¡Prueba de Debouncer con 3 mensajes e imagen superada!`);
   console.log(`   - Ejecuciones totales: ${flushCount}`);
   console.log(`   - Texto consolidado:\n${receivedText.split("\n").map(l => "     > " + l).join("\n")}`);
-  console.log(`   - Imágenes acumuladas: ${receivedImages.join(", ")}`);
+
+  // CASO 2: Simulación exacta de WhatsApp (Romer: Consulta doble 'Bueno bueno que que llamada' + 'Que sabes de Tania Pérez?')
+  console.log("\n🧪 [CASO 2] Simulación caso real de usuario (Consulta doble simultánea)...");
+  let realFlushCount = 0;
+  let realAggregatedText = "";
+
+  const realThreadId = "whatsapp-romer-57314";
+  const pReal1 = debouncer.enqueue(
+    realThreadId,
+    {
+      text: "Bueno bueno que que llamada",
+      messageId: "wa-msg-101",
+      senderName: "Romer",
+      timestamp: Date.now(),
+    },
+    async (_tid, aggText) => {
+      realFlushCount++;
+      realAggregatedText = aggText;
+    }
+  );
+
+  await new Promise((r) => setTimeout(r, 150));
+
+  const pReal2 = debouncer.enqueue(
+    realThreadId,
+    {
+      text: "Que sabes de Tania Pérez?",
+      messageId: "wa-msg-102",
+      senderName: "Romer",
+      timestamp: Date.now(),
+    },
+    async (_tid, aggText) => {
+      realFlushCount++;
+      realAggregatedText = aggText;
+    }
+  );
+
+  await Promise.all([pReal1, pReal2]);
+
+  if (realFlushCount !== 1) {
+    throw new Error(`❌ Falló consolidación en caso real: se ejecutaron ${realFlushCount} veces en vez de 1`);
+  }
+
+  if (!realAggregatedText.includes("Bueno bueno que que llamada") || !realAggregatedText.includes("Que sabes de Tania Pérez?")) {
+    throw new Error(`❌ El texto consolidado no contiene ambas preguntas: "${realAggregatedText}"`);
+  }
+
+  console.log(`✅ [CASO 2] ¡Consulta doble consolidada con éxito en un solo turno!`);
+  console.log(`   - Texto unificado:\n${realAggregatedText.split("\n").map(l => "     > " + l).join("\n")}`);
+
+  // CASO 3: Detección y descarte de mensaje duplicado (reintento de webhook)
+  console.log("\n🧪 [CASO 3] Detección de mensajes duplicados por reintentos de red...");
+  let dupFlushCount = 0;
+  let dupText = "";
+
+  const dupThreadId = "whatsapp-dup-test";
+  const pDup1 = debouncer.enqueue(
+    dupThreadId,
+    {
+      text: "Mensaje único original",
+      messageId: "same-msg-id-999",
+      senderName: "Ana",
+      timestamp: Date.now(),
+    },
+    async (_tid, aggText) => {
+      dupFlushCount++;
+      dupText = aggText;
+    }
+  );
+
+  // Intentar meter el mismo messageId de inmediato
+  const pDup2 = debouncer.enqueue(
+    dupThreadId,
+    {
+      text: "Mensaje único original",
+      messageId: "same-msg-id-999",
+      senderName: "Ana",
+      timestamp: Date.now(),
+    },
+    async (_tid, aggText) => {
+      dupFlushCount++;
+      dupText = aggText;
+    }
+  );
+
+  await Promise.all([pDup1, pDup2]);
+
+  if (dupFlushCount !== 1 || dupText !== "Mensaje único original") {
+    throw new Error(`❌ No se deduplicó correctamente: flushCount=${dupFlushCount}, text="${dupText}"`);
+  }
+  console.log(`✅ [CASO 3] Mensaje duplicado filtrado exitosamente.`);
+
+  console.log("\n🎉 ¡TODAS LAS PRUEBAS DEL DEBOUNCER PASARON CON ÉXITO!");
 }
 
 testDebouncer().catch((e) => {

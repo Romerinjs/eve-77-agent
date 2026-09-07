@@ -10,6 +10,8 @@
     "chat": "tsx agent/chat-cli.ts",
     "eval": "npx eve eval",
     "test:guards": "tsx agent/lib/guardrails.test.ts",
+    "test:debouncer": "tsx agent/lib/debouncer.test.ts",
+    "test:kapso": "tsx agent/channels/kapso.test.ts",
     "test:knowledge": "tsx agent/lib/knowledge.test.ts",
     "test:instructions": "tsx agent/lib/instructions.test.ts",
     "test:live": "tsx agent/test-live-agent.ts",

@@ -24,53 +24,76 @@ export class MessageDebouncer {
   private bufferMap = new Map<string, {
     items: BufferedItem[];
     timer: NodeJS.Timeout;
+    resolvers: Array<() => void>;
+    firstTimestamp: number;
     latestId: string;
   }>();
 
   private delayMs: number;
+  private maxWaitMs: number;
 
   /**
-   * @param delayMs Tiempo de espera en milisegundos tras el último mensaje (default: 10000ms = 10s)
+   * @param delayMs Tiempo de espera en milisegundos tras el último mensaje (default: 3500ms = 3.5s)
+   * @param maxWaitMs Tiempo máximo total antes de forzar flush aunque sigan llegando mensajes (default: 8000ms = 8s)
    */
-  constructor(delayMs = 10_000) {
+  constructor(delayMs = 3500, maxWaitMs = 8000) {
     this.delayMs = delayMs;
+    this.maxWaitMs = maxWaitMs;
   }
 
   /**
    * Encola un mensaje entrante. Si ya existe un temporizador activo para el hilo,
-   * se cancela y se reinicia el temporizador de 10s con el texto acumulado.
+   * se cancela y se reinicia el temporizador con el texto acumulado.
+   * Retorna una Promesa que se resuelve cuando el lote de mensajes haya sido procesado.
    */
   public enqueue(
     threadId: string,
     item: BufferedItem,
     onFlush: FlushCallback
-  ): void {
-    const existing = this.bufferMap.get(threadId);
+  ): Promise<void> {
+    return new Promise<void>((resolve) => {
+      const existing = this.bufferMap.get(threadId);
 
-    if (existing) {
-      // Cancelar temporizador previo
-      clearTimeout(existing.timer);
-      existing.items.push(item);
-      existing.latestId = item.messageId;
+      if (existing) {
+        // Evitar duplicados exactos si el webhook reintenta el mismo messageId
+        if (existing.items.some((i) => i.messageId === item.messageId)) {
+          console.log(`⚠️ [DEBOUNCER] Mensaje duplicado (${item.messageId}) ignorado para ${threadId}.`);
+          resolve();
+          return;
+        }
 
-      console.log(`⏳ [DEBOUNCER] Mensaje agregado al buffer de ${threadId} (Total: ${existing.items.length}). Reiniciando timer a ${this.delayMs / 1000}s...`);
+        clearTimeout(existing.timer);
+        existing.items.push(item);
+        existing.latestId = item.messageId;
+        existing.resolvers.push(resolve);
 
-      existing.timer = setTimeout(async () => {
-        await this.flush(threadId, onFlush);
-      }, this.delayMs);
-    } else {
-      console.log(`⏱️ [DEBOUNCER] Iniciando buffer para nuevo mensaje de ${threadId} (${this.delayMs / 1000}s de espera)...`);
+        const timeElapsed = Date.now() - existing.firstTimestamp;
+        const nextDelay = (timeElapsed + this.delayMs > this.maxWaitMs)
+          ? Math.max(0, this.maxWaitMs - timeElapsed)
+          : this.delayMs;
 
-      const timer = setTimeout(async () => {
-        await this.flush(threadId, onFlush);
-      }, this.delayMs);
+        console.log(`⏳ [DEBOUNCER] Mensaje agregado al buffer de ${threadId} (Total: ${existing.items.length}). Próximo flush en ${nextDelay / 1000}s...`);
 
-      this.bufferMap.set(threadId, {
-        items: [item],
-        timer,
-        latestId: item.messageId,
-      });
-    }
+        existing.timer = setTimeout(async () => {
+          await this.flush(threadId, onFlush);
+        }, nextDelay);
+      } else {
+        console.log(`⏱️ [DEBOUNCER] Iniciando buffer para mensaje de ${threadId} (${this.delayMs / 1000}s de espera)...`);
+
+        const resolvers = [resolve];
+        const timer = setTimeout(async () => {
+          await this.flush(threadId, onFlush);
+        }, this.delayMs);
+
+        this.bufferMap.set(threadId, {
+          items: [item],
+          timer,
+          resolvers,
+          firstTimestamp: Date.now(),
+          latestId: item.messageId,
+        });
+      }
+    });
   }
 
   /**
@@ -80,7 +103,7 @@ export class MessageDebouncer {
     const entry = this.bufferMap.get(threadId);
     if (!entry || entry.items.length === 0) return;
 
-    // Eliminar del mapa antes de procesar para evitar carreras
+    // Eliminar del mapa antes de procesar para evitar colisiones con nuevos mensajes
     this.bufferMap.delete(threadId);
 
     const aggregatedText = entry.items
@@ -103,6 +126,13 @@ export class MessageDebouncer {
       await onFlush(threadId, aggregatedText, allImageUrls, lastItem);
     } catch (error) {
       console.error(`❌ [DEBOUNCER FLUSH] Error ejecutando callback para ${threadId}:`, error);
+    } finally {
+      // Liberar las promesas en espera del webhook
+      for (const res of entry.resolvers) {
+        try {
+          res();
+        } catch {}
+      }
     }
   }
 
@@ -113,10 +143,15 @@ export class MessageDebouncer {
     const existing = this.bufferMap.get(threadId);
     if (existing) {
       clearTimeout(existing.timer);
+      for (const res of existing.resolvers) {
+        try {
+          res();
+        } catch {}
+      }
       this.bufferMap.delete(threadId);
     }
   }
 }
 
-// Instancia singleton compartida con ventana de 10 segundos
-export const whatsappDebouncer = new MessageDebouncer(10_000);
+// Instancia singleton compartida con ventana optimizada de 3.5 segundos (máximo 8 segundos)
+export const whatsappDebouncer = new MessageDebouncer(3500, 8000);

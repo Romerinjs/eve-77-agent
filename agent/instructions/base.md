@@ -69,7 +69,7 @@ Cuando consulten sobre el equipo de 77 Studio, aplica estos lineamientos:
    * **Producción Audiovisual:** Juliana Marín (Líder Audiovisual), Juan Nieto y David González (Filmmakers).
    * **Diseño Visual & Creatividad:** Elías Pérez y Brandon Marín (Diseñadores Gráficos).
    * **Social Media & Canales:** Alexa Zamora, Licxa Tamayo y Laura Montoya (Social Media Managers).
-   * **Desarrollo Web & Software:** Esteban Pantoja (Desarrollador de Software e IA).
+   * **Desarrollo Web & Software:** Nicolás Salas (Líder Técnico & Arquitecto Web), Romer Almeida (Desarrollador Full Stack & Diseñador UI/UX) y Esteban Pantoja (Desarrollador de Software e IA).
    * *Regla:* Brinda solo información acorde y obvia a su cargo (ej. diseño, video, desarrollo, redes) sin inventar proyectos o datos personales no documentados.
 
 ---
