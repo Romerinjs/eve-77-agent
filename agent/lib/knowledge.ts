@@ -327,10 +327,19 @@ function scoreDocument(
     }
   }
 
-  // Descartar coincidencias incidentales de ruido (ej. 1 sola palabra de 2+ términos que solo aparece de pasada en el texto plano)
+  // Descartar coincidencias incidentales de ruido (ej. 1 sola palabra de 2+ términos que solo aparece de pasada o en un apellido común)
   const significantTerms = terms.filter((t) => t.length > 2 && !stopWords.has(t));
-  if (significantTerms.length >= 2 && matchingTermsCount < 2 && score <= 2 && !targetSlug) {
-    return 0;
+  if (significantTerms.length >= 2 && matchingTermsCount < 2 && !targetSlug) {
+    const titleOrSlugMatch = significantTerms.some(
+      (t) =>
+        doc.search.title.includes(t) ||
+        doc.search.slug.includes(t) ||
+        doc.search.route.includes(t) ||
+        doc.search.module.includes(t),
+    );
+    if (!titleOrSlugMatch) {
+      return 0;
+    }
   }
 
   return score;

@@ -9,14 +9,14 @@ const inputSchema = z
       .trim()
       .default("")
       .describe(
-        "Términos o palabras clave que se deben buscar en la base de conocimiento oficial de 77 Studio (ej. 'Esteban Pantoja', 'equipo', 'meta ads', 'desarrollo web', 'automatizacion crm', 'precios').",
+        "Términos o palabras clave que se deben buscar en la base de conocimiento oficial de 77 Studio (ej. 'Jordan Cruz', 'Tania Perez', 'roster equipo', 'Esteban Pantoja', 'meta ads', 'desarrollo web', 'automatizacion crm').",
       ),
     slug: z
       .string()
       .regex(/^[a-zA-Z0-9/_.-]+$/)
       .optional()
       .describe(
-        "Slug o ID exacto del documento solo si lo conoces con certeza (ej. 'equipo/esteban', 'servicios/marketing', 'servicios/web', 'audiencias/nuevos-clientes', 'empresa/contacto'). Para búsquedas libres o por nombre, déjalo vacío y usa 'query'.",
+        "Slug o ID exacto del documento solo si lo conoces con certeza (ej. 'empresa/nosotros' para directivos y roster general, 'equipo/esteban', 'servicios/marketing', 'servicios/web', 'audiencias/nuevos-clientes', 'empresa/contacto'). Para búsquedas libres o por nombre, déjalo vacío y usa 'query'.",
       ),
     audience: z
       .enum(["nuevos-clientes", "empresas", "fundadores-startups"])
@@ -38,7 +38,7 @@ const inputSchema = z
 
 export default defineTool({
   description:
-    "Busca información oficial, verídica y vigente en la base de conocimiento de 77 Studio sobre servicios (Marketing, Web, IA & Automatización, Productos Digitales), equipo de trabajo (ej. Esteban Pantoja), playbooks de atención por audiencia y datos de contacto. Usa esta herramienta obligatoriamente antes de responder cualquier duda sobre la empresa, equipo o servicios. NUNCA inventes precios, miembros de equipo o condiciones que no existan en los documentos.",
+    "Busca información oficial, verídica y vigente en la base de conocimiento de 77 Studio sobre servicios (Marketing, Web, IA & Automatización, Productos Digitales), equipo de trabajo y directivos (para el roster general y directivos como Jordan Cruz o Tania Pérez consultar 'empresa/nosotros'; para Esteban Pantoja consultar 'equipo/esteban'), playbooks de atención por audiencia y datos de contacto. Usa esta herramienta obligatoriamente antes de responder cualquier duda sobre la empresa, equipo o servicios. NUNCA inventes precios, miembros de equipo o condiciones que no existan en los documentos.",
   inputSchema,
   async execute(input) {
     return searchKnowledge(input);

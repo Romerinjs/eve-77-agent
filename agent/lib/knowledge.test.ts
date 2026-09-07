@@ -152,7 +152,29 @@ async function runTests() {
   }
   console.log("   ✅ Match correcto con empresa/contacto");
 
-  console.log("\n🎉 ¡TODOS LOS 13 TESTS PASARON EXITOSAMENTE!");
+  // 15. Test Integrantes del Roster en Nosotros (Tania Pérez, Laura Montoya, Juan Nieto)
+  console.log("\n🧪 [TEST 14] Búsqueda Integrantes del Roster: 'Tania Perez' y 'Laura Montoya'");
+  const resTania = await searchKnowledge({ query: "Tania Perez" });
+  if (resTania.documents[0]?.slug !== "empresa/nosotros") {
+    throw new Error(`❌ Se esperaba empresa/nosotros para 'Tania Perez', recibido: ${resTania.documents[0]?.slug}`);
+  }
+  console.log("   ✅ Tania Pérez vinculada correctamente a empresa/nosotros");
+
+  const resLaura = await searchKnowledge({ query: "Laura Montoya" });
+  if (resLaura.documents[0]?.slug !== "empresa/nosotros") {
+    throw new Error(`❌ Se esperaba empresa/nosotros para 'Laura Montoya', recibido: ${resLaura.documents[0]?.slug}`);
+  }
+  console.log("   ✅ Laura Montoya vinculada correctamente a empresa/nosotros");
+
+  // 16. Test Consulta por Roster General
+  console.log("\n🧪 [TEST 15] Búsqueda General Roster: 'roster equipo quienes estan'");
+  const resRoster = await searchKnowledge({ query: "roster equipo quienes estan" });
+  if (resRoster.documents[0]?.slug !== "empresa/nosotros") {
+    throw new Error(`❌ Se esperaba empresa/nosotros para 'roster equipo', recibido: ${resRoster.documents[0]?.slug}`);
+  }
+  console.log("   ✅ Roster general vinculado correctamente a empresa/nosotros");
+
+  console.log("\n🎉 ¡TODOS LOS 15 TESTS PASARON EXITOSAMENTE!");
 }
 
 runTests().catch((err) => {

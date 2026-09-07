@@ -17,6 +17,9 @@ async function runTests() {
   if (!base.includes("PROHIBIDO PREGUNTAR PRESUPUESTO")) {
     throw new Error("❌ Las directrices base deben incluir la política de presupuesto.");
   }
+  if (!base.includes("Protocolo de Negación Seguro") || !base.includes("Protocolo del Equipo 77 Studio")) {
+    throw new Error("❌ Las directrices base deben incluir el protocolo de negación seguro y del equipo.");
+  }
   console.log("   ✅ Instrucciones base cargadas con éxito (longitud:", base.length, "caracteres)");
 
   // 2. Validar Sub-Instrucción Kapso (WhatsApp)
@@ -31,6 +34,9 @@ async function runTests() {
   if (!kapsoSub.includes("calendar.app.google") || !kapsoSub.includes("+57 314 8490955") || !kapsoSub.includes("+1 (202) 933-7792")) {
     throw new Error("❌ La sub-instrucción de Kapso debe incluir los números de Dirección Comercial y Calendar.");
   }
+  if (!kapsoSub.includes("CERO EMOJIS") && !kapsoSub.includes("PROHIBIDO EL USO DE EMOJIS")) {
+    throw new Error("❌ La sub-instrucción de Kapso debe prohibir estrictamente el uso de emojis.");
+  }
   console.log("   ✅ Sub-instrucción de Kapso cargada con éxito (longitud:", kapsoSub.length, "caracteres)");
 
   // 3. Validar Sub-Instrucción Web
@@ -38,6 +44,12 @@ async function runTests() {
   const webSub = getSubInstruction("web");
   if (!webSub || !webSub.includes("Chat Web") || !webSub.includes("[/marketing](/marketing)")) {
     throw new Error("❌ Falló la carga de la sub-instrucción para Web.");
+  }
+  if (!webSub.includes("[/nosotros](/nosotros)")) {
+    throw new Error("❌ La sub-instrucción Web debe incluir la ruta [/nosotros](/nosotros).");
+  }
+  if (!webSub.includes("1 a 4 líneas")) {
+    throw new Error("❌ La sub-instrucción Web debe especificar el límite de 1 a 4 líneas.");
   }
   if (!webSub.includes("calendar.app.google")) {
     throw new Error("❌ La sub-instrucción Web debe incluir el enlace a Calendar.");
@@ -50,8 +62,8 @@ async function runTests() {
   if (!kapsoFull.includes("Sofía") || !kapsoFull.includes("DIRECTRICES ESPECÍFICAS DE CANAL (KAPSO)")) {
     throw new Error("❌ La composición para Kapso no contiene la base o el encabezado de canal.");
   }
-  if (!kapsoFull.includes("Máximo 2 a 3 líneas")) {
-    throw new Error("❌ La composición para Kapso no contiene la directriz de extensión.");
+  if (!kapsoFull.includes("Máximo 2 párrafos")) {
+    throw new Error("❌ La composición para Kapso no contiene la directriz de extensión de máximo 2 párrafos.");
   }
   console.log("   ✅ Composición Kapso validada correctamente (longitud:", kapsoFull.length, "caracteres)");
 
@@ -60,6 +72,9 @@ async function runTests() {
   const webFull = getInstructionsForChannel("web");
   if (!webFull.includes("Sofía") || !webFull.includes("DIRECTRICES ESPECÍFICAS DE CANAL (WEB)")) {
     throw new Error("❌ La composición para Web no contiene la base o el encabezado de canal.");
+  }
+  if (!webFull.includes("[/nosotros](/nosotros)") || !webFull.includes("1 a 4 líneas")) {
+    throw new Error("❌ La composición para Web debe contener [/nosotros](/nosotros) y límite de 1 a 4 líneas.");
   }
   console.log("   ✅ Composición Web validada correctamente (longitud:", webFull.length, "caracteres)");
 

@@ -147,7 +147,10 @@ export function formatWhatsAppResponse(rawText: string): string {
   text = text.replace(/^[\s\-_*]{3,}$/gm, "");
 
   // 3. Limpiar links de markdown [Texto](URL) -> Texto o URL
-  // Si el texto dentro de corchetes ya contiene la URL o emojis de acción, dejar la URL limpia
+  // 3.1 Limpiar links con rutas relativas web tipo [/nosotros](/nosotros) o [Servicios](/servicios)
+  text = text.replace(/\[([^\]]+)\]\(\/[^\)]*\)/g, "$1");
+
+  // 3.2 Limpiar links markdown web absolutos [Texto](https://...)
   text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, (match, label, url) => {
     // Si la etiqueta es solo agendar o enlace, retornar la URL directamente
     if (/agendar|calendar|link|enlace|clic|aqui|aquí|meet/i.test(label)) {
@@ -156,14 +159,20 @@ export function formatWhatsAppResponse(rawText: string): string {
     return `${label}: ${url}`;
   });
 
-  // 4. Convertir doble asterisco **negrita** a *negrita* (WhatsApp nativo)
+  // 4. Limpiar puntos o signos finales pegados a URLs que rompen la previsualización en WhatsApp
+  text = text.replace(/(https?:\/\/[^\s\)]+)[.,;:](\s|$)/g, "$1$2");
+
+  // 5. Convertir doble asterisco **negrita** a *negrita* (WhatsApp nativo)
   text = text.replace(/\*\*(.*?)\*\*/g, "*$1*");
 
-  // 5. Limpiar asteriscos sobrantes si quedaron triples
+  // 6. Limpiar asteriscos sobrantes si quedaron triples
   text = text.replace(/\*{3,}(.*?)\*{3,}/g, "*$1*");
 
-  // 6. Normalizar saltos de línea excesivos (máximo 2 saltos consecutivos)
+  // 7. Normalizar saltos de línea excesivos (máximo 2 saltos consecutivos)
   text = text.replace(/\n{3,}/g, "\n\n");
+
+  // 8. Eliminar emojis para garantizar comunicación 100% limpia y ejecutiva
+  text = text.replace(/[\p{Extended_Pictographic}\uFE0F]/gu, "").replace(/[ ]{2,}/g, " ");
 
   return text.trim();
 }
@@ -216,7 +225,7 @@ async function processDebouncedTurn(
 
   if (!apiKey) {
     console.error("❌ [KAPSO] Error: GEMINI_API_KEY no encontrada.");
-    await thread.post("Hola 👋, en este momento estamos actualizando nuestro asistente. Por favor escríbenos directamente al +57 314 8490955.");
+    await thread.post("Hola, en este momento estamos optimizando nuestro asistente. Puedes agendar directamente tu llamada de diagnóstico en: https://calendar.app.google/9ygzNzhLH5Gy7iwz6");
     return;
   }
 
@@ -318,7 +327,7 @@ async function processDebouncedTurn(
       const forcedResult = await generateText({
         model: google(modelName),
         system: instructions,
-        prompt: `El cliente preguntó por WhatsApp: "${fullPrompt}". Responde como Sofía, Asesora Comercial de 77 Studio, en un mensaje súper conciso de 2 a 3 líneas estilo WhatsApp nativo. NUNCA pidas presupuesto. Explica brevemente el valor del servicio e invita a agendar llamada de diagnóstico en Google Meet: https://calendar.app.google/9ygzNzhLH5Gy7iwz6.`,
+        prompt: `El cliente preguntó por WhatsApp: "${fullPrompt}". Responde como Sofía, Asesora Comercial de 77 Studio, en un mensaje súper conciso de máximo 2 párrafos estilo WhatsApp nativo (sin saturar de texto). NUNCA pidas presupuesto. Explica brevemente el valor del servicio e invita a agendar llamada de diagnóstico en Google Meet: https://calendar.app.google/9ygzNzhLH5Gy7iwz6.`,
       });
       finalResponseText = forcedResult.text;
     }
@@ -332,12 +341,12 @@ async function processDebouncedTurn(
     // Enviar respuesta al hilo de WhatsApp vía Kapso
     await thread.post(
       sanitizedOutbound ||
-        "¡Hola! 👋 Soy Sofía de 77 Studio. Con gusto te asesoro en desarrollo web, marketing y automatizaciones con IA para tu empresa. ¿En qué área te gustaría que nos enfoquemos?"
+        "Hola, soy Sofía de 77 Studio. Con gusto te asesoro en desarrollo web, marketing y automatizaciones con IA para tu empresa. ¿En qué área te gustaría que nos enfoquemos?"
     );
   } catch (error) {
     console.error("❌ [KAPSO] Error procesando mensaje de WhatsApp:", error);
     await thread.post(
-      "Disculpa la demora, tuvimos un inconveniente de conexión. Por favor escríbenos directamente a nuestro WhatsApp oficial: +57 314 8490955."
+      "Disculpa la demora, tuvimos una breve intermitencia en el sistema. Puedes reenviarme tu mensaje o agendar directamente tu espacio de diagnóstico con nuestro equipo en: https://calendar.app.google/9ygzNzhLH5Gy7iwz6"
     );
   }
 }

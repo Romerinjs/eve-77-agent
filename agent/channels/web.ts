@@ -149,16 +149,16 @@ async function handleWebMessage(thread: Thread, message: Message) {
         tools: {
           search_knowledge: tool({
             description:
-              "Busca información oficial, verídica y vigente en la base de conocimiento de 77 Studio sobre servicios, equipo (ej. Esteban Pantoja), playbooks y datos de contacto.",
+              "Busca información oficial, verídica y vigente en la base de conocimiento de 77 Studio sobre servicios, equipo (para el roster general y directivos como Jordan Cruz o Tania Pérez consultar 'empresa/nosotros'; para Esteban Pantoja consultar 'equipo/esteban'), playbooks y datos de contacto.",
             inputSchema: z.object({
               query: z
                 .string()
                 .default("")
-                .describe("Términos o palabras clave que se deben buscar (ej. 'Esteban Pantoja', 'meta ads', 'desarrollo web')."),
+                .describe("Términos o palabras clave que se deben buscar (ej. 'Jordan Cruz', 'Tania Perez', 'equipo nosotros', 'meta ads', 'desarrollo web')."),
               slug: z
                 .string()
                 .optional()
-                .describe("Slug o ID exacto del documento solo si lo conoces con certeza (ej. 'equipo/esteban', 'servicios/web'). Déjalo vacío para búsquedas generales."),
+                .describe("Slug o ID exacto del documento solo si lo conoces con certeza (ej. 'empresa/nosotros' para el roster general del equipo, 'equipo/esteban', 'servicios/web'). Déjalo vacío para búsquedas generales."),
               audience: z
                 .enum(["nuevos-clientes", "empresas", "fundadores-startups"])
                 .optional()
@@ -183,14 +183,14 @@ async function handleWebMessage(thread: Thread, message: Message) {
     }
 
     // 🛡️ Si el modelo agotó los turnos de llamadas a herramientas sin emitir texto final,
-    // forzar una síntesis final directa (sin herramientas) con la voz de Sofía (3 a 5 líneas, comercial).
+    // forzar una síntesis final directa (sin herramientas) con la voz de Sofía (máximo 1 a 4 líneas, comercial).
     if (!finalResponseText || !finalResponseText.trim()) {
       console.log(`⚠️ [WEB CHAT] Síntesis final requerida tras llamadas a herramientas...`);
       try {
         const forcedResult = await generateText({
           model: google(modelName),
           system: instructions,
-          prompt: `El usuario preguntó: "${sanitizedQuery}". Responde como Sofía, asesora comercial de 77 Studio, en un mensaje conciso de 3 a 5 líneas. NO hagas resúmenes académicos al final ni des precios. Si se trata de un servicio, explica brevemente el beneficio comercial e invita al WhatsApp de 77 Studio (+57 314 8490955 / +1 202 933 7792) para agendar diagnóstico. Si la persona o tema no existe, niega el conocimiento cordialmente e invita al WhatsApp.`,
+          prompt: `El usuario preguntó: "${sanitizedQuery}". Responde como Sofía, asesora comercial de 77 Studio, en un mensaje de máximo 1 a 4 líneas en formato visual escaneable. NO hagas resúmenes académicos al final ni des precios fijos. JAMÁS menciones que buscas en bases de datos o memoria técnica. Si consultan por servicios o equipo, destaca el valor o rol e invita a agendar diagnóstico o ver [/nosotros](/nosotros). Si la persona no pertenece al estudio, responde con amabilidad y naturalidad ejecutiva.`,
         });
         finalResponseText = forcedResult.text;
       } catch (e) {
