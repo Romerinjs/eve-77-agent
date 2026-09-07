@@ -42,6 +42,48 @@ Para comunicarte con nuestro equipo o coordinar un proyecto con el área de tecn
   }
   console.log(`✅ Longitud de etiqueta de botón válida (${cta.label.length}/20 chars).`);
 
+  // CASO 2: Mensaje con asteriscos dobles multilínea y viñeta huérfana reportado en la captura
+  console.log("\n🧪 [TEST] Caso 2: Mensaje con asteriscos envolventes multilínea y viñeta huérfana de WhatsApp...");
+  const rawFromScreenshot1 = `**¡Hola, Romer! Buenas tardes.
+
+¿Cómo estás? Quedo muy atenta por si te gustaría que agendemos la llamada de diagnóstico de 15 minutos para estructurar las estrategias de tu software y de tu restaurante, o si prefieres que continuemos conversando directamente por WhatsApp.
+
+- Escribir por WhatsApp:
+
+¿Cómo prefieres avanzar?**`;
+
+  const cleanScreenshot1 = formatWhatsAppResponse(rawFromScreenshot1);
+  console.log("📄 Resultado Caso 2:\n" + cleanScreenshot1);
+
+  if (cleanScreenshot1.startsWith("**") || cleanScreenshot1.endsWith("**")) {
+    throw new Error("❌ Error: Los asteriscos dobles envolventes multilínea no fueron eliminados.");
+  }
+  if (cleanScreenshot1.includes("Escribir por WhatsApp")) {
+    throw new Error("❌ Error: La viñeta huérfana '- Escribir por WhatsApp:' no fue eliminada.");
+  }
+  console.log("✅ Asteriscos multilínea y viñeta huérfana eliminados con éxito en Caso 2.");
+
+  // CASO 3: Mensaje 2 de la captura con '- Hablar por WhatsApp:**'
+  console.log("\n🧪 [TEST] Caso 3: Mensaje con '- Hablar por WhatsApp:**'...");
+  const rawFromScreenshot2 = `**¡Hola, Romer! Todo muy bien por acá, ¡muchas gracias por preguntar! ¿Tú qué tal?
+
+Sigo súper atenta para ayudarte con la estrategia de tus dos negocios (el software y el restaurante).
+
+¿Pudiste revisar los horarios para la llamada estratégica de 15 minutos, o prefieres que lo coordinemos directamente por WhatsApp?
+
+- Hablar por WhatsApp:**`;
+
+  const cleanScreenshot2 = formatWhatsAppResponse(rawFromScreenshot2);
+  console.log("📄 Resultado Caso 3:\n" + cleanScreenshot2);
+
+  if (cleanScreenshot2.startsWith("**") || cleanScreenshot2.endsWith("**")) {
+    throw new Error("❌ Error: Asteriscos al final de Caso 3 no fueron limpiados.");
+  }
+  if (cleanScreenshot2.includes("Hablar por WhatsApp")) {
+    throw new Error("❌ Error: La viñeta huérfana '- Hablar por WhatsApp:' no fue eliminada.");
+  }
+  console.log("✅ Viñeta huérfana y asteriscos eliminados con éxito en Caso 3.");
+
   console.log("\n🎉 ¡TODAS LAS PRUEBAS DE SANITIZACIÓN Y BOTONES PASARON CON ÉXITO!");
   process.exit(0);
 }

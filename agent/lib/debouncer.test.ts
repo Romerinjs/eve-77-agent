@@ -180,6 +180,59 @@ async function testDebouncer() {
   }
   console.log(`✅ [CASO 3] Mensaje duplicado filtrado exitosamente.`);
 
+  // CASO 4: Mensaje recibido MIENTRAS se procesa la IA (cola secuencial, cero colisiones)
+  console.log("\n🧪 [CASO 4] Mensaje recibido mientras la IA procesa (cola segura sin llamadas simultáneas)...");
+  let executions = 0;
+  const executionTexts: string[] = [];
+
+  const busyThreadId = "whatsapp-busy-flow";
+  const debouncerFast = new MessageDebouncer(100);
+
+  // Turno 1 con procesamiento simulado de 300ms
+  const pTurn1 = debouncerFast.enqueue(
+    busyThreadId,
+    {
+      text: "Pregunta inicial",
+      messageId: "turn-msg-1",
+      senderName: "Romer",
+      timestamp: Date.now(),
+    },
+    async (_tid, aggText) => {
+      executions++;
+      executionTexts.push(aggText);
+      // Simular latencia de LLM
+      await new Promise((r) => setTimeout(r, 200));
+    }
+  );
+
+  // Mensaje que llega a los 150ms (cuando el turno 1 está en plena ejecución del LLM)
+  await new Promise((r) => setTimeout(r, 150));
+  const pTurn2 = debouncerFast.enqueue(
+    busyThreadId,
+    {
+      text: "Mensaje complementario enviado mientras pensaba",
+      messageId: "turn-msg-2",
+      senderName: "Romer",
+      timestamp: Date.now(),
+    },
+    async (_tid, aggText) => {
+      executions++;
+      executionTexts.push(aggText);
+    }
+  );
+
+  await Promise.all([pTurn1, pTurn2]);
+
+  if (executions !== 2) {
+    throw new Error(`❌ Se esperaban 2 ejecuciones secuenciales, pero hubo ${executions}`);
+  }
+
+  if (executionTexts[0] !== "Pregunta inicial" || executionTexts[1] !== "Mensaje complementario enviado mientras pensaba") {
+    throw new Error(`❌ Los textos secuenciales no coinciden: ${JSON.stringify(executionTexts)}`);
+  }
+
+  console.log(`✅ [CASO 4] Cola secuencial validada: 2 turnos limpios sin solapamiento de IA.`);
+
   console.log("\n🎉 ¡TODAS LAS PRUEBAS DEL DEBOUNCER PASARON CON ÉXITO!");
 }
 

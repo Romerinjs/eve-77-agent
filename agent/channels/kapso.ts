@@ -141,22 +141,27 @@ export function formatWhatsAppResponse(rawText: string): string {
 
   let text = rawText;
 
-  // 1. Eliminar encabezados Markdown (# Título -> *Título*)
+  // 1. Eliminar asteriscos dobles envolventes que cubran todo el mensaje
+  text = text.replace(/^\s*\*{2,}/g, "").replace(/\*{2,}\s*$/g, "");
+
+  // 2. Eliminar encabezados Markdown (# Título -> *Título*)
   text = text.replace(/^#{1,6}\s*(.+)$/gm, "*$1*");
 
-  // 2. Eliminar líneas divisorias (---, ___, ***)
+  // 3. Eliminar líneas divisorias (---, ___, ***)
   text = text.replace(/^[\s\-_*]{3,}$/gm, "");
 
-  // 3. Limpiar links de markdown [Texto](URL) -> Texto o URL
-  // 3.1 Limpiar links con rutas relativas web tipo [/nosotros](/nosotros) o [Servicios](/servicios)
+  // 4. Limpiar links de markdown [Texto](URL) -> Texto o URL
+  // 4.1 Limpiar links con rutas relativas web tipo [/nosotros](/nosotros) o [Servicios](/servicios)
   text = text.replace(/\[([^\]]+)\]\(\/[^\)]*\)/g, "$1");
 
-  // 3.2 Eliminar líneas completas de links redundantes a wa.me o directorios de WhatsApp
+  // 4.2 Eliminar líneas completas de links redundantes a wa.me o directorios de WhatsApp
   text = text.replace(/^[*-]?\s*\*?(?:WhatsApp|Línea|Contacto|Teléfono)[^\n]*wa\.me[^\n]*\n?/gim, "");
   text = text.replace(/https?:\/\/wa\.me\/[^\s\)]+/gi, "");
+  // Eliminar viñetas huérfanas tipo "- Escribir por WhatsApp:" o "- Hablar por WhatsApp:**"
+  text = text.replace(/^[*-]?\s*\*?(?:Escribir|Hablar|Conversar|Contactar)?\s*(?:por\s+)?WhatsApp\s*:?\*?\s*$/gim, "");
   text = text.replace(/manejamos la atención a través de nuestros canales oficiales:?/gi, "puedes agendar una sesión directa de diagnóstico.");
 
-  // 3.3 Limpiar links markdown web absolutos [Texto](https://...)
+  // 4.3 Limpiar links markdown web absolutos [Texto](https://...)
   text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, (match, label, url) => {
     if (/agendar|calendar|link|enlace|clic|aqui|aquí|meet/i.test(label)) {
       return url;
@@ -164,22 +169,26 @@ export function formatWhatsAppResponse(rawText: string): string {
     return `${label}: ${url}`;
   });
 
-  // 4. Limpiar puntos o signos finales pegados a URLs que rompen la previsualización en WhatsApp
+  // 5. Limpiar puntos o signos finales pegados a URLs que rompen la previsualización en WhatsApp
   text = text.replace(/(https?:\/\/[^\s\)]+)[.,;:](\s|$)/g, "$1$2");
 
-  // 5. Convertir doble asterisco **negrita** a *negrita* (WhatsApp nativo)
-  text = text.replace(/\*\*(.*?)\*\*/g, "*$1*");
+  // 6. Convertir doble asterisco **negrita** a *negrita* (incluso si abarca saltos de línea o texto extenso)
+  text = text.replace(/\*\*([\s\S]*?)\*\*/g, "*$1*");
+  text = text.replace(/\*\*/g, "*");
 
-  // 6. Limpiar asteriscos sobrantes si quedaron triples
-  text = text.replace(/\*{3,}(.*?)\*{3,}/g, "*$1*");
+  // 7. Limpiar asteriscos sobrantes si quedaron triples o cuádruples
+  text = text.replace(/\*{3,}/g, "*");
 
-  // 7. Normalizar viñetas vacías o líneas huérfanas que hayan quedado de wa.me
+  // 8. Normalizar viñetas vacías o líneas huérfanas que hayan quedado
   text = text.replace(/^[*-]\s*$/gm, "");
 
-  // 8. Normalizar saltos de línea excesivos (máximo 2 saltos consecutivos)
+  // 9. Eliminar asteriscos sueltos en los extremos del texto completo
+  text = text.replace(/^\s*\*+/g, "").replace(/\*+\s*$/g, "");
+
+  // 10. Normalizar saltos de línea excesivos (máximo 2 saltos consecutivos)
   text = text.replace(/\n{3,}/g, "\n\n");
 
-  // 9. Eliminar emojis para garantizar comunicación 100% limpia y ejecutiva
+  // 11. Eliminar emojis para garantizar comunicación 100% limpia y ejecutiva
   text = text.replace(/[\p{Extended_Pictographic}\uFE0F]/gu, "").replace(/[ ]{2,}/g, " ");
 
   return text.trim();
@@ -462,9 +471,8 @@ async function handleKapsoInbound(thread: Thread, message: Message) {
   );
 }
 
-// Registrar manejadores de eventos
+// Registrar manejadores de eventos (WhatsApp DM)
 bot.onDirectMessage(handleKapsoInbound);
-bot.onNewMessage(handleKapsoInbound);
 
 console.log("🟢 [EVE CHANNEL] Canal Kapso (WhatsApp) montado y listo para recibir tráfico en /eve/v1/kapso\n");
 
