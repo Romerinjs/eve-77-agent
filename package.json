@@ -18,7 +18,7 @@
     "bundle:instructions": "tsx scripts/bundle-instructions.ts",
     "bundle:knowledge": "tsx scripts/bundle-knowledge.ts",
     "bundle:all": "tsx scripts/bundle-instructions.ts && tsx scripts/bundle-knowledge.ts",
-    "build": "tsx scripts/bundle-instructions.ts && tsx scripts/bundle-knowledge.ts",
+    "build": "tsx scripts/bundle-instructions.ts && tsx scripts/bundle-knowledge.ts && eve build",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

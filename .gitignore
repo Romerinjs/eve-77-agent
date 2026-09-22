@@ -8,3 +8,5 @@ dist
 .eve
 .vercel
 .output
+
+.env*

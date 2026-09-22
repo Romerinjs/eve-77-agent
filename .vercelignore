@@ -1,0 +1,6 @@
+.git
+.eve
+.output
+node_modules
+.agents
+*.log
