@@ -20,6 +20,12 @@ async function runTests() {
   if (!base.includes("Protocolo de Negación Seguro") || !base.includes("Protocolo del Equipo 77 Studio")) {
     throw new Error("❌ Las directrices base deben incluir el protocolo de negación seguro y del equipo.");
   }
+  if (!base.includes("SESGO ESTRICTO Y GROUNDING OBLIGATORIO EN 77 STUDIO")) {
+    throw new Error("❌ Las directrices base deben incluir la regla de sesgo estricto y grounding.");
+  }
+  if (!base.includes("PROHIBIDO entregar código") || !base.includes("EFECTO PUENTE / PIVOTE")) {
+    throw new Error("❌ Las directrices base deben prohibir la entrega de código y el efecto puente/pivote.");
+  }
   console.log("   ✅ Instrucciones base cargadas con éxito (longitud:", base.length, "caracteres)");
 
   // 2. Validar Sub-Instrucción Kapso (WhatsApp)
@@ -37,6 +43,9 @@ async function runTests() {
   if (!kapsoSub.includes("CERO EMOJIS") && !kapsoSub.includes("PROHIBIDO EL USO DE EMOJIS")) {
     throw new Error("❌ La sub-instrucción de Kapso debe prohibir estrictamente el uso de emojis.");
   }
+  if (!kapsoSub.includes("Cero Código y Tutoriales") || !kapsoSub.includes("Cero Trivia")) {
+    throw new Error("❌ La sub-instrucción de Kapso debe incluir directrices de sesgo estricto y cero código/trivia.");
+  }
   console.log("   ✅ Sub-instrucción de Kapso cargada con éxito (longitud:", kapsoSub.length, "caracteres)");
 
   // 3. Validar Sub-Instrucción Web
@@ -53,6 +62,9 @@ async function runTests() {
   }
   if (!webSub.includes("calendar.app.google")) {
     throw new Error("❌ La sub-instrucción Web debe incluir el enlace a Calendar.");
+  }
+  if (!webSub.includes("Sesgo Estricto y Manejo de Solicitudes Fuera de Alcance") || !webSub.includes("Cero Código y Cero Tutoriales")) {
+    throw new Error("❌ La sub-instrucción Web debe incluir directrices de sesgo estricto y cero código.");
   }
   console.log("   ✅ Sub-instrucción Web cargada con éxito (longitud:", webSub.length, "caracteres)");
 

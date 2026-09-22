@@ -65,8 +65,9 @@ function getResolvedStateAdapter() {
 }
 
 // 4. Instanciar el Adaptador Oficial de Kapso para Chat SDK
-const kapsoApiKey = process.env.KAPSO_API_KEY;
-const phoneNumberId = process.env.KAPSO_PHONE_NUMBER_ID;
+// Resiliencia para build time en Vercel / CI donde las credenciales aún no están inyectadas
+const kapsoApiKey = process.env.KAPSO_API_KEY || "build_placeholder_kapso_key";
+const phoneNumberId = process.env.KAPSO_PHONE_NUMBER_ID || "build_placeholder_phone_id";
 const webhookSecret = process.env.KAPSO_WEBHOOK_SECRET;
 
 const kapsoAdapter = createKapsoAdapter({
@@ -354,7 +355,7 @@ async function processDebouncedTurn(
         tools: {
           search_knowledge: tool({
             description:
-              "Busca información oficial y verídica en la base de conocimiento de 77 Studio sobre servicios (Marketing, Web Astro, IA & Automatizaciones, SaaS), equipo (ej. Esteban Pantoja), playbooks comerciales y datos de contacto.",
+              "Busca información oficial y verídica en la base de conocimiento de 77 Studio sobre servicios (Marketing, Web Astro, IA & Automatizaciones, SaaS), equipo (ej. Esteban Pantoja), playbooks comerciales y datos de contacto. Úsala obligatoriamente para fundamentar información de la agencia. Si la consulta es de cultura general, ajena o pide tutoriales/código, no inventes información externa.",
             inputSchema: z.object({
               query: z
                 .string()
@@ -392,7 +393,7 @@ async function processDebouncedTurn(
       const forcedResult = await generateText({
         model: google(modelName),
         system: instructions,
-        prompt: `El cliente preguntó por WhatsApp: "${fullPrompt}". Responde como Sofía, Asesora Comercial de 77 Studio, en un mensaje súper conciso de máximo 2 párrafos estilo WhatsApp nativo (sin saturar de texto). NUNCA pidas presupuesto. Explica brevemente el valor del servicio e invita a agendar llamada de diagnóstico en Google Meet: https://calendar.app.google/9ygzNzhLH5Gy7iwz6.`,
+        prompt: `El cliente preguntó por WhatsApp: "${fullPrompt}". Responde como Sofía, Asesora Comercial de 77 Studio, en un mensaje súper conciso de máximo 2 párrafos estilo WhatsApp nativo (sin saturar de texto). REGLA ESTRICTA: Cero código, cero tutoriales de instalación ajena, cero trivias de cultura general y cero efecto puente. NUNCA pidas presupuesto. Si la consulta es sobre servicios de la agencia, explica brevemente el valor e invita a agendar llamada de diagnóstico en Google Meet: https://calendar.app.google/9ygzNzhLH5Gy7iwz6. Si es ajena o pide código, declina con sobriedad ejecutiva.`,
       });
       finalResponseText = forcedResult.text;
     }
