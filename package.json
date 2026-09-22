@@ -14,6 +14,7 @@
     "test:kapso": "tsx agent/lib/kapso.test.ts",
     "test:knowledge": "tsx agent/lib/knowledge.test.ts",
     "test:instructions": "tsx agent/lib/instructions.test.ts",
+    "test:bias": "tsx agent/lib/bias-grounding.test.ts",
     "test:live": "tsx agent/test-live-agent.ts",
     "bundle:knowledge": "tsx scripts/bundle-knowledge.ts",
     "typecheck": "tsc --noEmit"

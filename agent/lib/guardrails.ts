@@ -32,7 +32,17 @@ setInterval(() => {
 
 export type GuardrailCheckResult =
   | { allowed: true; sanitizedText: string }
-  | { allowed: false; reason: "RATE_LIMIT" | "COOLDOWN" | "TOO_LONG" | "PROMPT_INJECTION"; message: string };
+  | {
+      allowed: false;
+      reason:
+        | "RATE_LIMIT"
+        | "COOLDOWN"
+        | "TOO_LONG"
+        | "PROMPT_INJECTION"
+        | "INAPPROPRIATE_CONTENT"
+        | "ILLEGAL_CONTENT";
+      message: string;
+    };
 
 // Patrones sospechosos de Jailbreak / Prompt Injection comunes
 const INJECTION_PATTERNS = [
@@ -44,6 +54,20 @@ const INJECTION_PATTERNS = [
   /system\s+prompt\s+override/i,
   /revela\s+tu\s+prompt\s+de\s+sistema/i,
   /show\s+me\s+your\s+system\s+instructions/i,
+];
+
+// Patrones de lenguaje obsceno, vulgar o acoso sexual explícito
+const INAPPROPRIATE_PATTERNS = [
+  /\b(picha|verga|pinga|polla|chimbo|mond[aá]|culo|tetas|senos|vagina|pene|sexo|porn[oó]|gemidos?|mamada|mamadas|chuparla|chupame(la)?)\b/i,
+  /\b(dar\s+(la\s+)?picha|hacer\s+el\s+amor|vamos\s+a\s+coger|quieres\s+coger|te\s+quiero\s+coger|desnud[ao]s?)\b/i,
+  /\b(prostitut[ao]s?|escort|pack\s+de\s+fotos|nudes)\b/i,
+];
+
+// Patrones de terrorismo, violencia extrema o actividades ilícitas
+const ILLEGAL_PATTERNS = [
+  /\b(al[- ]?qaeda|alcaeda|isis|daesh|talib[aá]n|yihad|jihad|terroris(mo|ta)s?)\b/i,
+  /\b(fabricar\s+bombas?|hacer\s+explosivos?|armas?\s+(de\s+fuego\s+)?ilegales?)\b/i,
+  /\b(sicariato|contratar\s+sicario|vender\s+droga|narcotr[aá]fico)\b/i,
 ];
 
 /**
@@ -109,6 +133,30 @@ export function checkGuardrails(clientId: string, rawText: string): GuardrailChe
         allowed: false,
         reason: "PROMPT_INJECTION",
         message: "Como asesor de 77 Studio, estoy enfocado exclusivamente en orientarte sobre desarrollo web, marketing y automatizaciones.",
+      };
+    }
+  }
+
+  // 5. Detección de Lenguaje Obsceno / Acoso Sexual
+  for (const pattern of INAPPROPRIATE_PATTERNS) {
+    if (pattern.test(text)) {
+      console.warn(`🚨 [INAPPROPRIATE BLOCKED] Mensaje inapropiado detectado en cliente ${clientId}: "${text.substring(0, 50)}..."`);
+      return {
+        allowed: false,
+        reason: "INAPPROPRIATE_CONTENT",
+        message: "Este es un canal corporativo de 77 Studio exclusivo para consultas comerciales y profesionales. No se toleran mensajes inapropiados.",
+      };
+    }
+  }
+
+  // 6. Detección de Terrorismo / Actividades Ilícitas
+  for (const pattern of ILLEGAL_PATTERNS) {
+    if (pattern.test(text)) {
+      console.warn(`🚨 [ILLEGAL CONTENT BLOCKED] Consulta ilícita o violenta detectada en cliente ${clientId}: "${text.substring(0, 50)}..."`);
+      return {
+        allowed: false,
+        reason: "ILLEGAL_CONTENT",
+        message: "No se atienden consultas sobre actividades ilícitas o violentas. Este canal está destinado exclusivamente a la asesoría de servicios de 77 Studio.",
       };
     }
   }

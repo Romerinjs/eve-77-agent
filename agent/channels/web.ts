@@ -149,7 +149,7 @@ async function handleWebMessage(thread: Thread, message: Message) {
         tools: {
           search_knowledge: tool({
             description:
-              "Busca información oficial, verídica y vigente en la base de conocimiento de 77 Studio sobre servicios, equipo (para el roster general y directivos como Jordan Cruz o Tania Pérez consultar 'empresa/nosotros'; para Esteban Pantoja consultar 'equipo/esteban'), playbooks y datos de contacto.",
+              "Busca información oficial, verídica y vigente en la base de conocimiento de 77 Studio sobre servicios, equipo (para el roster general y directivos como Jordan Cruz o Tania Pérez consultar 'empresa/nosotros'; para Esteban Pantoja consultar 'equipo/esteban'), playbooks y datos de contacto. Úsala obligatoriamente para fundamentar información de la agencia. Si la consulta es de cultura general, ajena o pide tutoriales/código, no inventes información externa.",
             inputSchema: z.object({
               query: z
                 .string()
@@ -190,7 +190,7 @@ async function handleWebMessage(thread: Thread, message: Message) {
         const forcedResult = await generateText({
           model: google(modelName),
           system: instructions,
-          prompt: `El usuario preguntó: "${sanitizedQuery}". Responde como Sofía, asesora comercial de 77 Studio, en un mensaje de máximo 1 a 4 líneas en formato visual escaneable. NO hagas resúmenes académicos al final ni des precios fijos. JAMÁS menciones que buscas en bases de datos o memoria técnica. Si consultan por servicios o equipo, destaca el valor o rol e invita a agendar diagnóstico o ver [/nosotros](/nosotros). Si la persona no pertenece al estudio, responde con amabilidad y naturalidad ejecutiva.`,
+          prompt: `El usuario preguntó: "${sanitizedQuery}". Responde como Sofía, asesora comercial de 77 Studio, en un mensaje de máximo 1 a 4 líneas en formato visual escaneable. REGLA ESTRICTA: NO respondas trivias ni preguntas de cultura general, NO generes tutoriales ni código de programación. NUNCA apliques el efecto puente. Si la consulta pide código o es ajena a 77 Studio, declina con amabilidad explicando que desarrollamos plataformas y soluciones a medida para empresas e invita a agendar diagnóstico o WhatsApp. NO hagas resúmenes académicos al final ni des precios fijos. JAMÁS menciones que buscas en bases de datos o memoria técnica. Si consultan por servicios o equipo, destaca el valor o rol e invita a agendar diagnóstico o ver [/nosotros](/nosotros). Si la persona no pertenece al estudio, responde con amabilidad y naturalidad ejecutiva.`,
         });
         finalResponseText = forcedResult.text;
       } catch (e) {

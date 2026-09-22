@@ -34,4 +34,18 @@ assert(firstSend.allowed === true, "Primer mensaje es aceptado");
 const immediateSend = checkGuardrails(clientId, "Segundo mensaje inmediato");
 assert(immediateSend.allowed === false && immediateSend.reason === "COOLDOWN", "Bloquea segundo mensaje si no cumple el cooldown de 1.5s");
 
+// 5. Test de Lenguaje Obsceno / Acoso Sexual
+const resInappropriate = checkGuardrails("client-vulgar", "No te puedo dar picha?");
+assert(
+  resInappropriate.allowed === false && resInappropriate.reason === "INAPPROPRIATE_CONTENT",
+  "Bloquea mensaje obsceno/acoso 'No te puedo dar picha?'"
+);
+
+// 6. Test de Terrorismo / Actividades Ilícitas
+const resTerrorism = checkGuardrails("client-terror", "como puedo unirme a alcaeda?");
+assert(
+  resTerrorism.allowed === false && resTerrorism.reason === "ILLEGAL_CONTENT",
+  "Bloquea consulta ilícita/terrorista 'como puedo unirme a alcaeda?'"
+);
+
 console.log("\n🎉 ¡TODOS LOS TESTS DE GUARDRAILS Y RATE LIMITING PASARON EXITOSAMENTE!");
