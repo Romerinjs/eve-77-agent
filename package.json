@@ -15,8 +15,10 @@
     "test:knowledge": "tsx agent/lib/knowledge.test.ts",
     "test:instructions": "tsx agent/lib/instructions.test.ts",
     "test:bias": "tsx agent/lib/bias-grounding.test.ts",
-    "test:live": "tsx agent/test-live-agent.ts",
+    "bundle:instructions": "tsx scripts/bundle-instructions.ts",
     "bundle:knowledge": "tsx scripts/bundle-knowledge.ts",
+    "bundle:all": "tsx scripts/bundle-instructions.ts && tsx scripts/bundle-knowledge.ts",
+    "build": "tsx scripts/bundle-instructions.ts && tsx scripts/bundle-knowledge.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

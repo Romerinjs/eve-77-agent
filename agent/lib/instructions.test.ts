@@ -108,7 +108,19 @@ async function runTests() {
   if (!basePostInvalidate || !basePostInvalidate.includes("Sofía")) {
     throw new Error("❌ Falló recarga tras invalidación de caché.");
   }
-  console.log("   ✅ Caché invalidado y recargado correctamente.");
+  // 8. Validar Bundle Estático para Vercel Serverless
+  console.log("\n🧪 [TEST 8] Bundle Estático para Vercel Serverless (Zero-I/O)");
+  const { STATIC_BASE_INSTRUCTIONS, STATIC_CHANNEL_INSTRUCTIONS } = await import("./instructions-data.js");
+  if (!STATIC_BASE_INSTRUCTIONS || STATIC_BASE_INSTRUCTIONS.length < 5000) {
+    throw new Error("❌ STATIC_BASE_INSTRUCTIONS está vacío o incompleto.");
+  }
+  if (!STATIC_BASE_INSTRUCTIONS.includes("PROHIBICIÓN ESTRICTA DEL EFECTO PUENTE")) {
+    throw new Error("❌ STATIC_BASE_INSTRUCTIONS no incluye la prohibición del efecto puente.");
+  }
+  if (!STATIC_CHANNEL_INSTRUCTIONS.web || !STATIC_CHANNEL_INSTRUCTIONS.web.includes("Cero Código")) {
+    throw new Error("❌ STATIC_CHANNEL_INSTRUCTIONS.web está incompleto.");
+  }
+  console.log("   ✅ Bundle estático verificado con éxito (Longitud Base:", STATIC_BASE_INSTRUCTIONS.length, "caracteres)");
 
   console.log("\n🎉 ¡TODAS LAS PRUEBAS DE SUB-INSTRUCCIONES PASARON EXITOSAMENTE!");
 }

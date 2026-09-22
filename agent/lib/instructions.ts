@@ -1,6 +1,10 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  STATIC_BASE_INSTRUCTIONS,
+  STATIC_CHANNEL_INSTRUCTIONS,
+} from "./instructions-data.js";
 
 export type SupportedChannel = "kapso" | "web" | "cli" | (string & {});
 
@@ -69,6 +73,12 @@ export function getBaseInstructions(): string {
     }
   }
 
+  // Fallback seguro con el bundle estático para Vercel Serverless (0ms I/O)
+  if (STATIC_BASE_INSTRUCTIONS && STATIC_BASE_INSTRUCTIONS.trim()) {
+    cache.base = STATIC_BASE_INSTRUCTIONS;
+    return cache.base;
+  }
+
   cache.base =
     "Eres Sofía, asesora comercial de 77 Studio. Responde de forma clara, concisa y comercial guiando a una llamada de diagnóstico o WhatsApp.";
   return cache.base;
@@ -91,6 +101,13 @@ export function getSubInstruction(channel: SupportedChannel): string {
     } catch (e) {
       console.warn(`⚠️ [INSTRUCTIONS] Error leyendo sub-instrucción para canal '${channel}':`, e);
     }
+  }
+
+  // Fallback seguro con el bundle estático de canal para Vercel Serverless
+  if (STATIC_CHANNEL_INSTRUCTIONS && STATIC_CHANNEL_INSTRUCTIONS[channel]) {
+    const staticContent = STATIC_CHANNEL_INSTRUCTIONS[channel];
+    cache.channels[channel] = staticContent;
+    return staticContent;
   }
 
   return "";

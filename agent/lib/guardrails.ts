@@ -40,7 +40,8 @@ export type GuardrailCheckResult =
         | "TOO_LONG"
         | "PROMPT_INJECTION"
         | "INAPPROPRIATE_CONTENT"
-        | "ILLEGAL_CONTENT";
+        | "ILLEGAL_CONTENT"
+        | "OFF_TOPIC";
       message: string;
     };
 
@@ -68,6 +69,22 @@ const ILLEGAL_PATTERNS = [
   /\b(al[- ]?qaeda|alcaeda|isis|daesh|talib[aá]n|yihad|jihad|terroris(mo|ta)s?)\b/i,
   /\b(fabricar\s+bombas?|hacer\s+explosivos?|armas?\s+(de\s+fuego\s+)?ilegales?)\b/i,
   /\b(sicariato|contratar\s+sicario|vender\s+droga|narcotr[aá]fico)\b/i,
+];
+
+// Patrones de trivia de cultura general, historia ajena y soporte de dispositivos externos
+const OFF_TOPIC_PATTERNS = [
+  // Preguntas sobre fundación de marcas o entidades ajenas (excluyendo 77 Studio)
+  /\b(cu[aá]ndo|en\s+qu[eé]\s+a[nñ]o|qui[eé]n)\s+(se\s+)?fund[oó]\s+(?!77\s+studio)/i,
+  /\b(qui[eé]n\s+es\s+el\s+fundador\s+de)\s+(?!77\s+studio)/i,
+  // Independencia, historia externa, tareas escolares
+  /\b(cu[aá]ndo|en\s+qu[eé]\s+a[nñ]o)\s+(se\s+declar[oó]\s+la\s+independencia|se\s+independiz[oó]|fue\s+la\s+independencia)/i,
+  /\b(independencia\s+de\s+(estados\s+unidos|esetados\s+unidos|colombia|m[eé]xico|espa[nñ]a|per[uú]|argentina|chile))\b/i,
+  // Soporte técnico de dispositivos ajenos (iPhone, Android, Windows, Mac)
+  /\b(c[oó]mo\s+(entro|entrar|accedo|acceder|ir)\s+a\s+(los\s+)?(ajustes|configuraci[oó]n)\s+(en|de)\s+(mi\s+)?(iphone|android|ios|samsung|xiaomi|celular|tel[eé]fono|pc|windows|mac))\b/i,
+  /\b(c[oó]mo\s+formatear\s+(mi\s+)?(celular|iphone|pc|computador|laptop|disco))\b/i,
+  /\b(c[oó]mo\s+reiniciar\s+de\s+f[aá]brica\s+(mi\s+)?(celular|iphone))\b/i,
+  // Tutoriales de instalación externa genérica (WordPress local con XAMPP)
+  /\b(c[oó]mo\s+(instalar|configurar)\s+(wordpress\s+en\s+local|xampp|laragon|wamp|mysql\s+en\s+mi\s+pc))\b/i,
 ];
 
 /**
@@ -157,6 +174,18 @@ export function checkGuardrails(clientId: string, rawText: string): GuardrailChe
         allowed: false,
         reason: "ILLEGAL_CONTENT",
         message: "No se atienden consultas sobre actividades ilícitas o violentas. Este canal está destinado exclusivamente a la asesoría de servicios de 77 Studio.",
+      };
+    }
+  }
+
+  // 7. Detección de Consultas Ajenas / Trivia Externa / Soporte de Dispositivos Ajenos
+  for (const pattern of OFF_TOPIC_PATTERNS) {
+    if (pattern.test(text)) {
+      console.warn(`🛡️ [OFF_TOPIC BLOCKED] Consulta ajena detectada por guardrail en cliente ${clientId}: "${text.substring(0, 50)}..."`);
+      return {
+        allowed: false,
+        reason: "OFF_TOPIC",
+        message: "Como asesora comercial de 77 Studio, mi función es orientarte exclusivamente sobre nuestros servicios de desarrollo web, marketing digital, automatizaciones con IA y productos digitales para empresas. ¿En qué proyecto o requerimiento de tu negocio te podemos apoyar?",
       };
     }
   }
