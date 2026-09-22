@@ -65,8 +65,9 @@ function getResolvedStateAdapter() {
 }
 
 // 4. Instanciar el Adaptador Oficial de Kapso para Chat SDK
-const kapsoApiKey = process.env.KAPSO_API_KEY;
-const phoneNumberId = process.env.KAPSO_PHONE_NUMBER_ID;
+// Resiliencia para build time en Vercel / CI donde las credenciales aún no están inyectadas
+const kapsoApiKey = process.env.KAPSO_API_KEY || "build_placeholder_kapso_key";
+const phoneNumberId = process.env.KAPSO_PHONE_NUMBER_ID || "build_placeholder_phone_id";
 const webhookSecret = process.env.KAPSO_WEBHOOK_SECRET;
 
 const kapsoAdapter = createKapsoAdapter({
